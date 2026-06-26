@@ -1,0 +1,137 @@
+[
+ {
+  "id": "2026-06-27-RCTP-RCKH-de9a09",
+  "date": "2026-06-27",
+  "time_local": "02:45",
+  "aircraft": "Boeing 777-300ER China Airlines B-18003",
+  "model": "B773",
+  "airline": "China Airlines",
+  "flight_no": "TEMP",
+  "departure": "RCTP",
+  "arrival": "RCKH",
+  "dep_pos": [
+   121.233,
+   25.0777
+  ],
+  "arr_pos": [
+   120.35,
+   22.5771
+  ],
+  "distance_nm": 187.5,
+  "cruise_ft": 14500,
+  "block_min": 55.3,
+  "air_min": 35.2,
+  "complete": true,
+  "title": null,
+  "tags": [],
+  "track_ref": "data/flights/2026-06-27-RCTP-RCKH-de9a09.track.geojson"
+ },
+ {
+  "id": "2026-05-27-UNKN-RCFN-54689e",
+  "date": "2026-05-27",
+  "time_local": "16:57",
+  "aircraft": "DA40-NG Asobo",
+  "model": "DA40",
+  "airline": null,
+  "flight_no": null,
+  "departure": "UNKN",
+  "arrival": "RCFN",
+  "dep_pos": [
+   121.06072,
+   22.70746
+  ],
+  "arr_pos": [
+   121.10179,
+   22.75486
+  ],
+  "distance_nm": 3.5,
+  "cruise_ft": 500,
+  "block_min": 2.8,
+  "air_min": 0.0,
+  "complete": false,
+  "title": null,
+  "tags": [],
+  "track_ref": "data/flights/2026-05-27-UNKN-RCFN-54689e.track.geojson"
+ },
+ {
+  "id": "2026-05-27-RCFN-RCFN-2ab0aa",
+  "date": "2026-05-27",
+  "time_local": "16:52",
+  "aircraft": "DA40-NG Asobo",
+  "model": "DA40",
+  "airline": null,
+  "flight_no": null,
+  "departure": "RCFN",
+  "arrival": "RCFN",
+  "dep_pos": [
+   121.10179,
+   22.75486
+  ],
+  "arr_pos": [
+   121.10179,
+   22.75486
+  ],
+  "distance_nm": 10.8,
+  "cruise_ft": 1500,
+  "block_min": 7.8,
+  "air_min": 6.6,
+  "complete": true,
+  "title": null,
+  "tags": [],
+  "track_ref": "data/flights/2026-05-27-RCFN-RCFN-2ab0aa.track.geojson"
+ },
+ {
+  "id": "2026-05-27-RCTP-RCSS-124d31",
+  "date": "2026-05-27",
+  "time_local": "16:12",
+  "aircraft": "Airbus A320 Neo China Airlines",
+  "model": "A20N",
+  "airline": "Dynasty",
+  "flight_no": "1123",
+  "departure": "RCTP",
+  "arrival": "RCSS",
+  "dep_pos": [
+   121.233,
+   25.0777
+  ],
+  "arr_pos": [
+   121.55282,
+   25.06724
+  ],
+  "distance_nm": 18.7,
+  "cruise_ft": 2000,
+  "block_min": 6.7,
+  "air_min": 5.4,
+  "complete": true,
+  "title": null,
+  "tags": [],
+  "track_ref": "data/flights/2026-05-27-RCTP-RCSS-124d31.track.geojson"
+ },
+ {
+  "id": "2026-03-25-UNKN-RCSS-28ac7e",
+  "date": "2026-03-25",
+  "time_local": "14:59",
+  "aircraft": "Airbus A320 Neo EVA Airline",
+  "model": "A20N",
+  "airline": "Eva",
+  "flight_no": "BR911",
+  "departure": "UNKN",
+  "arrival": "RCSS",
+  "dep_pos": [
+   121.45923,
+   25.073
+  ],
+  "arr_pos": [
+   121.55282,
+   25.06724
+  ],
+  "distance_nm": 5.3,
+  "cruise_ft": 500,
+  "block_min": 2.0,
+  "air_min": 0.3,
+  "complete": false,
+  "title": null,
+  "tags": [],
+  "track_ref": "data/flights/2026-03-25-UNKN-RCSS-28ac7e.track.geojson"
+ }
+]
