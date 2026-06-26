@@ -1,0 +1,16 @@
+# local design docs — not part of the published site
+PRD.md
+SPEC.md
+範例/
+
+# os / editor
+.DS_Store
+*.swp
+
+# python
+__pycache__/
+*.pyc
+.venv/
+
+# tooling scratch
+ourairports-raw.csv
