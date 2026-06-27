@@ -1,5 +1,15 @@
 // Home page: interactive globe + stats header + flight list.
 (async function () {
+  // top-down plane silhouettes (point up = north), colour-coded by category.
+  // Declared first so the synchronous flat-map fallback can use it safely.
+  const PLANE_ICONS = {
+    airliner: `<path fill="#f2f7ff" stroke="#0b2030" stroke-width=".8" d="M0,-12 L2,-3 L12,3 L12,5.5 L2,1.5 L2,7 L5.5,10 L5.5,11 L0,9.5 L-5.5,11 L-5.5,10 L-2,7 L-2,1.5 L-12,5.5 L-12,3 L-2,-3 Z"/>`,
+    bizjet: `<path fill="#4fc3f7" stroke="#0b2030" stroke-width=".8" d="M0,-11 L1.3,-3.5 L7.5,1.5 L7.5,3 L1.4,0.6 L1.7,6.5 L4.6,9 L4.6,10 L0,8.8 L-4.6,10 L-4.6,9 L-1.7,6.5 L-1.4,0.6 L-7.5,3 L-7.5,1.5 L-1.3,-3.5 Z"/>`,
+    prop: `<g fill="#ffca45" stroke="#0b2030" stroke-width=".7"><path d="M-1.5,-10 L1.5,-10 L1.5,7 L4,9.5 L4,10.5 L0,9 L-4,10.5 L-4,9.5 L-1.5,7 Z"/><path d="M-12,-2 L12,-2 L12,1 L-12,1 Z"/><rect x="-7.6" y="-3.4" width="3" height="4.8" rx="1"/><rect x="4.6" y="-3.4" width="3" height="4.8" rx="1"/></g>`,
+    ga: `<g fill="#74e08a" stroke="#0b2030" stroke-width=".7"><path d="M-1,-7.5 L1,-7.5 L1,5 L2.8,6.8 L2.8,7.8 L0,6.6 L-2.8,7.8 L-2.8,6.8 L-1,5 Z"/><path d="M-9,-3.5 L9,-3.5 L9,-1.5 L-9,-1.5 Z"/></g>`,
+    helicopter: `<g stroke="#0b2030" stroke-width=".7"><circle cx="0" cy="-1" r="11" fill="none" stroke="#ff8a5c" stroke-width="1.2" opacity=".55"/><path fill="#ff8a5c" d="M-2,-4 L2,-4 L2,3 L1.3,4 L1.3,9 L3,11 L3,12 L-3,12 L-3,11 L-1.3,9 L-1.3,4 L-2,3 Z"/><line x1="-4" y1="-1" x2="4" y2="-1" stroke="#ff8a5c" stroke-width="1.4"/></g>`,
+  };
+
   const flights = await fetch("data/flights.json", { cache: "no-cache" }).then(r => r.json()).catch(() => []);
   const stats = await fetch("data/stats.json", { cache: "no-cache" }).then(r => r.json()).catch(() => null);
 
@@ -70,75 +80,82 @@
     const radiusForAlt = a => Math.max(0.05, Math.min(0.32, a * 0.12));
     const INIT_ALT = 1.9;
     const isMobile = Math.min(window.innerWidth, window.innerHeight) < 768;
+    const webglOK = (function () {
+      try {
+        const c = document.createElement("canvas");
+        return !!(window.WebGLRenderingContext && (c.getContext("webgl2") || c.getContext("webgl")));
+      } catch (e) { return false; }
+    })();
 
-    const g = Globe({ rendererConfig: { antialias: true, alpha: true } })(elem)
-      .globeImageUrl("assets/earth-day-4k.jpg")   // safe default; upgraded below if the GPU allows
-      .bumpImageUrl("assets/earth-topology.png")
-      .backgroundImageUrl("https://unpkg.com/three-globe/example/img/night-sky.png")
-      .atmosphereColor("#5b8bd0").atmosphereAltitude(0.2)
-      .arcsData(arcs)
-      .arcStartLat("startLat").arcStartLng("startLng")
-      .arcEndLat("endLat").arcEndLng("endLng")
-      .arcColor(d => d.complete ? ["#36c5ff", "#45e0a0"] : ["#ffaf43", "#ff6b6b"])
-      .arcStroke(strokeForAlt(INIT_ALT))
-      .arcAltitudeAutoScale(0.4)
-      .arcDashLength(d => d.complete ? 1 : 0.4)
-      .arcDashGap(d => d.complete ? 0 : 0.2)
-      .arcDashAnimateTime(d => d.complete ? 0 : 2500)
-      .arcLabel("label")
-      .onArcClick(d => { location.href = `flight.html?id=${d.id}`; })
-      .pointsData(airports)
-      .pointLat("lat").pointLng("lng")
-      .pointColor(() => "#eef6ff")
-      .pointAltitude(0)
-      .pointRadius(radiusForAlt(INIT_ALT))
-      .pointResolution(28)
-      .pointLabel(d => `<div class="globe-tooltip"><b>${d.code}</b></div>`)
-      .htmlElementsData(planes)
-      .htmlLat(d => d.lat).htmlLng(d => d.lng).htmlAltitude(d => d.alt || 0)
-      .htmlElement(makePlane);
+    // Build the 3D globe. If WebGL is missing or globe.gl throws (some phones
+    // can't allocate the GL context/texture), g stays null and we fall back to
+    // the flat map so the page is never blank.
+    let g = null;
+    if (webglOK) {
+      try {
+        g = Globe({ rendererConfig: { antialias: true, alpha: true } })(elem)
+          .globeImageUrl("assets/earth-day-4k.jpg")   // safe default; adjusted below per GPU
+          .bumpImageUrl("assets/earth-topology.png")
+          .backgroundImageUrl("https://unpkg.com/three-globe/example/img/night-sky.png")
+          .atmosphereColor("#5b8bd0").atmosphereAltitude(0.2)
+          .arcsData(arcs)
+          .arcStartLat("startLat").arcStartLng("startLng")
+          .arcEndLat("endLat").arcEndLng("endLng")
+          .arcColor(d => d.complete ? ["#36c5ff", "#45e0a0"] : ["#ffaf43", "#ff6b6b"])
+          .arcStroke(strokeForAlt(INIT_ALT))
+          .arcAltitudeAutoScale(0.4)
+          .arcDashLength(d => d.complete ? 1 : 0.4)
+          .arcDashGap(d => d.complete ? 0 : 0.2)
+          .arcDashAnimateTime(d => d.complete ? 0 : 2500)
+          .arcLabel("label")
+          .onArcClick(d => { location.href = `flight.html?id=${d.id}`; })
+          .pointsData(airports)
+          .pointLat("lat").pointLng("lng")
+          .pointColor(() => "#eef6ff")
+          .pointAltitude(0)
+          .pointRadius(radiusForAlt(INIT_ALT))
+          .pointResolution(28)
+          .pointLabel(d => `<div class="globe-tooltip"><b>${d.code}</b></div>`)
+          .htmlElementsData(planes)
+          .htmlLat(d => d.lat).htmlLng(d => d.lng).htmlAltitude(d => d.alt || 0)
+          .htmlElement(makePlane);
 
-    // pick a globe texture the GPU can actually upload — an 8K texture exceeds
-    // the max texture size (often 4096) or memory budget of many phones, which
-    // leaves the globe blank. Use 4K on mobile, 2K on very limited GPUs, 8K only
-    // on capable desktops.
-    const caps = g.renderer() && g.renderer().capabilities;
-    const maxTex = (caps && caps.maxTextureSize) || 4096;
-    if (maxTex < 4096) g.globeImageUrl("assets/earth-day-2k.jpg");
-    else if (!isMobile && maxTex >= 8192) g.globeImageUrl("assets/earth-day-8k.jpg");
+        // an 8K texture blows past many phones' max texture size / memory
+        const caps = g.renderer() && g.renderer().capabilities;
+        const maxTex = (caps && caps.maxTextureSize) || 4096;
+        if (maxTex < 4096) g.globeImageUrl("assets/earth-day-2k.jpg");
+        else if (!isMobile && maxTex >= 8192) g.globeImageUrl("assets/earth-day-8k.jpg");
 
-    // sharpen the texture at grazing angles
-    g.onGlobeReady(() => {
-      const tex = g.globeMaterial() && g.globeMaterial().map;
-      if (tex && g.renderer()) {
-        tex.anisotropy = g.renderer().capabilities.getMaxAnisotropy();
-        tex.needsUpdate = true;
-      }
-    });
-    g.renderer().setPixelRatio(Math.min(window.devicePixelRatio || 1, isMobile ? 2 : 3));
+        g.onGlobeReady(() => {
+          const tex = g.globeMaterial() && g.globeMaterial().map;
+          if (tex && g.renderer()) { tex.anisotropy = g.renderer().capabilities.getMaxAnisotropy(); tex.needsUpdate = true; }
+        });
+        g.renderer().setPixelRatio(Math.min(window.devicePixelRatio || 1, isMobile ? 1.5 : 3));
+      } catch (e) { g = null; }
+    }
 
-    // zoom in past a threshold -> fade to a flat high-res satellite map of that region
-    const FLAT_THRESHOLD = 0.5;
     const flat = setupFlatMap(g, arcs, airports, planes);
-    g.onZoom(pov => {
-      g.arcStroke(strokeForAlt(pov.altitude));
-      g.pointRadius(radiusForAlt(pov.altitude));
-      if (pov.altitude < FLAT_THRESHOLD) flat.enter(pov);
-    });
 
-    const resize = () => { g.width(elem.clientWidth).height(elem.clientHeight); };
-    resize();
-    window.addEventListener("resize", resize);
-
-    const lat = avg(fl.flatMap(f => [f.dep_pos[1], f.arr_pos[1]]));
-    const lng = avg(fl.flatMap(f => [f.dep_pos[0], f.arr_pos[0]]));
-    g.pointOfView({ lat, lng, altitude: INIT_ALT }, 0);
-
-    g.controls().autoRotate = true;
-    g.controls().autoRotateSpeed = 0.3;
-    elem.addEventListener("pointerdown", () => { g.controls().autoRotate = false; });
-
-    animatePlanes(g, planes);
+    if (g) {
+      const FLAT_THRESHOLD = 0.5;
+      g.onZoom(pov => {
+        g.arcStroke(strokeForAlt(pov.altitude));
+        g.pointRadius(radiusForAlt(pov.altitude));
+        if (pov.altitude < FLAT_THRESHOLD) flat.enter(pov);
+      });
+      const resize = () => { g.width(elem.clientWidth).height(elem.clientHeight); };
+      resize();
+      window.addEventListener("resize", resize);
+      const lat = avg(fl.flatMap(f => [f.dep_pos[1], f.arr_pos[1]]));
+      const lng = avg(fl.flatMap(f => [f.dep_pos[0], f.arr_pos[0]]));
+      g.pointOfView({ lat, lng, altitude: INIT_ALT }, 0);
+      g.controls().autoRotate = true;
+      g.controls().autoRotateSpeed = 0.3;
+      elem.addEventListener("pointerdown", () => { g.controls().autoRotate = false; });
+      animatePlanes(g, planes);
+    } else {
+      flat.showAll();   // no WebGL globe — show the flat map of all flights instead
+    }
   }
 
   // classify an aircraft into an icon family (FR24-style), from model + title
@@ -151,20 +168,6 @@
     return "airliner";
   }
 
-  // top-down silhouettes (point up = north so heading rotation works), colour-coded
-  // by category so the type reads at a glance; no glow
-  const PLANE_ICONS = {
-    // swept-wing jet, white
-    airliner: `<path fill="#f2f7ff" stroke="#0b2030" stroke-width=".8" d="M0,-12 L2,-3 L12,3 L12,5.5 L2,1.5 L2,7 L5.5,10 L5.5,11 L0,9.5 L-5.5,11 L-5.5,10 L-2,7 L-2,1.5 L-12,5.5 L-12,3 L-2,-3 Z"/>`,
-    // small swept jet, cyan
-    bizjet: `<path fill="#4fc3f7" stroke="#0b2030" stroke-width=".8" d="M0,-11 L1.3,-3.5 L7.5,1.5 L7.5,3 L1.4,0.6 L1.7,6.5 L4.6,9 L4.6,10 L0,8.8 L-4.6,10 L-4.6,9 L-1.7,6.5 L-1.4,0.6 L-7.5,3 L-7.5,1.5 L-1.3,-3.5 Z"/>`,
-    // straight wings + two engine nacelles, amber
-    prop: `<g fill="#ffca45" stroke="#0b2030" stroke-width=".7"><path d="M-1.5,-10 L1.5,-10 L1.5,7 L4,9.5 L4,10.5 L0,9 L-4,10.5 L-4,9.5 L-1.5,7 Z"/><path d="M-12,-2 L12,-2 L12,1 L-12,1 Z"/><rect x="-7.6" y="-3.4" width="3" height="4.8" rx="1"/><rect x="4.6" y="-3.4" width="3" height="4.8" rx="1"/></g>`,
-    // small high straight wing, green
-    ga: `<g fill="#74e08a" stroke="#0b2030" stroke-width=".7"><path d="M-1,-7.5 L1,-7.5 L1,5 L2.8,6.8 L2.8,7.8 L0,6.6 L-2.8,7.8 L-2.8,6.8 L-1,5 Z"/><path d="M-9,-3.5 L9,-3.5 L9,-1.5 L-9,-1.5 Z"/></g>`,
-    // rotor disc + tail boom, orange
-    helicopter: `<g stroke="#0b2030" stroke-width=".7"><circle cx="0" cy="-1" r="11" fill="none" stroke="#ff8a5c" stroke-width="1.2" opacity=".55"/><path fill="#ff8a5c" d="M-2,-4 L2,-4 L2,3 L1.3,4 L1.3,9 L3,11 L3,12 L-3,12 L-3,11 L-1.3,9 L-1.3,4 L-2,3 Z"/><line x1="-4" y1="-1" x2="4" y2="-1" stroke="#ff8a5c" stroke-width="1.4"/></g>`,
-  };
 
   // Flat high-res satellite map (Esri tiles) shown when the globe is zoomed in.
   // Draws the same great-circle routes, airports and flying planes; zooming back
@@ -174,7 +177,7 @@
     const mapEl = document.getElementById("flatmap");
     const backBtn = document.getElementById("to-globe");
     const MIN_ZOOM_BACK = 4;
-    let lmap = null, mapMode = false, cooldown = false, raf = null, last = null;
+    let lmap = null, mapMode = false, cooldown = false, raf = null, last = null, permanent = false;
     const flatPlanes = planes.map(p => ({ arc: p.arc, category: p.category, t: p.t, speed: p.speed, marker: null }));
 
     // great-circle path as [lat,lng] points, with longitude unwrapped so routes
@@ -209,7 +212,25 @@
           html: `<svg width="26" height="26" viewBox="-13 -13 26 26">${PLANE_ICONS[p.category] || PLANE_ICONS.airliner}</svg>` });
         p.marker = L.marker([p.arc.startLat, p.arc.startLng], { icon, interactive: false, keyboard: false, zIndexOffset: 1000 }).addTo(lmap);
       });
-      lmap.on("zoomend", () => { if (mapMode && lmap.getZoom() <= MIN_ZOOM_BACK) exit(); });
+      lmap.on("zoomend", () => { if (mapMode && !permanent && lmap.getZoom() <= MIN_ZOOM_BACK) exit(); });
+    }
+
+    function fitAll() {
+      // centre on the median airport (robust to a lone far-flung route that
+      // would otherwise stretch the view across an empty ocean)
+      if (!airports.length) { lmap.setView([20, 120], 3); return; }
+      const med = arr => arr.slice().sort((a, b) => a - b)[arr.length >> 1];
+      lmap.setView([med(airports.map(a => a.lat)), med(airports.map(a => a.lng))], 4);
+    }
+
+    // fallback when there is no 3D globe: show the flat map of every flight
+    function showAll() {
+      if (!lmap) build();
+      permanent = true; mapMode = true;
+      stage.classList.add("map-mode");
+      backBtn.hidden = true;
+      setTimeout(() => { lmap.invalidateSize(); fitAll(); }, 80);
+      if (!raf) { last = null; raf = requestAnimationFrame(animate); }
     }
 
     function animate(ts) {
@@ -236,7 +257,7 @@
       if (mapMode || cooldown) return;
       mapMode = true;
       if (!lmap) build();
-      g.controls().autoRotate = false;
+      if (g) g.controls().autoRotate = false;
       stage.classList.add("map-mode");
       backBtn.hidden = false;
       setTimeout(() => { lmap.invalidateSize(); lmap.setView([pov.lat, pov.lng], 7); }, 80);
@@ -250,11 +271,13 @@
       if (raf) { cancelAnimationFrame(raf); raf = null; }
       stage.classList.remove("map-mode");
       backBtn.hidden = true;
-      const c = lmap ? lmap.getCenter() : null;
-      g.pointOfView(c ? { lat: c.lat, lng: c.lng, altitude: 1.1 } : { altitude: 1.1 }, 0);
+      if (g) {
+        const c = lmap ? lmap.getCenter() : null;
+        g.pointOfView(c ? { lat: c.lat, lng: c.lng, altitude: 1.1 } : { altitude: 1.1 }, 0);
+      }
     }
     backBtn.addEventListener("click", exit);
-    return { enter, exit };
+    return { enter, exit, showAll };
   }
 
   // DOM node for a moving plane (inner svg rotated independently of globe.gl's positioning)

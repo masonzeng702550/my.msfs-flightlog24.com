@@ -2,7 +2,7 @@
 // Strategy: documents & flight data are network-first (so updates show), other
 // assets (versioned CSS/JS, icons, CDN libs, globe texture) are cache-first.
 // Map tiles are never cached (would balloon storage).
-const VERSION = "v1";
+const VERSION = "v2";
 const SHELL_CACHE = "shell-" + VERSION;
 const RUNTIME = "runtime-" + VERSION;
 const SHELL = [
