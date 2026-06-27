@@ -182,6 +182,84 @@
   "tags": []
  },
  {
+  "id": "2026-03-22-RCTP-RCSS-760004",
+  "date": "2026-03-22",
+  "time_local": "08:16",
+  "aircraft": "Airbus A320 Neo Tigerair Taiwan SoccerYCA",
+  "model": "A20N",
+  "airline": "Smart Cat",
+  "flight_no": "IT231",
+  "departure": "RCTP",
+  "arrival": "RCSS",
+  "dep_pos": [
+   121.233,
+   25.0777
+  ],
+  "arr_pos": [
+   121.55282,
+   25.06724
+  ],
+  "distance_nm": 19.0,
+  "cruise_ft": 1500,
+  "block_min": 9.9,
+  "air_min": 5.8,
+  "complete": true,
+  "title": null,
+  "tags": []
+ },
+ {
+  "id": "2026-03-22-RCTP-RCSS-3cb04b",
+  "date": "2026-03-22",
+  "time_local": "07:56",
+  "aircraft": "Airbus A320 Neo China Airlines",
+  "model": "A20N",
+  "airline": "Dynasty",
+  "flight_no": "1123",
+  "departure": "RCTP",
+  "arrival": "RCSS",
+  "dep_pos": [
+   121.233,
+   25.0777
+  ],
+  "arr_pos": [
+   121.55282,
+   25.06724
+  ],
+  "distance_nm": 18.9,
+  "cruise_ft": 1500,
+  "block_min": 9.6,
+  "air_min": 5.7,
+  "complete": true,
+  "title": null,
+  "tags": []
+ },
+ {
+  "id": "2026-03-21-RCTP-RCSS-cbd619",
+  "date": "2026-03-21",
+  "time_local": "03:09",
+  "aircraft": "Airbus A320 Neo EVA Airline",
+  "model": "A20N",
+  "airline": "Eva",
+  "flight_no": "BR911",
+  "departure": "RCTP",
+  "arrival": "RCSS",
+  "dep_pos": [
+   121.233,
+   25.0777
+  ],
+  "arr_pos": [
+   121.55282,
+   25.06724
+  ],
+  "distance_nm": 18.9,
+  "cruise_ft": 1500,
+  "block_min": 10.1,
+  "air_min": 5.8,
+  "complete": true,
+  "title": null,
+  "tags": []
+ },
+ {
   "id": "2026-03-16-RCTP-RCSS-b9f325",
   "date": "2026-03-16",
   "time_local": "17:10",
@@ -1165,84 +1243,6 @@
   "cruise_ft": 500,
   "block_min": 5.9,
   "air_min": 4.2,
-  "complete": true,
-  "title": null,
-  "tags": []
- },
- {
-  "id": "nodate-RCTP-RCSS-3cb04b",
-  "date": null,
-  "time_local": null,
-  "aircraft": "Airbus A320 Neo China Airlines",
-  "model": "A20N",
-  "airline": "Dynasty",
-  "flight_no": "1123",
-  "departure": "RCTP",
-  "arrival": "RCSS",
-  "dep_pos": [
-   121.233,
-   25.0777
-  ],
-  "arr_pos": [
-   121.55282,
-   25.06724
-  ],
-  "distance_nm": 18.9,
-  "cruise_ft": 1500,
-  "block_min": 9.6,
-  "air_min": 5.7,
-  "complete": true,
-  "title": null,
-  "tags": []
- },
- {
-  "id": "nodate-RCTP-RCSS-cbd619",
-  "date": null,
-  "time_local": null,
-  "aircraft": "Airbus A320 Neo EVA Airline",
-  "model": "A20N",
-  "airline": "Eva",
-  "flight_no": "BR911",
-  "departure": "RCTP",
-  "arrival": "RCSS",
-  "dep_pos": [
-   121.233,
-   25.0777
-  ],
-  "arr_pos": [
-   121.55282,
-   25.06724
-  ],
-  "distance_nm": 18.9,
-  "cruise_ft": 1500,
-  "block_min": 10.1,
-  "air_min": 5.8,
-  "complete": true,
-  "title": null,
-  "tags": []
- },
- {
-  "id": "nodate-RCTP-RCSS-760004",
-  "date": null,
-  "time_local": null,
-  "aircraft": "Airbus A320 Neo Tigerair Taiwan SoccerYCA",
-  "model": "A20N",
-  "airline": "Smart Cat",
-  "flight_no": "IT231",
-  "departure": "RCTP",
-  "arrival": "RCSS",
-  "dep_pos": [
-   121.233,
-   25.0777
-  ],
-  "arr_pos": [
-   121.55282,
-   25.06724
-  ],
-  "distance_nm": 19.0,
-  "cruise_ft": 1500,
-  "block_min": 9.9,
-  "air_min": 5.8,
   "complete": true,
   "title": null,
   "tags": []

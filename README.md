@@ -37,6 +37,12 @@ git add recordings/ && git commit -m "add flight" && git push
 
 Push to `recordings/` and the site rebuilds itself — nothing else to do.
 
+The flight date comes from the filename (`YYYY-MM-DD-HH-MM…`), which is Flight
+Recorder's default. If a file has no date in its name, embed the recording's
+file timestamp as a prefix and keep the rest, e.g.
+`2026-03-22-07-56_CAL320RCTP1RCSS.fltrec` (git doesn't preserve file mtimes, so
+the date has to live in the name).
+
 Optionally add a sidecar `recordings/<name>.meta.yml` to override the title,
 departure/arrival, notes or tags for that flight.
 
