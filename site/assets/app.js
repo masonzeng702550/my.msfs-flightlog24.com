@@ -38,6 +38,7 @@
       startLat: f.dep_pos[1], startLng: f.dep_pos[0],
       endLat: f.arr_pos[1], endLng: f.arr_pos[0],
       complete: f.complete,
+      category: planeCategory(f.model, f.aircraft),
       label: `<div class="globe-tooltip"><b>${f.departure} → ${f.arrival}</b><br>${f.aircraft} · ${f.distance_nm} NM</div>`,
     }));
 
@@ -50,16 +51,23 @@
     });
     const airports = [...ptMap.values()];
 
-    // a few random routes get a little plane flying along them
-    const flyable = arcs.filter(a => Math.abs(a.startLat - a.endLat) + Math.abs(a.startLng - a.endLng) > 0.6);
-    const chosen = flyable.sort(() => Math.random() - 0.5).slice(0, 6);
+    // a few routes get a little plane flying along them — prefer category
+    // variety first (so airliner / prop / GA / heli icons all show), then fill
+    const flyable = arcs.filter(a => Math.abs(a.startLat - a.endLat) + Math.abs(a.startLng - a.endLng) > 0.15);
+    const byCat = {};
+    flyable.forEach(a => (byCat[a.category] = byCat[a.category] || []).push(a));
+    const pickRandom = list => list[Math.floor(Math.random() * list.length)];
+    const chosen = Object.values(byCat).map(pickRandom);
+    flyable.filter(a => !chosen.includes(a)).sort(() => Math.random() - 0.5)
+      .forEach(a => { if (chosen.length < 6) chosen.push(a); });
     const planes = chosen.map((arc, i) => ({
-      arc, t: i / Math.max(1, chosen.length),
+      arc, category: arc.category, t: i / Math.max(1, chosen.length),
       speed: 0.035 + Math.random() * 0.03, lat: arc.startLat, lng: arc.startLng, alt: 0,
     }));
 
-    // arcs get THINNER as you zoom in (a fixed world-stroke looks too thick up close)
+    // arcs AND airport dots shrink as you zoom in (fixed sizes look too big up close)
     const strokeForAlt = a => Math.max(0.02, Math.min(0.3, a * 0.1));
+    const radiusForAlt = a => Math.max(0.05, Math.min(0.32, a * 0.12));
     const INIT_ALT = 1.9;
 
     const g = Globe({ rendererConfig: { antialias: true, alpha: true } })(elem)
@@ -82,13 +90,14 @@
       .pointLat("lat").pointLng("lng")
       .pointColor(() => "#eef6ff")
       .pointAltitude(0)
-      .pointRadius(0.32)
+      .pointRadius(radiusForAlt(INIT_ALT))
+      .pointResolution(28)
       .pointLabel(d => `<div class="globe-tooltip"><b>${d.code}</b></div>`)
       .htmlElementsData(planes)
       .htmlLat(d => d.lat).htmlLng(d => d.lng).htmlAltitude(d => d.alt || 0)
       .htmlElement(makePlane);
 
-    // sharpen the texture at grazing angles for a crisp, high-res globe
+    // sharpen the texture at grazing angles and render at full device resolution
     g.onGlobeReady(() => {
       const tex = g.globeMaterial() && g.globeMaterial().map;
       if (tex && g.renderer()) {
@@ -96,8 +105,11 @@
         tex.needsUpdate = true;
       }
     });
-    g.renderer().setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
-    g.onZoom(pov => g.arcStroke(strokeForAlt(pov.altitude)));
+    g.renderer().setPixelRatio(Math.min(window.devicePixelRatio || 1, 3));
+    g.onZoom(pov => {
+      g.arcStroke(strokeForAlt(pov.altitude));
+      g.pointRadius(radiusForAlt(pov.altitude));
+    });
 
     const resize = () => { g.width(elem.clientWidth).height(elem.clientHeight); };
     resize();
@@ -114,12 +126,30 @@
     animatePlanes(g, planes);
   }
 
-  // DOM node for a moving plane (an inner svg we rotate independently of globe.gl's positioning)
+  // classify an aircraft into an icon family (FR24-style), from model + title
+  function planeCategory(model, title) {
+    const s = `${model || ""} ${title || ""}`.toUpperCase();
+    if (/HELI|HELICOPTER|\bH1\d\d|H160|H175|EC\d|AS3|R22|R44|R66|\bUH|AW1|BELL|S76|MD5/.test(s)) return "helicopter";
+    if (/DA40|DA42|DV20|C152|C162|C172|C182|SR20|SR22|PA2|PA3|CUB|ICON|VL3|BONANZA|\bG36|\bG58|CIRRUS/.test(s)) return "ga";
+    if (/TBM|PC12|C208|CARAVAN|DHC|ATR|\bAT[47]|BE20|KING|KODIAK|EMB1[12]0|SAAB|Q400|DASH|TURBOPROP|PROP/.test(s)) return "prop";
+    if (/CITATION|\bC25|\bC56|\bC68|\bC70|LEAR|\bLJ\d|GLF|GLEX|GLOBAL|PHENOM|E5[05]|HAWKER|FALCON|\bCL[36]|CRJ/.test(s)) return "bizjet";
+    return "airliner";
+  }
+
+  // top-down silhouettes (point up = north so heading rotation works), no glow
+  const PLANE_ICONS = {
+    airliner: `<path fill="#eef6ff" stroke="#0b2030" stroke-width=".9" d="M0,-11 L2,-3 L11,3 L11,5 L2,1 L2,7 L5,9.5 L5,10.5 L0,9 L-5,10.5 L-5,9.5 L-2,7 L-2,1 L-11,5 L-11,3 L-2,-3 Z"/>`,
+    bizjet: `<path fill="#eef6ff" stroke="#0b2030" stroke-width=".9" d="M0,-10 L1.4,-3 L8,3 L8,4.4 L1.5,2 L2.2,7 L4.5,9 L4.5,10 L0,8.6 L-4.5,10 L-4.5,9 L-2.2,7 L-1.5,2 L-8,4.4 L-8,3 L-1.4,-3 Z"/>`,
+    prop: `<path fill="#eef6ff" stroke="#0b2030" stroke-width=".9" d="M0,-9.5 L1.5,-6 L1.5,-1 L11,1 L11,2.6 L1.5,2.6 L1.5,6.5 L4,8.8 L4,9.8 L0,8.6 L-4,9.8 L-4,8.8 L-1.5,6.5 L-1.5,2.6 L-11,2.6 L-11,1 L-1.5,-1 L-1.5,-6 Z"/><line x1="-4" y1="-9.5" x2="4" y2="-9.5" stroke="#eef6ff" stroke-width="1.3"/>`,
+    ga: `<path fill="#eef6ff" stroke="#0b2030" stroke-width=".9" d="M0,-8 L1.2,-4 L9,-1.5 L9,-0.2 L1.2,0.6 L1.2,5 L3.2,7.2 L3.2,8.2 L0,7.2 L-3.2,8.2 L-3.2,7.2 L-1.2,5 L-1.2,0.6 L-9,-0.2 L-9,-1.5 L-1.2,-4 Z"/>`,
+    helicopter: `<circle cx="0" cy="0" r="9.5" fill="none" stroke="#eef6ff" stroke-width="1" opacity=".55"/><path fill="#eef6ff" stroke="#0b2030" stroke-width=".8" d="M-1.7,-4 L1.7,-4 L1.7,4 L1,7 L1,11 L-1,11 L-1,7 L-1.7,4 Z"/><line x1="-3.5" y1="11" x2="3.5" y2="11" stroke="#eef6ff" stroke-width="1.2"/>`,
+  };
+
+  // DOM node for a moving plane (inner svg rotated independently of globe.gl's positioning)
   function makePlane(d) {
     const wrap = document.createElement("div");
     wrap.className = "globe-plane";
-    wrap.innerHTML = `<svg width="20" height="20" viewBox="-12 -12 24 24"><path fill="#eaf6ff" stroke="#0b2030" stroke-width="1"
-      d="M0,-11 L2,-3 L11,3 L11,5 L2,1 L2,7 L5,9 L5,10 L0,8.5 L-5,10 L-5,9 L-2,7 L-2,1 L-11,5 L-11,3 L-2,-3 Z"/></svg>`;
+    wrap.innerHTML = `<svg width="22" height="22" viewBox="-12 -12 24 24">${PLANE_ICONS[d.category] || PLANE_ICONS.airliner}</svg>`;
     d.__el = wrap; d.__inner = wrap.firstElementChild;
     return wrap;
   }

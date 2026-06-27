@@ -67,7 +67,7 @@ a:hover { text-decoration: underline; }
 
 /* moving planes on the globe */
 .globe-plane { pointer-events: none; transition: opacity .15s; }
-.globe-plane svg { display: block; filter: drop-shadow(0 0 3px rgba(255,255,255,.9)); }
+.globe-plane svg { display: block; }
 
 /* stats bar */
 .stats {
