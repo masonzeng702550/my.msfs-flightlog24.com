@@ -1,42 +1,87 @@
 {
- "flights_total": 5,
- "flights_complete": 3,
- "flights_partial": 2,
- "domestic": 3,
- "international": 0,
- "distance_total_nm": 226.0,
- "distance_total_km": 418.0,
- "distance_total_miles": 260.0,
- "around_earth": 0.01,
- "block_time_total_min": 75.0,
- "block_time_human": "1h 15m",
+ "flights_total": 48,
+ "flights_complete": 33,
+ "flights_partial": 15,
+ "domestic": 28,
+ "international": 5,
+ "distance_total_nm": 11130.0,
+ "distance_total_km": 20613.0,
+ "distance_total_miles": 12809.0,
+ "around_earth": 0.51,
+ "block_time_total_min": 1259.0,
+ "block_time_human": "20h 59m",
  "by_aircraft": [
   {
-   "aircraft": "DA40",
-   "flights": 2,
-   "nm": 14.3
+   "aircraft": "A20N",
+   "flights": 26,
+   "nm": 1100.6000000000001
   },
   {
-   "aircraft": "A20N",
-   "flights": 2,
-   "nm": 24.0
+   "aircraft": "B78X",
+   "flights": 9,
+   "nm": 4856.7
+  },
+  {
+   "aircraft": "DA40",
+   "flights": 5,
+   "nm": 75.60000000000001
   },
   {
    "aircraft": "B773",
+   "flights": 4,
+   "nm": 4051.2
+  },
+  {
+   "aircraft": "B748",
+   "flights": 2,
+   "nm": 48.9
+  },
+  {
+   "aircraft": "Unknown aircraft",
    "flights": 1,
-   "nm": 187.5
+   "nm": 951.4
+  },
+  {
+   "aircraft": "C25C",
+   "flights": 1,
+   "nm": 45.9
   }
  ],
  "airports_visited": [
+  "KPHX",
   "RCFN",
+  "RCGI",
   "RCKH",
+  "RCQC",
+  "RCQS",
   "RCSS",
-  "RCTP"
+  "RCTP",
+  "RCYU",
+  "RJAA",
+  "RJBE",
+  "RJFF",
+  "RJGG",
+  "RJNA",
+  "RJOO",
+  "RJTT",
+  "RKPK",
+  "VHSS",
+  "VMMC",
+  "WIDD",
+  "WSSS"
  ],
  "by_month": [
   {
+   "month": "2026-01",
+   "flights": 6
+  },
+  {
+   "month": "2026-02",
+   "flights": 17
+  },
+  {
    "month": "2026-03",
-   "flights": 1
+   "flights": 16
   },
   {
    "month": "2026-05",
@@ -44,7 +89,7 @@
   },
   {
    "month": "2026-06",
-   "flights": 1
+   "flights": 3
   }
  ]
 }

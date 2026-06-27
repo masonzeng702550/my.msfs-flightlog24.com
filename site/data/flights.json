@@ -1,5 +1,57 @@
 [
  {
+  "id": "2026-06-27-RCFN-RCGI-95237d",
+  "date": "2026-06-27",
+  "time_local": "14:23",
+  "aircraft": "DA40-NG Asobo",
+  "model": "DA40",
+  "airline": null,
+  "flight_no": null,
+  "departure": "RCFN",
+  "arrival": "RCGI",
+  "dep_pos": [
+   121.10179,
+   22.75486
+  ],
+  "arr_pos": [
+   121.466,
+   22.6739
+  ],
+  "distance_nm": 24.6,
+  "cruise_ft": 1500,
+  "block_min": 19.7,
+  "air_min": 13.9,
+  "complete": true,
+  "title": null,
+  "tags": []
+ },
+ {
+  "id": "2026-06-27-RJNA-RJOO-a6b9db",
+  "date": "2026-06-27",
+  "time_local": "13:58",
+  "aircraft": "Airbus A320 Neo Tigerair Taiwan SoccerYCA",
+  "model": "A20N",
+  "airline": "Smart Cat",
+  "flight_no": "IT231",
+  "departure": "RJNA",
+  "arrival": "RJOO",
+  "dep_pos": [
+   136.92409,
+   35.25576
+  ],
+  "arr_pos": [
+   135.44083,
+   34.78085
+  ],
+  "distance_nm": 110.0,
+  "cruise_ft": 5000,
+  "block_min": 33.5,
+  "air_min": 19.7,
+  "complete": true,
+  "title": null,
+  "tags": []
+ },
+ {
   "id": "2026-06-27-RCTP-RCKH-de9a09",
   "date": "2026-06-27",
   "time_local": "02:45",
@@ -126,6 +178,1072 @@
   "block_min": 2.0,
   "air_min": 0.3,
   "complete": false,
+  "title": null,
+  "tags": []
+ },
+ {
+  "id": "2026-03-16-RCTP-RCSS-b9f325",
+  "date": "2026-03-16",
+  "time_local": "17:10",
+  "aircraft": "Airbus A320 Neo Asobo",
+  "model": "A20N",
+  "airline": null,
+  "flight_no": "1123",
+  "departure": "RCTP",
+  "arrival": "RCSS",
+  "dep_pos": [
+   121.233,
+   25.0777
+  ],
+  "arr_pos": [
+   121.55282,
+   25.06724
+  ],
+  "distance_nm": 21.1,
+  "cruise_ft": 0,
+  "block_min": 29.7,
+  "air_min": 5.7,
+  "complete": true,
+  "title": null,
+  "tags": []
+ },
+ {
+  "id": "2026-03-16-RCTP-RCSS-388fe5",
+  "date": "2026-03-16",
+  "time_local": "16:22",
+  "aircraft": "Boeing 787-10 Asobo",
+  "model": "B78X",
+  "airline": null,
+  "flight_no": "1123",
+  "departure": "RCTP",
+  "arrival": "RCSS",
+  "dep_pos": [
+   121.233,
+   25.0777
+  ],
+  "arr_pos": [
+   121.55282,
+   25.06724
+  ],
+  "distance_nm": 19.4,
+  "cruise_ft": 0,
+  "block_min": 11.1,
+  "air_min": 4.5,
+  "complete": true,
+  "title": null,
+  "tags": []
+ },
+ {
+  "id": "2026-03-16-RCTP-RCSS-09015c",
+  "date": "2026-03-16",
+  "time_local": "12:55",
+  "aircraft": "Boeing 787-10 Asobo",
+  "model": "B78X",
+  "airline": null,
+  "flight_no": "1123",
+  "departure": "RCTP",
+  "arrival": "RCSS",
+  "dep_pos": [
+   121.233,
+   25.0777
+  ],
+  "arr_pos": [
+   121.55282,
+   25.06724
+  ],
+  "distance_nm": 75.1,
+  "cruise_ft": 500,
+  "block_min": 27.2,
+  "air_min": 17.6,
+  "complete": true,
+  "title": null,
+  "tags": []
+ },
+ {
+  "id": "2026-03-16-RCTP-RCSS-52af64",
+  "date": "2026-03-16",
+  "time_local": "02:12",
+  "aircraft": "Boeing 787-10 Asobo",
+  "model": "B78X",
+  "airline": null,
+  "flight_no": "1123",
+  "departure": "RCTP",
+  "arrival": "RCSS",
+  "dep_pos": [
+   121.233,
+   25.0777
+  ],
+  "arr_pos": [
+   121.55282,
+   25.06724
+  ],
+  "distance_nm": 19.2,
+  "cruise_ft": 2000,
+  "block_min": 9.0,
+  "air_min": 5.2,
+  "complete": true,
+  "title": null,
+  "tags": []
+ },
+ {
+  "id": "2026-03-16-RCTP-RCSS-7949c1",
+  "date": "2026-03-16",
+  "time_local": "01:54",
+  "aircraft": "Airbus A320 Neo Asobo",
+  "model": "A20N",
+  "airline": null,
+  "flight_no": "1123",
+  "departure": "RCTP",
+  "arrival": "RCSS",
+  "dep_pos": [
+   121.233,
+   25.0777
+  ],
+  "arr_pos": [
+   121.55282,
+   25.06724
+  ],
+  "distance_nm": 21.8,
+  "cruise_ft": 0,
+  "block_min": 23.6,
+  "air_min": 4.5,
+  "complete": true,
+  "title": null,
+  "tags": []
+ },
+ {
+  "id": "2026-03-16-RCTP-UNKN-1097b8",
+  "date": "2026-03-16",
+  "time_local": "01:26",
+  "aircraft": "Airbus A320 Neo Asobo",
+  "model": "A20N",
+  "airline": null,
+  "flight_no": "1123",
+  "departure": "RCTP",
+  "arrival": "UNKN",
+  "dep_pos": [
+   121.233,
+   25.0777
+  ],
+  "arr_pos": [
+   121.49118,
+   25.07187
+  ],
+  "distance_nm": 64.8,
+  "cruise_ft": 3000,
+  "block_min": 22.0,
+  "air_min": null,
+  "complete": false,
+  "title": null,
+  "tags": []
+ },
+ {
+  "id": "2026-03-14-RCTP-RCSS-44a1af",
+  "date": "2026-03-14",
+  "time_local": "15:26",
+  "aircraft": "Airbus A320 Neo Asobo",
+  "model": "A20N",
+  "airline": null,
+  "flight_no": "1123",
+  "departure": "RCTP",
+  "arrival": "RCSS",
+  "dep_pos": [
+   121.233,
+   25.0777
+  ],
+  "arr_pos": [
+   121.55282,
+   25.06724
+  ],
+  "distance_nm": 19.1,
+  "cruise_ft": 0,
+  "block_min": 11.8,
+  "air_min": 4.6,
+  "complete": true,
+  "title": null,
+  "tags": []
+ },
+ {
+  "id": "2026-03-14-RCTP-RCSS-ddfb49",
+  "date": "2026-03-14",
+  "time_local": "12:18",
+  "aircraft": "Airbus A320 Neo Asobo",
+  "model": "A20N",
+  "airline": null,
+  "flight_no": "1123",
+  "departure": "RCTP",
+  "arrival": "RCSS",
+  "dep_pos": [
+   121.233,
+   25.0777
+  ],
+  "arr_pos": [
+   121.55282,
+   25.06724
+  ],
+  "distance_nm": 19.2,
+  "cruise_ft": 500,
+  "block_min": 11.1,
+  "air_min": 4.9,
+  "complete": true,
+  "title": null,
+  "tags": []
+ },
+ {
+  "id": "2026-03-14-RCTP-RCSS-b770e0",
+  "date": "2026-03-14",
+  "time_local": "12:03",
+  "aircraft": "Airbus A320 Neo Asobo",
+  "model": "A20N",
+  "airline": null,
+  "flight_no": "1123",
+  "departure": "RCTP",
+  "arrival": "RCSS",
+  "dep_pos": [
+   121.233,
+   25.0777
+  ],
+  "arr_pos": [
+   121.55282,
+   25.06724
+  ],
+  "distance_nm": 19.5,
+  "cruise_ft": 1500,
+  "block_min": 10.6,
+  "air_min": 5.8,
+  "complete": true,
+  "title": null,
+  "tags": []
+ },
+ {
+  "id": "2026-03-13-UNKN-RCSS-2c88a3",
+  "date": "2026-03-13",
+  "time_local": "19:47",
+  "aircraft": "Airbus A320 Neo Asobo",
+  "model": "A20N",
+  "airline": null,
+  "flight_no": "1123",
+  "departure": "UNKN",
+  "arrival": "RCSS",
+  "dep_pos": [
+   121.36346,
+   25.07615
+  ],
+  "arr_pos": [
+   121.55282,
+   25.06724
+  ],
+  "distance_nm": 10.9,
+  "cruise_ft": 500,
+  "block_min": 6.2,
+  "air_min": null,
+  "complete": false,
+  "title": null,
+  "tags": []
+ },
+ {
+  "id": "2026-03-13-UNKN-RJTT-be3373",
+  "date": "2026-03-13",
+  "time_local": "19:35",
+  "aircraft": "Airbus A320 Neo Asobo",
+  "model": "A20N",
+  "airline": null,
+  "flight_no": "1123",
+  "departure": "UNKN",
+  "arrival": "RJTT",
+  "dep_pos": [
+   139.66973,
+   35.69978
+  ],
+  "arr_pos": [
+   139.78696,
+   35.54968
+  ],
+  "distance_nm": 11.2,
+  "cruise_ft": 1000,
+  "block_min": 6.1,
+  "air_min": null,
+  "complete": false,
+  "title": null,
+  "tags": []
+ },
+ {
+  "id": "2026-03-12-UNKN-RJTT-cf2cef",
+  "date": "2026-03-12",
+  "time_local": "23:07",
+  "aircraft": "Airbus A320 Neo Asobo",
+  "model": "A20N",
+  "airline": null,
+  "flight_no": "1123",
+  "departure": "UNKN",
+  "arrival": "RJTT",
+  "dep_pos": [
+   139.66684,
+   35.70376
+  ],
+  "arr_pos": [
+   139.78696,
+   35.54968
+  ],
+  "distance_nm": 11.4,
+  "cruise_ft": 2000,
+  "block_min": 5.5,
+  "air_min": null,
+  "complete": false,
+  "title": null,
+  "tags": []
+ },
+ {
+  "id": "2026-03-12-UNKN-RJTT-bdb2db",
+  "date": "2026-03-12",
+  "time_local": "22:55",
+  "aircraft": "Airbus A320 Neo Asobo",
+  "model": "A20N",
+  "airline": null,
+  "flight_no": "1123",
+  "departure": "UNKN",
+  "arrival": "RJTT",
+  "dep_pos": [
+   139.66685,
+   35.70375
+  ],
+  "arr_pos": [
+   139.78696,
+   35.54968
+  ],
+  "distance_nm": 11.2,
+  "cruise_ft": 1500,
+  "block_min": 6.0,
+  "air_min": null,
+  "complete": false,
+  "title": null,
+  "tags": []
+ },
+ {
+  "id": "2026-03-01-RJFF-UNKN-b14658",
+  "date": "2026-03-01",
+  "time_local": "17:35",
+  "aircraft": "Boeing 787-10 Asobo",
+  "model": "B78X",
+  "airline": null,
+  "flight_no": "1123",
+  "departure": "RJFF",
+  "arrival": "UNKN",
+  "dep_pos": [
+   130.451,
+   33.5859
+  ],
+  "arr_pos": [
+   130.31354,
+   33.76944
+  ],
+  "distance_nm": 33.1,
+  "cruise_ft": 3000,
+  "block_min": 10.9,
+  "air_min": null,
+  "complete": false,
+  "title": null,
+  "tags": []
+ },
+ {
+  "id": "2026-03-01-UNKN-RJFF-d4a506",
+  "date": "2026-03-01",
+  "time_local": "17:22",
+  "aircraft": "Boeing 787-10 Asobo",
+  "model": "B78X",
+  "airline": null,
+  "flight_no": "1123",
+  "departure": "UNKN",
+  "arrival": "RJFF",
+  "dep_pos": [
+   130.34436,
+   33.74111
+  ],
+  "arr_pos": [
+   130.451,
+   33.5859
+  ],
+  "distance_nm": 24.3,
+  "cruise_ft": 1500,
+  "block_min": 10.4,
+  "air_min": null,
+  "complete": false,
+  "title": null,
+  "tags": []
+ },
+ {
+  "id": "2026-02-27-RCSS-RJTT-fa0fd4",
+  "date": "2026-02-27",
+  "time_local": "21:24",
+  "aircraft": "Boeing 787-10 Asobo",
+  "model": "B78X",
+  "airline": null,
+  "flight_no": "1123",
+  "departure": "RCSS",
+  "arrival": "RJTT",
+  "dep_pos": [
+   121.55282,
+   25.06724
+  ],
+  "arr_pos": [
+   139.78696,
+   35.54968
+  ],
+  "distance_nm": 1165.4,
+  "cruise_ft": 40000,
+  "block_min": 160.9,
+  "air_min": 158.3,
+  "complete": true,
+  "title": null,
+  "tags": []
+ },
+ {
+  "id": "2026-02-24-UNKN-RKPK-ab3ac7",
+  "date": "2026-02-24",
+  "time_local": "20:35",
+  "aircraft": "Boeing 787-10 Asobo",
+  "model": "B78X",
+  "airline": null,
+  "flight_no": "1123",
+  "departure": "UNKN",
+  "arrival": "RKPK",
+  "dep_pos": [
+   128.96004,
+   35.00001
+  ],
+  "arr_pos": [
+   128.938,
+   35.1795
+  ],
+  "distance_nm": 26.4,
+  "cruise_ft": 3000,
+  "block_min": 10.6,
+  "air_min": 6.3,
+  "complete": false,
+  "title": null,
+  "tags": []
+ },
+ {
+  "id": "2026-02-23-RCSS-RJTT-b55e11",
+  "date": "2026-02-23",
+  "time_local": "16:00",
+  "aircraft": "Boeing 787-10 Asobo",
+  "model": "B78X",
+  "airline": null,
+  "flight_no": "1123",
+  "departure": "RCSS",
+  "arrival": "RJTT",
+  "dep_pos": [
+   121.55282,
+   25.06724
+  ],
+  "arr_pos": [
+   139.78696,
+   35.54968
+  ],
+  "distance_nm": 1184.1,
+  "cruise_ft": 39000,
+  "block_min": 161.8,
+  "air_min": 155.8,
+  "complete": true,
+  "title": null,
+  "tags": []
+ },
+ {
+  "id": "2026-02-23-RCQC-RCKH-dba7d9",
+  "date": "2026-02-23",
+  "time_local": "02:42",
+  "aircraft": "Airbus A320 Neo Asobo",
+  "model": "A20N",
+  "airline": null,
+  "flight_no": "1123",
+  "departure": "RCQC",
+  "arrival": "RCKH",
+  "dep_pos": [
+   119.628,
+   23.5687
+  ],
+  "arr_pos": [
+   120.35,
+   22.5771
+  ],
+  "distance_nm": 82.5,
+  "cruise_ft": 8000,
+  "block_min": 20.7,
+  "air_min": 18.5,
+  "complete": true,
+  "title": null,
+  "tags": []
+ },
+ {
+  "id": "2026-02-22-RCQC-RCKH-2f25a7",
+  "date": "2026-02-22",
+  "time_local": "01:22",
+  "aircraft": "Airbus A320 Neo Asobo",
+  "model": "A20N",
+  "airline": null,
+  "flight_no": "1123",
+  "departure": "RCQC",
+  "arrival": "RCKH",
+  "dep_pos": [
+   119.628,
+   23.5687
+  ],
+  "arr_pos": [
+   120.35,
+   22.5771
+  ],
+  "distance_nm": 82.6,
+  "cruise_ft": 9000,
+  "block_min": 20.4,
+  "air_min": 17.8,
+  "complete": true,
+  "title": null,
+  "tags": []
+ },
+ {
+  "id": "2026-02-21-RCQC-RCKH-34223b",
+  "date": "2026-02-21",
+  "time_local": "02:55",
+  "aircraft": "Airbus A320 Neo Asobo",
+  "model": "A20N",
+  "airline": null,
+  "flight_no": "1123",
+  "departure": "RCQC",
+  "arrival": "RCKH",
+  "dep_pos": [
+   119.628,
+   23.5687
+  ],
+  "arr_pos": [
+   120.35,
+   22.5771
+  ],
+  "distance_nm": 90.3,
+  "cruise_ft": 3500,
+  "block_min": 34.1,
+  "air_min": 20.9,
+  "complete": true,
+  "title": null,
+  "tags": []
+ },
+ {
+  "id": "2026-02-18-VMMC-RJAA-9a4fea",
+  "date": "2026-02-18",
+  "time_local": "17:47",
+  "aircraft": "Boeing 777-300ER China Airlines B-18003",
+  "model": "B773",
+  "airline": "China Airlines",
+  "flight_no": "TEMP",
+  "departure": "VMMC",
+  "arrival": "RJAA",
+  "dep_pos": [
+   113.592,
+   22.1496
+  ],
+  "arr_pos": [
+   140.38871,
+   35.76858
+  ],
+  "distance_nm": 1633.7,
+  "cruise_ft": 0,
+  "block_min": 10.3,
+  "air_min": 2.6,
+  "complete": true,
+  "title": null,
+  "tags": []
+ },
+ {
+  "id": "2026-02-18-UNKN-RJAA-fb1ea4",
+  "date": "2026-02-18",
+  "time_local": "17:34",
+  "aircraft": "Boeing 777-300ER China Airlines B-18003",
+  "model": "B773",
+  "airline": "China Airlines",
+  "flight_no": "TEMP",
+  "departure": "UNKN",
+  "arrival": "RJAA",
+  "dep_pos": [
+   113.58476,
+   22.16316
+  ],
+  "arr_pos": [
+   140.38871,
+   35.76858
+  ],
+  "distance_nm": 1640.7,
+  "cruise_ft": 0,
+  "block_min": 11.2,
+  "air_min": 4.8,
+  "complete": false,
+  "title": null,
+  "tags": []
+ },
+ {
+  "id": "2026-02-12-RJTT-RJTT-68edc5",
+  "date": "2026-02-12",
+  "time_local": "20:07",
+  "aircraft": "Boeing 787-10 Asobo",
+  "model": "B78X",
+  "airline": null,
+  "flight_no": "1123",
+  "departure": "RJTT",
+  "arrival": "RJTT",
+  "dep_pos": [
+   139.78696,
+   35.54968
+  ],
+  "arr_pos": [
+   139.78696,
+   35.54968
+  ],
+  "distance_nm": 2309.7,
+  "cruise_ft": 0,
+  "block_min": 11.5,
+  "air_min": 3.6,
+  "complete": true,
+  "title": null,
+  "tags": []
+ },
+ {
+  "id": "2026-02-08-UNKN-KPHX-d4e3f3",
+  "date": "2026-02-08",
+  "time_local": "02:34",
+  "aircraft": "Boeing 777-300ER China Airlines B-18003",
+  "model": "B773",
+  "airline": "China Airlines",
+  "flight_no": "TEMP",
+  "departure": "UNKN",
+  "arrival": "KPHX",
+  "dep_pos": [
+   -122.68076,
+   37.15603
+  ],
+  "arr_pos": [
+   -112.0059,
+   33.4353
+  ],
+  "distance_nm": 589.3,
+  "cruise_ft": 35500,
+  "block_min": 78.2,
+  "air_min": null,
+  "complete": false,
+  "title": null,
+  "tags": []
+ },
+ {
+  "id": "2026-02-04-RCTP-RJBE-02d2d4",
+  "date": "2026-02-04",
+  "time_local": "22:39",
+  "aircraft": "Unknown aircraft",
+  "model": "",
+  "airline": null,
+  "flight_no": null,
+  "departure": "RCTP",
+  "arrival": "RJBE",
+  "dep_pos": [
+   121.233,
+   25.0777
+  ],
+  "arr_pos": [
+   135.224,
+   34.6328
+  ],
+  "distance_nm": 951.4,
+  "cruise_ft": 35000,
+  "block_min": 147.3,
+  "air_min": 141.2,
+  "complete": true,
+  "title": null,
+  "tags": []
+ },
+ {
+  "id": "2026-02-03-RJBE-RJOO-ad60bb",
+  "date": "2026-02-03",
+  "time_local": "23:44",
+  "aircraft": "Cessna CJ4 Citation Asobo",
+  "model": "C25C",
+  "airline": null,
+  "flight_no": null,
+  "departure": "RJBE",
+  "arrival": "RJOO",
+  "dep_pos": [
+   135.224,
+   34.6328
+  ],
+  "arr_pos": [
+   135.44083,
+   34.78085
+  ],
+  "distance_nm": 45.9,
+  "cruise_ft": 500,
+  "block_min": 24.2,
+  "air_min": 13.8,
+  "complete": true,
+  "title": null,
+  "tags": []
+ },
+ {
+  "id": "2026-02-03-WIDD-WSSS-abba24",
+  "date": "2026-02-03",
+  "time_local": "23:01",
+  "aircraft": "Airbus A320 Neo Tigerair Taiwan SoccerYCA",
+  "model": "A20N",
+  "airline": "Smart Cat",
+  "flight_no": "IT231",
+  "departure": "WIDD",
+  "arrival": "WSSS",
+  "dep_pos": [
+   104.119,
+   1.12103
+  ],
+  "arr_pos": [
+   103.994,
+   1.35019
+  ],
+  "distance_nm": 34.7,
+  "cruise_ft": 2000,
+  "block_min": 20.8,
+  "air_min": 11.1,
+  "complete": true,
+  "title": null,
+  "tags": []
+ },
+ {
+  "id": "2026-02-03-RCSS-RCSS-bb9d31",
+  "date": "2026-02-03",
+  "time_local": "00:47",
+  "aircraft": "Boeing 747-8i Cathay Pacific",
+  "model": "B748",
+  "airline": "Cathay",
+  "flight_no": "1021",
+  "departure": "RCSS",
+  "arrival": "RCSS",
+  "dep_pos": [
+   121.55282,
+   25.06724
+  ],
+  "arr_pos": [
+   121.55282,
+   25.06724
+  ],
+  "distance_nm": 29.7,
+  "cruise_ft": 2000,
+  "block_min": 13.5,
+  "air_min": 8.2,
+  "complete": true,
+  "title": null,
+  "tags": []
+ },
+ {
+  "id": "2026-02-03-RCTP-RCSS-4f1524",
+  "date": "2026-02-03",
+  "time_local": "00:31",
+  "aircraft": "Boeing 747-8i Cathay Pacific",
+  "model": "B748",
+  "airline": "Cathay",
+  "flight_no": "1021",
+  "departure": "RCTP",
+  "arrival": "RCSS",
+  "dep_pos": [
+   121.233,
+   25.0777
+  ],
+  "arr_pos": [
+   121.55282,
+   25.06724
+  ],
+  "distance_nm": 19.2,
+  "cruise_ft": 2500,
+  "block_min": 6.8,
+  "air_min": 4.4,
+  "complete": true,
+  "title": null,
+  "tags": []
+ },
+ {
+  "id": "2026-02-02-UNKN-VHSS-3a112b",
+  "date": "2026-02-02",
+  "time_local": "19:22",
+  "aircraft": "Airbus A320 Neo Asobo",
+  "model": "A20N",
+  "airline": null,
+  "flight_no": "1123",
+  "departure": "UNKN",
+  "arrival": "VHSS",
+  "dep_pos": [
+   114.06115,
+   22.32004
+  ],
+  "arr_pos": [
+   114.15237,
+   22.28887
+  ],
+  "distance_nm": 10.9,
+  "cruise_ft": 0,
+  "block_min": 10.8,
+  "air_min": 0.0,
+  "complete": false,
+  "title": null,
+  "tags": []
+ },
+ {
+  "id": "2026-02-02-UNKN-VMMC-032abb",
+  "date": "2026-02-02",
+  "time_local": "13:21",
+  "aircraft": "Airbus A320 Neo Tigerair Taiwan SoccerYCA",
+  "model": "A20N",
+  "airline": "Smart Cat",
+  "flight_no": "IT231",
+  "departure": "UNKN",
+  "arrival": "VMMC",
+  "dep_pos": [
+   113.61187,
+   22.09303
+  ],
+  "arr_pos": [
+   113.592,
+   22.1496
+  ],
+  "distance_nm": 5.2,
+  "cruise_ft": 0,
+  "block_min": 7.1,
+  "air_min": null,
+  "complete": false,
+  "title": null,
+  "tags": []
+ },
+ {
+  "id": "2026-01-31-UNKN-RCSS-9400dc",
+  "date": "2026-01-31",
+  "time_local": "22:43",
+  "aircraft": "Airbus A320 Neo Tigerair Taiwan SoccerYCA",
+  "model": "A20N",
+  "airline": "Smart Cat",
+  "flight_no": "IT231",
+  "departure": "UNKN",
+  "arrival": "RCSS",
+  "dep_pos": [
+   121.40117,
+   25.08052
+  ],
+  "arr_pos": [
+   121.55282,
+   25.06724
+  ],
+  "distance_nm": 8.6,
+  "cruise_ft": 1000,
+  "block_min": 3.6,
+  "air_min": null,
+  "complete": false,
+  "title": null,
+  "tags": []
+ },
+ {
+  "id": "2026-01-31-RCYU-RCSS-006099",
+  "date": "2026-01-31",
+  "time_local": "13:48",
+  "aircraft": "Airbus A320 Neo Tigerair Taiwan SoccerYCA",
+  "model": "A20N",
+  "airline": "Smart Cat",
+  "flight_no": "IT231",
+  "departure": "RCYU",
+  "arrival": "RCSS",
+  "dep_pos": [
+   121.61799,
+   24.02316
+  ],
+  "arr_pos": [
+   121.55282,
+   25.06724
+  ],
+  "distance_nm": 84.8,
+  "cruise_ft": 8500,
+  "block_min": 26.4,
+  "air_min": 19.8,
+  "complete": true,
+  "title": null,
+  "tags": []
+ },
+ {
+  "id": "2026-01-30-RCSS-RCQC-69c8f9",
+  "date": "2026-01-30",
+  "time_local": "20:45",
+  "aircraft": "Airbus A320 Neo Tigerair Taiwan SoccerYCA",
+  "model": "A20N",
+  "airline": "Smart Cat",
+  "flight_no": "IT231",
+  "departure": "RCSS",
+  "arrival": "RCQC",
+  "dep_pos": [
+   121.55282,
+   25.06724
+  ],
+  "arr_pos": [
+   119.628,
+   23.5687
+  ],
+  "distance_nm": 168.1,
+  "cruise_ft": 5000,
+  "block_min": 43.4,
+  "air_min": 37.8,
+  "complete": true,
+  "title": null,
+  "tags": []
+ },
+ {
+  "id": "2026-01-29-RJGG-RJBE-7e0f28",
+  "date": "2026-01-29",
+  "time_local": "17:39",
+  "aircraft": "Airbus A320 Neo ANA",
+  "model": "A20N",
+  "airline": "All Nippon",
+  "flight_no": "255",
+  "departure": "RJGG",
+  "arrival": "RJBE",
+  "dep_pos": [
+   136.80499,
+   34.8584
+  ],
+  "arr_pos": [
+   135.224,
+   34.6328
+  ],
+  "distance_nm": 131.9,
+  "cruise_ft": 9000,
+  "block_min": 43.6,
+  "air_min": 33.7,
+  "complete": true,
+  "title": null,
+  "tags": []
+ },
+ {
+  "id": "2026-01-10-RCFN-RCFN-b92d6c",
+  "date": "2026-01-10",
+  "time_local": "00:47",
+  "aircraft": "DA 40 NG APEX flight academy",
+  "model": "DA40",
+  "airline": "APEX",
+  "flight_no": null,
+  "departure": "RCFN",
+  "arrival": "RCFN",
+  "dep_pos": [
+   121.10179,
+   22.75486
+  ],
+  "arr_pos": [
+   121.10179,
+   22.75486
+  ],
+  "distance_nm": 29.9,
+  "cruise_ft": 1000,
+  "block_min": 27.6,
+  "air_min": 17.2,
+  "complete": true,
+  "title": null,
+  "tags": []
+ },
+ {
+  "id": "2026-01-09-RCFN-RCQS-bf1b8b",
+  "date": "2026-01-09",
+  "time_local": "22:58",
+  "aircraft": "DA 40 NG APEX flight academy",
+  "model": "DA40",
+  "airline": "APEX",
+  "flight_no": null,
+  "departure": "RCFN",
+  "arrival": "RCQS",
+  "dep_pos": [
+   121.10179,
+   22.75486
+  ],
+  "arr_pos": [
+   121.182,
+   22.7931
+  ],
+  "distance_nm": 6.8,
+  "cruise_ft": 500,
+  "block_min": 5.9,
+  "air_min": 4.2,
+  "complete": true,
+  "title": null,
+  "tags": []
+ },
+ {
+  "id": "nodate-RCTP-RCSS-3cb04b",
+  "date": null,
+  "time_local": null,
+  "aircraft": "Airbus A320 Neo China Airlines",
+  "model": "A20N",
+  "airline": "Dynasty",
+  "flight_no": "1123",
+  "departure": "RCTP",
+  "arrival": "RCSS",
+  "dep_pos": [
+   121.233,
+   25.0777
+  ],
+  "arr_pos": [
+   121.55282,
+   25.06724
+  ],
+  "distance_nm": 18.9,
+  "cruise_ft": 1500,
+  "block_min": 9.6,
+  "air_min": 5.7,
+  "complete": true,
+  "title": null,
+  "tags": []
+ },
+ {
+  "id": "nodate-RCTP-RCSS-cbd619",
+  "date": null,
+  "time_local": null,
+  "aircraft": "Airbus A320 Neo EVA Airline",
+  "model": "A20N",
+  "airline": "Eva",
+  "flight_no": "BR911",
+  "departure": "RCTP",
+  "arrival": "RCSS",
+  "dep_pos": [
+   121.233,
+   25.0777
+  ],
+  "arr_pos": [
+   121.55282,
+   25.06724
+  ],
+  "distance_nm": 18.9,
+  "cruise_ft": 1500,
+  "block_min": 10.1,
+  "air_min": 5.8,
+  "complete": true,
+  "title": null,
+  "tags": []
+ },
+ {
+  "id": "nodate-RCTP-RCSS-760004",
+  "date": null,
+  "time_local": null,
+  "aircraft": "Airbus A320 Neo Tigerair Taiwan SoccerYCA",
+  "model": "A20N",
+  "airline": "Smart Cat",
+  "flight_no": "IT231",
+  "departure": "RCTP",
+  "arrival": "RCSS",
+  "dep_pos": [
+   121.233,
+   25.0777
+  ],
+  "arr_pos": [
+   121.55282,
+   25.06724
+  ],
+  "distance_nm": 19.0,
+  "cruise_ft": 1500,
+  "block_min": 9.9,
+  "air_min": 5.8,
+  "complete": true,
   "title": null,
   "tags": []
  }
