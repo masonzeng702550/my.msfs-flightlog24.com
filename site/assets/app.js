@@ -136,20 +136,26 @@
     return "airliner";
   }
 
-  // top-down silhouettes (point up = north so heading rotation works), no glow
+  // top-down silhouettes (point up = north so heading rotation works), colour-coded
+  // by category so the type reads at a glance; no glow
   const PLANE_ICONS = {
-    airliner: `<path fill="#eef6ff" stroke="#0b2030" stroke-width=".9" d="M0,-11 L2,-3 L11,3 L11,5 L2,1 L2,7 L5,9.5 L5,10.5 L0,9 L-5,10.5 L-5,9.5 L-2,7 L-2,1 L-11,5 L-11,3 L-2,-3 Z"/>`,
-    bizjet: `<path fill="#eef6ff" stroke="#0b2030" stroke-width=".9" d="M0,-10 L1.4,-3 L8,3 L8,4.4 L1.5,2 L2.2,7 L4.5,9 L4.5,10 L0,8.6 L-4.5,10 L-4.5,9 L-2.2,7 L-1.5,2 L-8,4.4 L-8,3 L-1.4,-3 Z"/>`,
-    prop: `<path fill="#eef6ff" stroke="#0b2030" stroke-width=".9" d="M0,-9.5 L1.5,-6 L1.5,-1 L11,1 L11,2.6 L1.5,2.6 L1.5,6.5 L4,8.8 L4,9.8 L0,8.6 L-4,9.8 L-4,8.8 L-1.5,6.5 L-1.5,2.6 L-11,2.6 L-11,1 L-1.5,-1 L-1.5,-6 Z"/><line x1="-4" y1="-9.5" x2="4" y2="-9.5" stroke="#eef6ff" stroke-width="1.3"/>`,
-    ga: `<path fill="#eef6ff" stroke="#0b2030" stroke-width=".9" d="M0,-8 L1.2,-4 L9,-1.5 L9,-0.2 L1.2,0.6 L1.2,5 L3.2,7.2 L3.2,8.2 L0,7.2 L-3.2,8.2 L-3.2,7.2 L-1.2,5 L-1.2,0.6 L-9,-0.2 L-9,-1.5 L-1.2,-4 Z"/>`,
-    helicopter: `<circle cx="0" cy="0" r="9.5" fill="none" stroke="#eef6ff" stroke-width="1" opacity=".55"/><path fill="#eef6ff" stroke="#0b2030" stroke-width=".8" d="M-1.7,-4 L1.7,-4 L1.7,4 L1,7 L1,11 L-1,11 L-1,7 L-1.7,4 Z"/><line x1="-3.5" y1="11" x2="3.5" y2="11" stroke="#eef6ff" stroke-width="1.2"/>`,
+    // swept-wing jet, white
+    airliner: `<path fill="#f2f7ff" stroke="#0b2030" stroke-width=".8" d="M0,-12 L2,-3 L12,3 L12,5.5 L2,1.5 L2,7 L5.5,10 L5.5,11 L0,9.5 L-5.5,11 L-5.5,10 L-2,7 L-2,1.5 L-12,5.5 L-12,3 L-2,-3 Z"/>`,
+    // small swept jet, cyan
+    bizjet: `<path fill="#4fc3f7" stroke="#0b2030" stroke-width=".8" d="M0,-11 L1.3,-3.5 L7.5,1.5 L7.5,3 L1.4,0.6 L1.7,6.5 L4.6,9 L4.6,10 L0,8.8 L-4.6,10 L-4.6,9 L-1.7,6.5 L-1.4,0.6 L-7.5,3 L-7.5,1.5 L-1.3,-3.5 Z"/>`,
+    // straight wings + two engine nacelles, amber
+    prop: `<g fill="#ffca45" stroke="#0b2030" stroke-width=".7"><path d="M-1.5,-10 L1.5,-10 L1.5,7 L4,9.5 L4,10.5 L0,9 L-4,10.5 L-4,9.5 L-1.5,7 Z"/><path d="M-12,-2 L12,-2 L12,1 L-12,1 Z"/><rect x="-7.6" y="-3.4" width="3" height="4.8" rx="1"/><rect x="4.6" y="-3.4" width="3" height="4.8" rx="1"/></g>`,
+    // small high straight wing, green
+    ga: `<g fill="#74e08a" stroke="#0b2030" stroke-width=".7"><path d="M-1,-7.5 L1,-7.5 L1,5 L2.8,6.8 L2.8,7.8 L0,6.6 L-2.8,7.8 L-2.8,6.8 L-1,5 Z"/><path d="M-9,-3.5 L9,-3.5 L9,-1.5 L-9,-1.5 Z"/></g>`,
+    // rotor disc + tail boom, orange
+    helicopter: `<g stroke="#0b2030" stroke-width=".7"><circle cx="0" cy="-1" r="11" fill="none" stroke="#ff8a5c" stroke-width="1.2" opacity=".55"/><path fill="#ff8a5c" d="M-2,-4 L2,-4 L2,3 L1.3,4 L1.3,9 L3,11 L3,12 L-3,12 L-3,11 L-1.3,9 L-1.3,4 L-2,3 Z"/><line x1="-4" y1="-1" x2="4" y2="-1" stroke="#ff8a5c" stroke-width="1.4"/></g>`,
   };
 
   // DOM node for a moving plane (inner svg rotated independently of globe.gl's positioning)
   function makePlane(d) {
     const wrap = document.createElement("div");
     wrap.className = "globe-plane";
-    wrap.innerHTML = `<svg width="22" height="22" viewBox="-12 -12 24 24">${PLANE_ICONS[d.category] || PLANE_ICONS.airliner}</svg>`;
+    wrap.innerHTML = `<svg width="26" height="26" viewBox="-13 -13 26 26">${PLANE_ICONS[d.category] || PLANE_ICONS.airliner}</svg>`;
     d.__el = wrap; d.__inner = wrap.firstElementChild;
     return wrap;
   }
