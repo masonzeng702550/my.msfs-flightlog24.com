@@ -142,6 +142,36 @@ a:hover { text-decoration: underline; }
 .kpi .v small { font-size: 13px; color: var(--muted); font-weight: 500; }
 .kpi .k { color: var(--muted); font-size: 12px; margin-top: 3px; text-transform: uppercase; letter-spacing: .4px; }
 
+/* replay controls */
+.replay {
+  display: flex; align-items: center; gap: 12px;
+  background: var(--panel); border: 1px solid var(--line);
+  border-radius: 12px; padding: 12px 16px; margin: 12px 0;
+}
+.replay button.play {
+  flex: none; width: 42px; height: 42px; border-radius: 50%;
+  border: 1px solid var(--line); background: var(--accent); color: #04121c;
+  font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center;
+}
+.replay button.play:hover { filter: brightness(1.1); }
+.replay .seek { flex: 1; accent-color: var(--accent); height: 4px; cursor: pointer; }
+.replay .time { font-variant-numeric: tabular-nums; color: var(--muted); font-size: 13px; min-width: 92px; text-align: center; }
+.replay select { background: var(--panel-2); color: var(--text); border: 1px solid var(--line); border-radius: 7px; padding: 6px 8px; font-size: 13px; }
+.replay-readout {
+  display: flex; gap: 18px; flex-wrap: wrap;
+  font-variant-numeric: tabular-nums; font-size: 13px; color: var(--muted);
+  padding: 2px 2px 0;
+}
+.replay-readout b { color: var(--accent); font-size: 15px; font-weight: 700; }
+.replay-readout .hdg b { color: var(--accent-2); }
+
+/* moving aircraft marker */
+.plane-icon svg { display: block; transition: transform .08s linear; filter: drop-shadow(0 0 3px rgba(54,197,255,.9)); }
+
+/* chart cursor overlay */
+.chart-wrap { position: relative; }
+.chart-cursor { position: absolute; top: 0; width: 0; border-left: 1px solid var(--accent-2); pointer-events: none; opacity: 0; }
+
 .chart-card, .meta-card { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 16px; margin: 16px 0; }
 .chart-card h3, .meta-card h3 { margin: 0 0 12px; font-size: 13px; color: var(--muted); text-transform: uppercase; letter-spacing: .4px; }
 .meta-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px 28px; font-size: 14px; }
