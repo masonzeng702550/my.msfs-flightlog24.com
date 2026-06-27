@@ -35,8 +35,25 @@ cp "2026-06-27-02-45.fltrec" recordings/
 git add recordings/ && git commit -m "add flight" && git push
 ```
 
+Push to `recordings/` and the site rebuilds itself — nothing else to do.
+
 Optionally add a sidecar `recordings/<name>.meta.yml` to override the title,
 departure/arrival, notes or tags for that flight.
+
+### File size limits
+
+| How you add it | Per-file limit |
+| --- | --- |
+| `git push` (the command above) | **100 MB** |
+| GitHub web upload (Add file → Upload files) | **25 MB** |
+
+A `.fltrec` is mostly redundant per-frame samples, so oversized recordings can
+be downsampled with no visible effect on the site (it decimates to ~1500 points
+anyway):
+
+```bash
+python3 scripts/shrink_recording.py big.fltrec recordings/big.fltrec 20   # target ~20 MB
+```
 
 ## Local build
 
