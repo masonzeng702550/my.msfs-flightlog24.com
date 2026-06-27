@@ -17,3 +17,6 @@ ourairports-raw.csv
 
 # local preview tooling
 .claude/
+
+# local recording archive (originals kept off the repo)
+待上傳/

@@ -35,6 +35,17 @@ CRUISE_TRIM = 0.10         # drop first/last 10% (climb/descent) for cruise alt
 
 
 # ── geo helpers ─────────────────────────────────────────────────────────────
+def valid_coord(p):
+    lat, lon = p.get("Latitude"), p.get("Longitude")
+    if lat is None or lon is None:
+        return False
+    if not (-90 <= lat <= 90) or not (-180 <= lon <= 180):
+        return False
+    # reject the "null island" cluster near (0,0): sim loading frames sit there
+    # before GPS locks (e.g. 0.0004, 0.014), not exactly zero
+    return not (abs(lat) < 0.2 and abs(lon) < 0.2)
+
+
 def haversine_nm(lat1, lon1, lat2, lon2):
     r = 3440.065  # nautical miles
     p1, p2 = math.radians(lat1), math.radians(lat2)
@@ -178,6 +189,13 @@ def parse_recording(path, airports):
     records = data.get("Records", [])
     if not records:
         raise ValueError("no records")
+
+    # drop frames with invalid coordinates — recordings occasionally contain
+    # spurious "null island" (0,0) or out-of-range samples that would otherwise
+    # inflate track distance and send map/globe lines across the planet
+    records = [r for r in records if valid_coord(r.get("Position", {}))]
+    if not records:
+        raise ValueError("no valid frames")
 
     pos = [r["Position"] for r in records]
     times_ms = [r["Time"] for r in records]
