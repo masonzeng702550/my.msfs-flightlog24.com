@@ -106,9 +106,14 @@
       }
     });
     g.renderer().setPixelRatio(Math.min(window.devicePixelRatio || 1, 3));
+
+    // zoom in past a threshold -> fade to a flat high-res satellite map of that region
+    const FLAT_THRESHOLD = 0.5;
+    const flat = setupFlatMap(g, arcs, airports);
     g.onZoom(pov => {
       g.arcStroke(strokeForAlt(pov.altitude));
       g.pointRadius(radiusForAlt(pov.altitude));
+      if (pov.altitude < FLAT_THRESHOLD) flat.enter(pov);
     });
 
     const resize = () => { g.width(elem.clientWidth).height(elem.clientHeight); };
@@ -150,6 +155,55 @@
     // rotor disc + tail boom, orange
     helicopter: `<g stroke="#0b2030" stroke-width=".7"><circle cx="0" cy="-1" r="11" fill="none" stroke="#ff8a5c" stroke-width="1.2" opacity=".55"/><path fill="#ff8a5c" d="M-2,-4 L2,-4 L2,3 L1.3,4 L1.3,9 L3,11 L3,12 L-3,12 L-3,11 L-1.3,9 L-1.3,4 L-2,3 Z"/><line x1="-4" y1="-1" x2="4" y2="-1" stroke="#ff8a5c" stroke-width="1.4"/></g>`,
   };
+
+  // Flat high-res satellite map (Esri tiles) shown when the globe is zoomed in.
+  // Draws the same airports and routes; zooming back out returns to the globe.
+  function setupFlatMap(g, arcs, airports) {
+    const stage = document.getElementById("stage");
+    const mapEl = document.getElementById("flatmap");
+    const backBtn = document.getElementById("to-globe");
+    const MIN_ZOOM_BACK = 4;
+    let lmap = null, mapMode = false, cooldown = false;
+
+    function build() {
+      lmap = L.map(mapEl, { attributionControl: false, zoomControl: true, minZoom: 3, maxZoom: 18 });
+      L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+        { maxZoom: 19, attribution: "Imagery © Esri, Maxar, Earthstar Geographics" }).addTo(lmap);
+      L.control.attribution({ prefix: false }).addTo(lmap);
+      arcs.forEach(a => {
+        L.polyline([[a.startLat, a.startLng], [a.endLat, a.endLng]],
+          { color: a.complete ? "#36c5ff" : "#ffaf43", weight: 2, opacity: .85 })
+          .on("click", () => { location.href = `flight.html?id=${a.id}`; })
+          .addTo(lmap);
+      });
+      airports.forEach(ap => {
+        L.circleMarker([ap.lat, ap.lng], { radius: 4, color: "#fff", weight: 1.2, fillColor: "#fff", fillOpacity: 1 })
+          .bindTooltip(ap.code).addTo(lmap);
+      });
+      lmap.on("zoomend", () => { if (mapMode && lmap.getZoom() <= MIN_ZOOM_BACK) exit(); });
+    }
+    function enter(pov) {
+      if (mapMode || cooldown) return;
+      mapMode = true;
+      if (!lmap) build();
+      g.controls().autoRotate = false;
+      stage.classList.add("map-mode");
+      backBtn.hidden = false;
+      setTimeout(() => { lmap.invalidateSize(); lmap.setView([pov.lat, pov.lng], 7); }, 80);
+    }
+    function exit() {
+      if (!mapMode) return;
+      mapMode = false;
+      cooldown = true;
+      setTimeout(() => { cooldown = false; }, 1200);
+      stage.classList.remove("map-mode");
+      backBtn.hidden = true;
+      const c = lmap ? lmap.getCenter() : null;
+      g.pointOfView(c ? { lat: c.lat, lng: c.lng, altitude: 1.1 } : { altitude: 1.1 }, 0);
+    }
+    backBtn.addEventListener("click", exit);
+    return { enter, exit };
+  }
 
   // DOM node for a moving plane (inner svg rotated independently of globe.gl's positioning)
   function makePlane(d) {

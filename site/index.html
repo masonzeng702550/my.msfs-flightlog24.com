@@ -4,7 +4,8 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>my.msfs-flightlog24 · MSFS Flight Logbook</title>
-  <link rel="stylesheet" href="assets/style.css?v=3">
+  <link rel="stylesheet" href="assets/style.css?v=4">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><text y='14' font-size='14'>✈️</text></svg>">
 </head>
 <body>
@@ -13,7 +14,11 @@
     <span class="tagline">Microsoft Flight Simulator · personal flight logbook</span>
   </header>
 
-  <div id="globe"><div class="globe-hint">拖曳旋轉 · 滾輪縮放 · 點擊航線看詳情</div></div>
+  <div id="stage">
+    <div id="globe"><div class="globe-hint">拖曳旋轉 · 滾輪縮放 · 點擊航線看詳情 · 放大切換衛星圖</div></div>
+    <div id="flatmap"></div>
+    <button id="to-globe" class="to-globe" hidden>← 回到地球</button>
+  </div>
 
   <section class="stats" id="stats"></section>
 
@@ -38,6 +43,7 @@
   </footer>
 
   <script src="https://unpkg.com/globe.gl@2.34.4/dist/globe.gl.min.js"></script>
-  <script src="assets/app.js?v=4"></script>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="assets/app.js?v=5"></script>
 </body>
 </html>
