@@ -48,16 +48,22 @@
     });
     const points = [...ptMap.values()];
 
-    const g = Globe()(elem)
-      .globeImageUrl("https://unpkg.com/three-globe/example/img/earth-night.jpg")
-      .bumpImageUrl("https://unpkg.com/three-globe/example/img/earth-topology.png")
+    // arc/point thickness scales with camera altitude so lines get THINNER as
+    // you zoom in (a fixed world-stroke looks too thick up close)
+    const strokeForAlt = a => Math.max(0.04, Math.min(0.7, a * 0.25));
+    const radiusForAlt = a => Math.max(0.06, Math.min(0.32, a * 0.12));
+    const INIT_ALT = 1.9;
+
+    const g = Globe({ rendererConfig: { antialias: true, alpha: true } })(elem)
+      .globeImageUrl("assets/earth-night-8k.jpg")
+      .bumpImageUrl("assets/earth-topology.png")
       .backgroundImageUrl("https://unpkg.com/three-globe/example/img/night-sky.png")
       .atmosphereColor("#3a6ea5")
       .arcsData(arcs)
       .arcStartLat("startLat").arcStartLng("startLng")
       .arcEndLat("endLat").arcEndLng("endLng")
       .arcColor(d => d.complete ? ["#36c5ff", "#45e0a0"] : ["#ffaf43", "#ff6b6b"])
-      .arcStroke(0.6)
+      .arcStroke(strokeForAlt(INIT_ALT))
       .arcAltitudeAutoScale(0.4)
       .arcDashLength(d => d.complete ? 1 : 0.4)
       .arcDashGap(d => d.complete ? 0 : 0.2)
@@ -68,8 +74,24 @@
       .pointLat("lat").pointLng("lng")
       .pointColor(() => "#ffffff")
       .pointAltitude(0.005)
-      .pointRadius(0.28)
+      .pointRadius(radiusForAlt(INIT_ALT))
       .pointLabel(d => `<div class="globe-tooltip"><b>${d.code}</b></div>`);
+
+    // crisp texture at grazing angles + max device resolution
+    g.onGlobeReady(() => {
+      const tex = g.globeMaterial() && g.globeMaterial().map;
+      if (tex && g.renderer()) {
+        tex.anisotropy = g.renderer().capabilities.getMaxAnisotropy();
+        tex.needsUpdate = true;
+      }
+    });
+    g.renderer().setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+
+    // re-thin arcs/points whenever the zoom changes
+    g.onZoom(pov => {
+      g.arcStroke(strokeForAlt(pov.altitude));
+      g.pointRadius(radiusForAlt(pov.altitude));
+    });
 
     // size + responsive
     const resize = () => { g.width(elem.clientWidth).height(elem.clientHeight); };
@@ -79,7 +101,7 @@
     // frame the flights
     const lat = avg(fl.flatMap(f => [f.dep_pos[1], f.arr_pos[1]]));
     const lng = avg(fl.flatMap(f => [f.dep_pos[0], f.arr_pos[0]]));
-    g.pointOfView({ lat, lng, altitude: 1.9 }, 0);
+    g.pointOfView({ lat, lng, altitude: INIT_ALT }, 0);
 
     g.controls().autoRotate = true;
     g.controls().autoRotateSpeed = 0.35;
