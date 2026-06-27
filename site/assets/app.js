@@ -1,7 +1,7 @@
 // Home page: interactive globe + stats header + flight list.
 (async function () {
-  const flights = await fetch("data/flights.json").then(r => r.json()).catch(() => []);
-  const stats = await fetch("data/stats.json").then(r => r.json()).catch(() => null);
+  const flights = await fetch("data/flights.json", { cache: "no-cache" }).then(r => r.json()).catch(() => []);
+  const stats = await fetch("data/stats.json", { cache: "no-cache" }).then(r => r.json()).catch(() => null);
 
   renderStats(stats);
   renderGlobe(flights);

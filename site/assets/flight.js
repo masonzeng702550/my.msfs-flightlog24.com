@@ -6,7 +6,7 @@
 
   let f;
   try {
-    f = await fetch(`data/flights/${id}.json`).then(r => { if (!r.ok) throw 0; return r.json(); });
+    f = await fetch(`data/flights/${id}.json`, { cache: "no-cache" }).then(r => { if (!r.ok) throw 0; return r.json(); });
   } catch {
     root.innerHTML = `<div class="empty">找不到這趟飛行</div>`;
     return;
