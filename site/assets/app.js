@@ -109,7 +109,7 @@
 
     // zoom in past a threshold -> fade to a flat high-res satellite map of that region
     const FLAT_THRESHOLD = 0.5;
-    const flat = setupFlatMap(g, arcs, airports);
+    const flat = setupFlatMap(g, arcs, airports, planes);
     g.onZoom(pov => {
       g.arcStroke(strokeForAlt(pov.altitude));
       g.pointRadius(radiusForAlt(pov.altitude));
@@ -157,22 +157,36 @@
   };
 
   // Flat high-res satellite map (Esri tiles) shown when the globe is zoomed in.
-  // Draws the same airports and routes; zooming back out returns to the globe.
-  function setupFlatMap(g, arcs, airports) {
+  // Draws the same great-circle routes, airports and flying planes; zooming back
+  // out (or the back button) returns to the globe.
+  function setupFlatMap(g, arcs, airports, planes) {
     const stage = document.getElementById("stage");
     const mapEl = document.getElementById("flatmap");
     const backBtn = document.getElementById("to-globe");
     const MIN_ZOOM_BACK = 4;
-    let lmap = null, mapMode = false, cooldown = false;
+    let lmap = null, mapMode = false, cooldown = false, raf = null, last = null;
+    const flatPlanes = planes.map(p => ({ arc: p.arc, category: p.category, t: p.t, speed: p.speed, marker: null }));
+
+    // great-circle path as [lat,lng] points, with longitude unwrapped so routes
+    // crossing the antimeridian stay continuous
+    function gcLine(a) {
+      const pts = []; let prev = null;
+      for (let i = 0; i <= 48; i++) {
+        const gi = gcInterp(a.startLat, a.startLng, a.endLat, a.endLng, i / 48);
+        let lng = gi.lng;
+        if (prev !== null) { while (lng - prev > 180) lng -= 360; while (lng - prev < -180) lng += 360; }
+        prev = lng; pts.push([gi.lat, lng]);
+      }
+      return pts;
+    }
 
     function build() {
-      lmap = L.map(mapEl, { attributionControl: false, zoomControl: true, minZoom: 3, maxZoom: 18 });
+      lmap = L.map(mapEl, { attributionControl: false, zoomControl: true, minZoom: 3, maxZoom: 18, worldCopyJump: true });
       L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
         { maxZoom: 19, attribution: "Imagery © Esri, Maxar, Earthstar Geographics" }).addTo(lmap);
       L.control.attribution({ prefix: false }).addTo(lmap);
       arcs.forEach(a => {
-        L.polyline([[a.startLat, a.startLng], [a.endLat, a.endLng]],
-          { color: a.complete ? "#36c5ff" : "#ffaf43", weight: 2, opacity: .85 })
+        L.polyline(gcLine(a), { color: a.complete ? "#36c5ff" : "#ffaf43", weight: 2, opacity: .85 })
           .on("click", () => { location.href = `flight.html?id=${a.id}`; })
           .addTo(lmap);
       });
@@ -180,8 +194,34 @@
         L.circleMarker([ap.lat, ap.lng], { radius: 4, color: "#fff", weight: 1.2, fillColor: "#fff", fillOpacity: 1 })
           .bindTooltip(ap.code).addTo(lmap);
       });
+      flatPlanes.forEach(p => {
+        const icon = L.divIcon({ className: "globe-plane", iconSize: [26, 26], iconAnchor: [13, 13],
+          html: `<svg width="26" height="26" viewBox="-13 -13 26 26">${PLANE_ICONS[p.category] || PLANE_ICONS.airliner}</svg>` });
+        p.marker = L.marker([p.arc.startLat, p.arc.startLng], { icon, interactive: false, keyboard: false, zIndexOffset: 1000 }).addTo(lmap);
+      });
       lmap.on("zoomend", () => { if (mapMode && lmap.getZoom() <= MIN_ZOOM_BACK) exit(); });
     }
+
+    function animate(ts) {
+      if (!mapMode) { raf = null; last = null; return; }
+      const dt = last == null ? 0 : Math.min(0.1, (ts - last) / 1000);
+      last = ts;
+      flatPlanes.forEach(p => {
+        p.t = (p.t + p.speed * dt) % 1;
+        const gi = gcInterp(p.arc.startLat, p.arc.startLng, p.arc.endLat, p.arc.endLng, p.t);
+        if (!p.marker) return;
+        p.marker.setLatLng([gi.lat, gi.lng]);
+        const svg = p.marker.getElement() && p.marker.getElement().querySelector("svg");
+        if (svg) {
+          const n = gcInterp(p.arc.startLat, p.arc.startLng, p.arc.endLat, p.arc.endLng, (p.t + 0.01) % 1);
+          const a = lmap.latLngToLayerPoint([gi.lat, gi.lng]);
+          const b = lmap.latLngToLayerPoint([n.lat, n.lng]);
+          svg.style.transform = `rotate(${Math.atan2(b.y - a.y, b.x - a.x) * 180 / Math.PI + 90}deg)`;
+        }
+      });
+      raf = requestAnimationFrame(animate);
+    }
+
     function enter(pov) {
       if (mapMode || cooldown) return;
       mapMode = true;
@@ -190,12 +230,14 @@
       stage.classList.add("map-mode");
       backBtn.hidden = false;
       setTimeout(() => { lmap.invalidateSize(); lmap.setView([pov.lat, pov.lng], 7); }, 80);
+      if (!raf) { last = null; raf = requestAnimationFrame(animate); }
     }
     function exit() {
       if (!mapMode) return;
       mapMode = false;
       cooldown = true;
       setTimeout(() => { cooldown = false; }, 1200);
+      if (raf) { cancelAnimationFrame(raf); raf = null; }
       stage.classList.remove("map-mode");
       backBtn.hidden = true;
       const c = lmap ? lmap.getCenter() : null;
