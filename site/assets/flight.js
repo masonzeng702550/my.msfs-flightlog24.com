@@ -2,13 +2,20 @@
 (async function () {
   const id = new URLSearchParams(location.search).get("id");
   const root = document.getElementById("detail");
-  if (!id) { root.innerHTML = `<div class="empty">缺少飛行 ID</div>`; return; }
+  const hideSplash = () => {
+    const s = document.getElementById("splash");
+    if (!s || s.classList.contains("hidden")) return;
+    s.classList.add("hidden"); setTimeout(() => s.remove(), 700);
+  };
+  setTimeout(hideSplash, 8000);
+  if (!id) { root.innerHTML = `<div class="empty">缺少飛行 ID</div>`; hideSplash(); return; }
 
   let f;
   try {
     f = await fetch(`data/flights/${id}.json`, { cache: "no-cache" }).then(r => { if (!r.ok) throw 0; return r.json(); });
   } catch {
     root.innerHTML = `<div class="empty">找不到這趟飛行</div>`;
+    hideSplash();
     return;
   }
 
@@ -84,6 +91,7 @@
   const chart = buildChart();
   const plane = buildPlane(map);
   setupReplay(map, chart, plane);
+  hideSplash();
 
   // ── map ─────────────────────────────────────────────────────────────
   function buildMap() {

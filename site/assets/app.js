@@ -16,6 +16,15 @@
   renderStats(stats);
   renderGlobe(flights);
   setupList(flights);
+  setTimeout(hideSplash, 9000);   // safety net if the globe/data never signal ready
+
+  // fade out the first-load splash (idempotent)
+  function hideSplash() {
+    const s = document.getElementById("splash");
+    if (!s || s.classList.contains("hidden")) return;
+    s.classList.add("hidden");
+    setTimeout(() => s.remove(), 700);
+  }
 
   // ── stats header ──────────────────────────────────────────────────────
   function renderStats(s) {
@@ -129,6 +138,7 @@
         g.onGlobeReady(() => {
           const tex = g.globeMaterial() && g.globeMaterial().map;
           if (tex && g.renderer()) { tex.anisotropy = g.renderer().capabilities.getMaxAnisotropy(); tex.needsUpdate = true; }
+          hideSplash();
         });
         g.renderer().setPixelRatio(Math.min(window.devicePixelRatio || 1, isMobile ? 1.5 : 3));
       } catch (e) { g = null; }
@@ -155,6 +165,7 @@
       animatePlanes(g, planes);
     } else {
       flat.showAll();   // no WebGL globe — show the flat map of all flights instead
+      setTimeout(hideSplash, 400);
     }
   }
 

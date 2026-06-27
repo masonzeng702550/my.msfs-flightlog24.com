@@ -11,10 +11,21 @@
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
   <link rel="icon" type="image/png" href="assets/icon-192.png">
-  <link rel="stylesheet" href="assets/style.css?v=8">
+  <link rel="stylesheet" href="assets/style.css?v=9">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 </head>
 <body>
+  <div id="splash">
+    <div class="orbit">
+      <div class="path"></div>
+      <div class="hub"></div>
+      <div class="runner"><svg viewBox="-12 -12 24 24"><path fill="#eef6ff" stroke="#0b2030" stroke-width=".8"
+        d="M0,-11 L2,-3 L11,3 L11,5 L2,1 L2,7 L5,9.5 L5,10.5 L0,9 L-5,10.5 L-5,9.5 L-2,7 L-2,1 L-11,5 L-11,3 L-2,-3 Z"/></svg></div>
+    </div>
+    <div class="splash-brand">my.msfs-flightlog<span>24</span></div>
+    <div class="splash-sub">載入飛行紀錄</div>
+  </div>
+
   <header class="site-header">
     <span class="brand">my.msfs-flightlog<span class="dot">24</span></span>
     <span class="tagline">Microsoft Flight Simulator · personal flight logbook</span>
@@ -50,7 +61,7 @@
 
   <script src="https://unpkg.com/globe.gl@2.34.4/dist/globe.gl.min.js"></script>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <script src="assets/app.js?v=8"></script>
+  <script src="assets/app.js?v=9"></script>
   <script>if("serviceWorker" in navigator){addEventListener("load",function(){navigator.serviceWorker.register("sw.js").catch(function(){})})}</script>
 </body>
 </html>
