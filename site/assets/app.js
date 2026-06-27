@@ -69,9 +69,10 @@
     const strokeForAlt = a => Math.max(0.02, Math.min(0.3, a * 0.1));
     const radiusForAlt = a => Math.max(0.05, Math.min(0.32, a * 0.12));
     const INIT_ALT = 1.9;
+    const isMobile = Math.min(window.innerWidth, window.innerHeight) < 768;
 
     const g = Globe({ rendererConfig: { antialias: true, alpha: true } })(elem)
-      .globeImageUrl("assets/earth-day-8k.jpg")
+      .globeImageUrl("assets/earth-day-4k.jpg")   // safe default; upgraded below if the GPU allows
       .bumpImageUrl("assets/earth-topology.png")
       .backgroundImageUrl("https://unpkg.com/three-globe/example/img/night-sky.png")
       .atmosphereColor("#5b8bd0").atmosphereAltitude(0.2)
@@ -97,7 +98,16 @@
       .htmlLat(d => d.lat).htmlLng(d => d.lng).htmlAltitude(d => d.alt || 0)
       .htmlElement(makePlane);
 
-    // sharpen the texture at grazing angles and render at full device resolution
+    // pick a globe texture the GPU can actually upload — an 8K texture exceeds
+    // the max texture size (often 4096) or memory budget of many phones, which
+    // leaves the globe blank. Use 4K on mobile, 2K on very limited GPUs, 8K only
+    // on capable desktops.
+    const caps = g.renderer() && g.renderer().capabilities;
+    const maxTex = (caps && caps.maxTextureSize) || 4096;
+    if (maxTex < 4096) g.globeImageUrl("assets/earth-day-2k.jpg");
+    else if (!isMobile && maxTex >= 8192) g.globeImageUrl("assets/earth-day-8k.jpg");
+
+    // sharpen the texture at grazing angles
     g.onGlobeReady(() => {
       const tex = g.globeMaterial() && g.globeMaterial().map;
       if (tex && g.renderer()) {
@@ -105,7 +115,7 @@
         tex.needsUpdate = true;
       }
     });
-    g.renderer().setPixelRatio(Math.min(window.devicePixelRatio || 1, 3));
+    g.renderer().setPixelRatio(Math.min(window.devicePixelRatio || 1, isMobile ? 2 : 3));
 
     // zoom in past a threshold -> fade to a flat high-res satellite map of that region
     const FLAT_THRESHOLD = 0.5;
