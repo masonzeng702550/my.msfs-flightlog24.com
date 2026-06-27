@@ -135,6 +135,20 @@ a:hover { text-decoration: underline; }
 
 #map { width: 100%; height: 360px; border-radius: 12px; border: 1px solid var(--line); background: var(--panel); }
 .leaflet-container { background: #0a1424; }
+/* dark theme for Leaflet's layer switcher + attribution */
+.leaflet-control-layers {
+  background: rgba(13,19,32,.95); border: 1px solid var(--line);
+  border-radius: 9px; color: var(--text);
+}
+.leaflet-control-layers-toggle {
+  background-color: rgba(13,19,32,.95);
+  filter: invert(1) hue-rotate(180deg) brightness(1.4);
+}
+.leaflet-control-layers-expanded { padding: 8px 12px 8px 10px; font-size: 13px; }
+.leaflet-control-layers label { margin: 3px 0; cursor: pointer; }
+.leaflet-control-layers-selector { accent-color: var(--accent); margin-right: 6px; }
+.leaflet-control-attribution { background: rgba(8,12,20,.7) !important; color: var(--muted) !important; }
+.leaflet-control-attribution a { color: var(--accent) !important; }
 
 .kpis { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin: 16px 0; }
 .kpi { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px; }

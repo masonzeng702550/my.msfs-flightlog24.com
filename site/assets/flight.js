@@ -89,10 +89,16 @@
   function buildMap() {
     const map = L.map("map", { attributionControl: false, zoomControl: true });
     window.__map = map;
-    L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png", {
-      maxZoom: 19, subdomains: "abcd",
-    }).addTo(map);
-    L.control.attribution({ prefix: false }).addAttribution("© OpenStreetMap · © CARTO").addTo(map);
+    const dark = L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png", {
+      maxZoom: 19, subdomains: "abcd", attribution: "© OpenStreetMap · © CARTO",
+    });
+    const satellite = L.tileLayer(
+      "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+      { maxZoom: 19, attribution: "Imagery © Esri, Maxar, Earthstar Geographics" });
+    dark.addTo(map);                                  // default base layer
+    L.control.attribution({ prefix: false }).addTo(map);
+    L.control.layers({ "深色地圖": dark, "衛星影像": satellite }, null,
+                     { position: "topright" }).addTo(map);
 
     if (coords.length) {
       const route = L.polyline(coords, { color: "#2a4d6e", weight: 3, opacity: .55 }).addTo(map);
