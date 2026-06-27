@@ -23,8 +23,7 @@
   "air_min": 35.2,
   "complete": true,
   "title": null,
-  "tags": [],
-  "track_ref": "data/flights/2026-06-27-RCTP-RCKH-de9a09.track.geojson"
+  "tags": []
  },
  {
   "id": "2026-05-27-UNKN-RCFN-54689e",
@@ -50,8 +49,7 @@
   "air_min": 0.0,
   "complete": false,
   "title": null,
-  "tags": [],
-  "track_ref": "data/flights/2026-05-27-UNKN-RCFN-54689e.track.geojson"
+  "tags": []
  },
  {
   "id": "2026-05-27-RCFN-RCFN-2ab0aa",
@@ -77,8 +75,7 @@
   "air_min": 6.6,
   "complete": true,
   "title": null,
-  "tags": [],
-  "track_ref": "data/flights/2026-05-27-RCFN-RCFN-2ab0aa.track.geojson"
+  "tags": []
  },
  {
   "id": "2026-05-27-RCTP-RCSS-124d31",
@@ -104,8 +101,7 @@
   "air_min": 5.4,
   "complete": true,
   "title": null,
-  "tags": [],
-  "track_ref": "data/flights/2026-05-27-RCTP-RCSS-124d31.track.geojson"
+  "tags": []
  },
  {
   "id": "2026-03-25-UNKN-RCSS-28ac7e",
@@ -131,7 +127,6 @@
   "air_min": 0.3,
   "complete": false,
   "title": null,
-  "tags": [],
-  "track_ref": "data/flights/2026-03-25-UNKN-RCSS-28ac7e.track.geojson"
+  "tags": []
  }
 ]

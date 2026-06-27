@@ -30,8 +30,7 @@ OUT_FLIGHTS = OUT / "flights"
 
 # ── tuning ────────────────────────────────────────────────────────────────
 AIRPORT_MATCH_NM = 5.0     # nearest-airport must be within this distance
-TRACK_MAX_POINTS = 1000    # decimate the ground track to at most this many pts
-PROFILE_MAX_POINTS = 1500  # decimate altitude/speed profile
+REPLAY_MAX_POINTS = 1500   # decimate the time-stamped replay samples
 CRUISE_TRIM = 0.10         # drop first/last 10% (climb/descent) for cruise alt
 
 
@@ -251,23 +250,16 @@ def parse_recording(path, airports):
     arr_code = arrival["icao"] if arrival else "UNKN"
     fid = f"{date or 'nodate'}-{dep_code}-{arr_code}-{digest}"
 
-    # track geojson (lon, lat, alt)
-    coords = decimate(list(zip(lons, lats, alts)), TRACK_MAX_POINTS)
-    track = {
-        "type": "Feature",
-        "properties": {"id": fid},
-        "geometry": {"type": "LineString",
-                     "coordinates": [[round(x, 5), round(y, 5), round(z, 1)] for x, y, z in coords]},
-    }
-
-    # altitude/speed profile (minutes from start, alt ft, ias kt)
+    # replay samples — one time-stamped row drives the map, the chart and the
+    # animated playback: [t_sec, lat, lon, alt_ft, heading_deg, ias_kt]
     t0 = times_ms[0]
-    profile_full = [
-        [round((t - t0) / 60000.0, 2), round(a, 0),
+    replay_full = [
+        [round((t - t0) / 1000.0, 1), round(la, 5), round(lo, 5),
+         round(a, 0), round(p.get("TrueHeading", 0) % 360, 1),
          round(p.get("IndicatedAirspeed", 0), 0)]
-        for t, a, p in zip(times_ms, alts, pos)
+        for t, la, lo, a, p in zip(times_ms, lats, lons, alts, pos)
     ]
-    profile = decimate(profile_full, PROFILE_MAX_POINTS)
+    replay = decimate(replay_full, REPLAY_MAX_POINTS)
 
     # sidecar overrides
     sidecar = load_sidecar(path.with_suffix(".meta.yml"))
@@ -298,8 +290,8 @@ def parse_recording(path, airports):
             "end": [round(lons[-1], 5), round(lats[-1], 5)],
         },
         "frames": len(pos),
-        "profile": profile,
-        "track_ref": f"data/flights/{fid}.track.geojson",
+        "duration_sec": replay[-1][0] if replay else 0,
+        "replay": replay,
     }
 
     # apply sidecar route overrides
@@ -310,7 +302,7 @@ def parse_recording(path, airports):
             if ap:
                 detail["route"][side] = {"icao": ap[0], "name": ap[3],
                                          "country": ap[4], "lat": ap[1], "lon": ap[2]}
-    return detail, track
+    return detail
 
 
 def summarize(detail):
@@ -335,7 +327,6 @@ def summarize(detail):
         "complete": detail["complete"],
         "title": detail["title"],
         "tags": detail["tags"],
-        "track_ref": detail["track_ref"],
     }
 
 
@@ -388,20 +379,23 @@ def build_stats(flights):
 def main():
     airports = load_airports()
     OUT_FLIGHTS.mkdir(parents=True, exist_ok=True)
+    # drop stale output so renamed/removed flights don't linger
+    for old in OUT_FLIGHTS.glob("*.json"):
+        old.unlink()
+    for old in OUT_FLIGHTS.glob("*.geojson"):
+        old.unlink()
     files = sorted(RECORDINGS.glob("*.fltrec"))
     print(f"Found {len(files)} recording(s)")
 
     flights = []
     for path in files:
         try:
-            detail, track = parse_recording(path, airports)
+            detail = parse_recording(path, airports)
         except Exception as e:  # never let one bad file break the build
             print(f"  !! {path.name}: {type(e).__name__}: {e}")
             continue
         (OUT_FLIGHTS / f"{detail['id']}.json").write_text(
-            json.dumps(detail, ensure_ascii=False, indent=1), encoding="utf-8")
-        (OUT_FLIGHTS / f"{detail['id']}.track.geojson").write_text(
-            json.dumps(track, ensure_ascii=False), encoding="utf-8")
+            json.dumps(detail, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
         flights.append(summarize(detail))
         route = f"{detail['route']['departure'].get('icao')}→{detail['route']['arrival'].get('icao')}"
         flag = "" if detail["complete"] else "  [partial]"
