@@ -16,7 +16,76 @@
   renderStats(stats);
   renderGlobe(flights);
   setupList(flights);
+  renderAnalytics(stats && stats.analytics);
   setTimeout(hideSplash, 9000);   // safety net if the globe/data never signal ready
+
+  // ── collapsible FR24-style analytics panel ────────────────────────────
+  function renderAnalytics(a) {
+    const wrap = document.querySelector(".analytics-wrap");
+    const inner = document.getElementById("analytics-inner");
+    const toggle = document.getElementById("analytics-toggle");
+    if (!a || !inner) { if (wrap) wrap.style.display = "none"; return; }
+
+    const esc = s => String(s).replace(/[<>&]/g, c => ({ "<": "&lt;", ">": "&gt;", "&": "&amp;" }[c]));
+    const card = (title, color, dark, items, total, totalLabel) => {
+      if (!items.length) return "";
+      const max = Math.max(...items.map(i => i.count), 1);
+      const rows = items.map(i =>
+        `<div class="arow"><span class="lbl" title="${esc(i.label)}">${esc(i.label)}</span>`
+        + `<span class="track"><span class="fill" style="width:${Math.max(8, i.count / max * 100)}%;background:${color}"></span></span>`
+        + `<span class="cnt">${i.count}</span></div>`).join("");
+      return `<div class="acard"><h4 style="background:${color};color:${dark ? "#fff" : "#07131e"}">${title}</h4>`
+        + `<ul>${rows}</ul><div class="total"><b>${total}</b> ${totalLabel}</div></div>`;
+    };
+
+    inner.innerHTML =
+      `<div class="analytics-cards">`
+      + card("Top airports", "#8bc34a", false, a.top_airports, a.total_airports, "airports")
+      + card("Top airlines", "#ffc107", false, a.top_airlines, a.total_airlines, "airlines")
+      + card("Top aircraft", "#ef5350", false, a.top_aircraft, a.total_aircraft, "aircraft")
+      + card("Top routes", "#ab47bc", true, a.top_routes, a.total_routes, "routes")
+      + card("Top countries", "#26a69a", true, a.top_countries, a.total_countries, "countries")
+      + `</div>`
+      + `<div class="analytics-charts">`
+      + `<div class="chart-box"><h4>Flights per year</h4><canvas id="ch-year" height="150"></canvas></div>`
+      + `<div class="chart-box"><h4>Flights per month</h4><canvas id="ch-month" height="150"></canvas></div>`
+      + `<div class="chart-box"><h4>Flights per weekday</h4><canvas id="ch-weekday" height="150"></canvas></div>`
+      + `</div>`;
+
+    let charted = false;
+    toggle.addEventListener("click", () => {
+      const open = document.getElementById("analytics").classList.toggle("open");
+      toggle.setAttribute("aria-expanded", open ? "true" : "false");
+      if (open && !charted) { charted = true; setTimeout(() => drawAnalyticsCharts(a), 120); }
+    });
+  }
+
+  function drawAnalyticsCharts(a) {
+    if (!window.Chart) return;
+    const grid = "#1f2c44", tick = "#8a99b3";
+    const axes = (xt) => ({
+      x: { ticks: { color: tick, ...(xt || {}) }, grid: { color: grid } },
+      y: { beginAtZero: true, ticks: { color: tick, precision: 0 }, grid: { color: grid } },
+    });
+    const base = { responsive: true, animation: false, plugins: { legend: { display: false } } };
+    const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    const days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+    new window.Chart(document.getElementById("ch-year"), {
+      type: "line",
+      data: { labels: a.by_year.map(x => x.label), datasets: [{ data: a.by_year.map(x => x.count), borderColor: "#36c5ff", backgroundColor: "rgba(54,197,255,.15)", fill: true, tension: .25, pointRadius: 3, pointBackgroundColor: "#36c5ff" }] },
+      options: { ...base, scales: axes() },
+    });
+    new window.Chart(document.getElementById("ch-month"), {
+      type: "bar",
+      data: { labels: months, datasets: [{ data: a.by_month_of_year.map(x => x.count), backgroundColor: "#ff8fb1", borderRadius: 3 }] },
+      options: { ...base, scales: axes({ maxRotation: 0, autoSkip: false, font: { size: 9 } }) },
+    });
+    new window.Chart(document.getElementById("ch-weekday"), {
+      type: "bar",
+      data: { labels: days, datasets: [{ data: a.by_weekday.map(x => x.count), backgroundColor: "#45e0a0", borderRadius: 3 }] },
+      options: { ...base, scales: axes({ maxRotation: 0 }) },
+    });
+  }
 
   // fade out the first-load splash (idempotent)
   function hideSplash() {

@@ -11,7 +11,7 @@
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
   <link rel="icon" type="image/png" href="assets/icon-192.png">
-  <link rel="stylesheet" href="assets/style.css?v=9">
+  <link rel="stylesheet" href="assets/style.css?v=10">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 </head>
 <body>
@@ -39,6 +39,14 @@
 
   <section class="stats" id="stats"></section>
 
+  <div class="wrap analytics-wrap">
+    <button class="analytics-toggle" id="analytics-toggle" aria-expanded="false">
+      <span>📊 飛行分析 · Flight analysis</span>
+      <span class="chev">▾</span>
+    </button>
+    <div class="analytics" id="analytics"><div class="analytics-inner" id="analytics-inner"></div></div>
+  </div>
+
   <div class="wrap">
     <div class="list-head">
       <h2>Flights</h2>
@@ -61,7 +69,8 @@
 
   <script src="https://unpkg.com/globe.gl@2.34.4/dist/globe.gl.min.js"></script>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <script src="assets/app.js?v=9"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <script src="assets/app.js?v=10"></script>
   <script>if("serviceWorker" in navigator){addEventListener("load",function(){navigator.serviceWorker.register("sw.js").catch(function(){})})}</script>
 </body>
 </html>

@@ -9,6 +9,8 @@
   "flight_no": null,
   "departure": "RCFN",
   "arrival": "RCGI",
+  "dep_country": "TW",
+  "arr_country": "TW",
   "dep_pos": [
    121.10179,
    22.75486
@@ -35,6 +37,8 @@
   "flight_no": "IT231",
   "departure": "RJNA",
   "arrival": "RJOO",
+  "dep_country": "JP",
+  "arr_country": "JP",
   "dep_pos": [
    136.92409,
    35.25576
@@ -61,6 +65,8 @@
   "flight_no": "TEMP",
   "departure": "RCTP",
   "arrival": "RCKH",
+  "dep_country": "TW",
+  "arr_country": "TW",
   "dep_pos": [
    121.233,
    25.0777
@@ -87,6 +93,8 @@
   "flight_no": null,
   "departure": "UNKN",
   "arrival": "RCFN",
+  "dep_country": null,
+  "arr_country": "TW",
   "dep_pos": [
    121.06072,
    22.70746
@@ -113,6 +121,8 @@
   "flight_no": null,
   "departure": "RCFN",
   "arrival": "RCFN",
+  "dep_country": "TW",
+  "arr_country": "TW",
   "dep_pos": [
    121.10179,
    22.75486
@@ -139,6 +149,8 @@
   "flight_no": "1123",
   "departure": "RCTP",
   "arrival": "RCSS",
+  "dep_country": "TW",
+  "arr_country": "TW",
   "dep_pos": [
    121.233,
    25.0777
@@ -165,6 +177,8 @@
   "flight_no": "BR911",
   "departure": "UNKN",
   "arrival": "RCSS",
+  "dep_country": null,
+  "arr_country": "TW",
   "dep_pos": [
    121.45923,
    25.073
@@ -191,6 +205,8 @@
   "flight_no": "IT231",
   "departure": "RCTP",
   "arrival": "RCSS",
+  "dep_country": "TW",
+  "arr_country": "TW",
   "dep_pos": [
    121.233,
    25.0777
@@ -217,6 +233,8 @@
   "flight_no": "1123",
   "departure": "RCTP",
   "arrival": "RCSS",
+  "dep_country": "TW",
+  "arr_country": "TW",
   "dep_pos": [
    121.233,
    25.0777
@@ -243,6 +261,8 @@
   "flight_no": "BR911",
   "departure": "RCTP",
   "arrival": "RCSS",
+  "dep_country": "TW",
+  "arr_country": "TW",
   "dep_pos": [
    121.233,
    25.0777
@@ -269,6 +289,8 @@
   "flight_no": "1123",
   "departure": "RCTP",
   "arrival": "RCSS",
+  "dep_country": "TW",
+  "arr_country": "TW",
   "dep_pos": [
    121.233,
    25.0777
@@ -295,6 +317,8 @@
   "flight_no": "1123",
   "departure": "RCTP",
   "arrival": "RCSS",
+  "dep_country": "TW",
+  "arr_country": "TW",
   "dep_pos": [
    121.233,
    25.0777
@@ -321,6 +345,8 @@
   "flight_no": "1123",
   "departure": "RCTP",
   "arrival": "RCSS",
+  "dep_country": "TW",
+  "arr_country": "TW",
   "dep_pos": [
    121.233,
    25.0777
@@ -347,6 +373,8 @@
   "flight_no": "1123",
   "departure": "RCTP",
   "arrival": "RCSS",
+  "dep_country": "TW",
+  "arr_country": "TW",
   "dep_pos": [
    121.233,
    25.0777
@@ -373,6 +401,8 @@
   "flight_no": "1123",
   "departure": "RCTP",
   "arrival": "RCSS",
+  "dep_country": "TW",
+  "arr_country": "TW",
   "dep_pos": [
    121.233,
    25.0777
@@ -399,6 +429,8 @@
   "flight_no": "1123",
   "departure": "RCTP",
   "arrival": "UNKN",
+  "dep_country": "TW",
+  "arr_country": null,
   "dep_pos": [
    121.233,
    25.0777
@@ -425,6 +457,8 @@
   "flight_no": "1123",
   "departure": "RCTP",
   "arrival": "RCSS",
+  "dep_country": "TW",
+  "arr_country": "TW",
   "dep_pos": [
    121.233,
    25.0777
@@ -451,6 +485,8 @@
   "flight_no": "1123",
   "departure": "RCTP",
   "arrival": "RCSS",
+  "dep_country": "TW",
+  "arr_country": "TW",
   "dep_pos": [
    121.233,
    25.0777
@@ -477,6 +513,8 @@
   "flight_no": "1123",
   "departure": "RCTP",
   "arrival": "RCSS",
+  "dep_country": "TW",
+  "arr_country": "TW",
   "dep_pos": [
    121.233,
    25.0777
@@ -503,6 +541,8 @@
   "flight_no": "1123",
   "departure": "UNKN",
   "arrival": "RCSS",
+  "dep_country": null,
+  "arr_country": "TW",
   "dep_pos": [
    121.36346,
    25.07615
@@ -529,6 +569,8 @@
   "flight_no": "1123",
   "departure": "UNKN",
   "arrival": "RJTT",
+  "dep_country": null,
+  "arr_country": "JP",
   "dep_pos": [
    139.66973,
    35.69978
@@ -555,6 +597,8 @@
   "flight_no": "1123",
   "departure": "UNKN",
   "arrival": "RJTT",
+  "dep_country": null,
+  "arr_country": "JP",
   "dep_pos": [
    139.66684,
    35.70376
@@ -581,6 +625,8 @@
   "flight_no": "1123",
   "departure": "UNKN",
   "arrival": "RJTT",
+  "dep_country": null,
+  "arr_country": "JP",
   "dep_pos": [
    139.66685,
    35.70375
@@ -607,6 +653,8 @@
   "flight_no": "1123",
   "departure": "RJFF",
   "arrival": "UNKN",
+  "dep_country": "JP",
+  "arr_country": null,
   "dep_pos": [
    130.451,
    33.5859
@@ -633,6 +681,8 @@
   "flight_no": "1123",
   "departure": "UNKN",
   "arrival": "RJFF",
+  "dep_country": null,
+  "arr_country": "JP",
   "dep_pos": [
    130.34436,
    33.74111
@@ -659,6 +709,8 @@
   "flight_no": "1123",
   "departure": "RCSS",
   "arrival": "RJTT",
+  "dep_country": "TW",
+  "arr_country": "JP",
   "dep_pos": [
    121.55282,
    25.06724
@@ -685,6 +737,8 @@
   "flight_no": "1123",
   "departure": "UNKN",
   "arrival": "RKPK",
+  "dep_country": null,
+  "arr_country": "KR",
   "dep_pos": [
    128.96004,
    35.00001
@@ -711,6 +765,8 @@
   "flight_no": "1123",
   "departure": "RCSS",
   "arrival": "RJTT",
+  "dep_country": "TW",
+  "arr_country": "JP",
   "dep_pos": [
    121.55282,
    25.06724
@@ -737,6 +793,8 @@
   "flight_no": "1123",
   "departure": "RCQC",
   "arrival": "RCKH",
+  "dep_country": "TW",
+  "arr_country": "TW",
   "dep_pos": [
    119.628,
    23.5687
@@ -763,6 +821,8 @@
   "flight_no": "1123",
   "departure": "RCQC",
   "arrival": "RCKH",
+  "dep_country": "TW",
+  "arr_country": "TW",
   "dep_pos": [
    119.628,
    23.5687
@@ -789,6 +849,8 @@
   "flight_no": "1123",
   "departure": "RCQC",
   "arrival": "RCKH",
+  "dep_country": "TW",
+  "arr_country": "TW",
   "dep_pos": [
    119.628,
    23.5687
@@ -815,6 +877,8 @@
   "flight_no": "TEMP",
   "departure": "VMMC",
   "arrival": "RJAA",
+  "dep_country": "MO",
+  "arr_country": "JP",
   "dep_pos": [
    113.592,
    22.1496
@@ -841,6 +905,8 @@
   "flight_no": "TEMP",
   "departure": "UNKN",
   "arrival": "RJAA",
+  "dep_country": null,
+  "arr_country": "JP",
   "dep_pos": [
    113.58476,
    22.16316
@@ -867,6 +933,8 @@
   "flight_no": "1123",
   "departure": "RJTT",
   "arrival": "RJTT",
+  "dep_country": "JP",
+  "arr_country": "JP",
   "dep_pos": [
    139.78696,
    35.54968
@@ -893,6 +961,8 @@
   "flight_no": "TEMP",
   "departure": "UNKN",
   "arrival": "KPHX",
+  "dep_country": null,
+  "arr_country": "US",
   "dep_pos": [
    -122.68076,
    37.15603
@@ -919,6 +989,8 @@
   "flight_no": null,
   "departure": "RCTP",
   "arrival": "RJBE",
+  "dep_country": "TW",
+  "arr_country": "JP",
   "dep_pos": [
    121.233,
    25.0777
@@ -945,6 +1017,8 @@
   "flight_no": null,
   "departure": "RJBE",
   "arrival": "RJOO",
+  "dep_country": "JP",
+  "arr_country": "JP",
   "dep_pos": [
    135.224,
    34.6328
@@ -971,6 +1045,8 @@
   "flight_no": "IT231",
   "departure": "WIDD",
   "arrival": "WSSS",
+  "dep_country": "ID",
+  "arr_country": "SG",
   "dep_pos": [
    104.119,
    1.12103
@@ -997,6 +1073,8 @@
   "flight_no": "1021",
   "departure": "RCSS",
   "arrival": "RCSS",
+  "dep_country": "TW",
+  "arr_country": "TW",
   "dep_pos": [
    121.55282,
    25.06724
@@ -1023,6 +1101,8 @@
   "flight_no": "1021",
   "departure": "RCTP",
   "arrival": "RCSS",
+  "dep_country": "TW",
+  "arr_country": "TW",
   "dep_pos": [
    121.233,
    25.0777
@@ -1049,6 +1129,8 @@
   "flight_no": "1123",
   "departure": "UNKN",
   "arrival": "VHSS",
+  "dep_country": null,
+  "arr_country": "HK",
   "dep_pos": [
    114.06115,
    22.32004
@@ -1075,6 +1157,8 @@
   "flight_no": "IT231",
   "departure": "UNKN",
   "arrival": "VMMC",
+  "dep_country": null,
+  "arr_country": "MO",
   "dep_pos": [
    113.61187,
    22.09303
@@ -1101,6 +1185,8 @@
   "flight_no": "IT231",
   "departure": "UNKN",
   "arrival": "RCSS",
+  "dep_country": null,
+  "arr_country": "TW",
   "dep_pos": [
    121.40117,
    25.08052
@@ -1127,6 +1213,8 @@
   "flight_no": "IT231",
   "departure": "RCYU",
   "arrival": "RCSS",
+  "dep_country": "TW",
+  "arr_country": "TW",
   "dep_pos": [
    121.61799,
    24.02316
@@ -1153,6 +1241,8 @@
   "flight_no": "IT231",
   "departure": "RCSS",
   "arrival": "RCQC",
+  "dep_country": "TW",
+  "arr_country": "TW",
   "dep_pos": [
    121.55282,
    25.06724
@@ -1179,6 +1269,8 @@
   "flight_no": "255",
   "departure": "RJGG",
   "arrival": "RJBE",
+  "dep_country": "JP",
+  "arr_country": "JP",
   "dep_pos": [
    136.80499,
    34.8584
@@ -1205,6 +1297,8 @@
   "flight_no": null,
   "departure": "RCFN",
   "arrival": "RCFN",
+  "dep_country": "TW",
+  "arr_country": "TW",
   "dep_pos": [
    121.10179,
    22.75486
@@ -1231,6 +1325,8 @@
   "flight_no": null,
   "departure": "RCFN",
   "arrival": "RCQS",
+  "dep_country": "TW",
+  "arr_country": "TW",
   "dep_pos": [
    121.10179,
    22.75486

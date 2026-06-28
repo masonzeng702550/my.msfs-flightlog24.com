@@ -336,6 +336,8 @@ def summarize(detail):
         "flight_no": detail["aircraft"]["flight_no"],
         "departure": dep.get("icao", "UNKN"),
         "arrival": arr.get("icao", "UNKN"),
+        "dep_country": dep.get("country"),
+        "arr_country": arr.get("country"),
         "dep_pos": [dep.get("lon"), dep.get("lat")] if dep.get("lat") else detail["endpoints"]["start"],
         "arr_pos": [arr.get("lon"), arr.get("lat")] if arr.get("lat") else detail["endpoints"]["end"],
         "distance_nm": detail["distance"]["track_nm"],
@@ -391,6 +393,62 @@ def build_stats(flights):
                         sorted(by_ac.items(), key=lambda kv: -kv[1]["flights"])],
         "airports_visited": sorted(airports),
         "by_month": [{"month": k, "flights": v} for k, v in sorted(by_month.items())],
+        "analytics": build_analytics(flights),
+    }
+
+
+def build_analytics(flights):
+    """FR24-style breakdowns for the collapsible analytics panel."""
+    from collections import Counter
+    import datetime
+
+    airports, airlines, aircraft, routes, countries = (Counter() for _ in range(5))
+    nm_by_airport, nm_by_route = Counter(), Counter()
+    by_year, by_month_of_year, by_weekday = Counter(), Counter(), Counter()
+
+    for f in flights:
+        dep, arr = f["departure"], f["arrival"]
+        nm = f["distance_nm"]
+        for code in (dep, arr):
+            if code != "UNKN":
+                airports[code] += 1
+                nm_by_airport[code] += nm
+        if f.get("airline"):
+            airlines[f["airline"]] += 1
+        model = f["model"] or f["aircraft"]
+        if model and model != "Unknown aircraft":
+            aircraft[model] += 1
+        if dep != "UNKN" and arr != "UNKN":
+            routes[f"{dep}–{arr}"] += 1
+            nm_by_route[f"{dep}–{arr}"] += nm
+        for c in (f.get("dep_country"), f.get("arr_country")):
+            if c:
+                countries[c] += 1
+        d = f.get("date")
+        if d:
+            by_year[d[:4]] += 1
+            by_month_of_year[int(d[5:7])] += 1
+            try:
+                by_weekday[datetime.date(int(d[:4]), int(d[5:7]), int(d[8:10])).weekday()] += 1
+            except (ValueError, TypeError):
+                pass
+
+    def top(counter, n=5):
+        return [{"label": k, "count": v} for k, v in counter.most_common(n)]
+
+    years = sorted(by_year)
+    year_span = (int(years[-1]) - int(years[0]) + 1) if years else 0
+
+    return {
+        "top_airports": top(airports), "total_airports": len(airports),
+        "top_airlines": top(airlines), "total_airlines": len(airlines),
+        "top_aircraft": top(aircraft), "total_aircraft": len(aircraft),
+        "top_routes": top(routes), "total_routes": len(routes),
+        "top_countries": top(countries), "total_countries": len(countries),
+        "by_year": [{"label": y, "count": by_year[y]} for y in years],
+        "by_month_of_year": [{"label": m, "count": by_month_of_year.get(m, 0)} for m in range(1, 13)],
+        "by_weekday": [{"label": w, "count": by_weekday.get(w, 0)} for w in range(7)],
+        "year_span": year_span,
     }
 
 
