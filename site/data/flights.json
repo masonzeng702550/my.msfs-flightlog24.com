@@ -1,5 +1,145 @@
 [
  {
+  "id": "2026-06-28-RCTP-RJAA-35bf39",
+  "date": "2026-06-28",
+  "time_local": "23:48",
+  "aircraft": "Boeing 777-300ER EVA Air 8K",
+  "model": "B773",
+  "airline": "EVA Air",
+  "flight_no": "TEMP",
+  "departure": "RCTP",
+  "arrival": "RJAA",
+  "dep_country": "TW",
+  "arr_country": "JP",
+  "dep_pos": [
+   121.233,
+   25.0777
+  ],
+  "arr_pos": [
+   140.38871,
+   35.76858
+  ],
+  "distance_nm": 1215.7,
+  "cruise_ft": 39000,
+  "block_min": 178.0,
+  "air_min": 150.2,
+  "complete": true,
+  "title": null,
+  "tags": []
+ },
+ {
+  "id": "2026-06-28-ROAH-UNKN-d6337e",
+  "date": "2026-06-28",
+  "time_local": "15:32",
+  "aircraft": "Boeing 777-300ER EVA Air 8K",
+  "model": "B773",
+  "airline": "EVA Air",
+  "flight_no": "TEMP",
+  "departure": "ROAH",
+  "arrival": "UNKN",
+  "dep_country": "JP",
+  "arr_country": null,
+  "dep_pos": [
+   127.6398,
+   26.19244
+  ],
+  "arr_pos": [
+   127.65675,
+   26.13865
+  ],
+  "distance_nm": 5.0,
+  "cruise_ft": 0,
+  "block_min": 13.3,
+  "air_min": null,
+  "complete": false,
+  "title": null,
+  "tags": []
+ },
+ {
+  "id": "2026-06-28-UNKN-ROAH-a3f6ad",
+  "date": "2026-06-28",
+  "time_local": "15:12",
+  "aircraft": "Boeing 787-10 Asobo",
+  "model": "B78X",
+  "airline": null,
+  "flight_no": "1123",
+  "departure": "UNKN",
+  "arrival": "ROAH",
+  "dep_country": null,
+  "arr_country": "JP",
+  "dep_pos": [
+   127.65422,
+   26.01854
+  ],
+  "arr_pos": [
+   127.6398,
+   26.19244
+  ],
+  "distance_nm": 11.4,
+  "cruise_ft": 1000,
+  "block_min": 6.3,
+  "air_min": 0.0,
+  "complete": false,
+  "title": null,
+  "tags": []
+ },
+ {
+  "id": "2026-06-28-UNKN-ROAH-6b3c8d",
+  "date": "2026-06-28",
+  "time_local": "14:59",
+  "aircraft": "Boeing 777-300ER China Airlines B-18003",
+  "model": "B773",
+  "airline": "China Airlines",
+  "flight_no": "TEMP",
+  "departure": "UNKN",
+  "arrival": "ROAH",
+  "dep_country": null,
+  "arr_country": "JP",
+  "dep_pos": [
+   127.65429,
+   26.01641
+  ],
+  "arr_pos": [
+   127.6398,
+   26.19244
+  ],
+  "distance_nm": 11.5,
+  "cruise_ft": 0,
+  "block_min": 7.3,
+  "air_min": null,
+  "complete": false,
+  "title": null,
+  "tags": []
+ },
+ {
+  "id": "2026-06-27-RCTP-RCSS-37eb0b",
+  "date": "2026-06-27",
+  "time_local": "22:03",
+  "aircraft": "Airbus A320 Neo Asobo",
+  "model": "A20N",
+  "airline": null,
+  "flight_no": "1123",
+  "departure": "RCTP",
+  "arrival": "RCSS",
+  "dep_country": "TW",
+  "arr_country": "TW",
+  "dep_pos": [
+   121.233,
+   25.0777
+  ],
+  "arr_pos": [
+   121.55282,
+   25.06724
+  ],
+  "distance_nm": 19.9,
+  "cruise_ft": 1000,
+  "block_min": 13.7,
+  "air_min": 6.2,
+  "complete": true,
+  "title": null,
+  "tags": []
+ },
+ {
   "id": "2026-06-27-RCFN-RCGI-95237d",
   "date": "2026-06-27",
   "time_local": "14:23",
