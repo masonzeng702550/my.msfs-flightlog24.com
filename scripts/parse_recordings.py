@@ -181,6 +181,16 @@ def landing_rating(fpm):
     return "hard"
 
 
+WIDEBODY_RE = re.compile(r"^(A30|A310|A33|A34|A35|A38|B74|B76|B77|B78|MD11|DC10|IL9)", re.I)
+
+
+def is_widebody(model, title):
+    if WIDEBODY_RE.match((model or "").strip()):
+        return True
+    t = (title or "").upper()
+    return bool(re.search(r"747|767|777|787|A300|A310|A330|A340|A350|A380|MD-?11|DC-?10", t))
+
+
 def parse_recording(path, airports):
     with zipfile.ZipFile(path) as z:
         data = json.loads(z.read("data.json"))
@@ -260,6 +270,9 @@ def parse_recording(path, airports):
             v = pos[j].get("TouchdownNormalVelocity", 0) or 0
             if abs(v) > abs(fpm):
                 fpm = v
+        # wide-body airliners report touchdown rate ~2x high in this data — halve it
+        if is_widebody(aircraft["model"], aircraft["title"]):
+            fpm *= 0.5
         touchdown = {"fpm": round(fpm, 0), "rating": landing_rating(fpm)}
 
     # ids
