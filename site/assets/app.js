@@ -1,5 +1,6 @@
 // Home page: interactive globe + stats header + flight list.
 (async function () {
+  const T = k => (window.I18N ? window.I18N.t(k) : k);
   // top-down plane silhouettes (point up = north), colour-coded by category.
   // Declared first so the synchronous flat-map fallback can use it safely.
   const PLANE_ICONS = {
@@ -40,16 +41,16 @@
 
     inner.innerHTML =
       `<div class="analytics-cards">`
-      + card("Top airports", "#8bc34a", false, a.top_airports, a.total_airports, "airports")
-      + card("Top airlines", "#ffc107", false, a.top_airlines, a.total_airlines, "airlines")
-      + card("Top aircraft", "#ef5350", false, a.top_aircraft, a.total_aircraft, "aircraft")
-      + card("Top routes", "#ab47bc", true, a.top_routes, a.total_routes, "routes")
-      + card("Top countries", "#26a69a", true, a.top_countries, a.total_countries, "countries")
+      + card(T("top_airports"), "#8bc34a", false, a.top_airports, a.total_airports, T("u_airports"))
+      + card(T("top_airlines"), "#ffc107", false, a.top_airlines, a.total_airlines, T("u_airlines"))
+      + card(T("top_aircraft"), "#ef5350", false, a.top_aircraft, a.total_aircraft, T("u_aircraft"))
+      + card(T("top_routes"), "#ab47bc", true, a.top_routes, a.total_routes, T("u_routes"))
+      + card(T("top_countries"), "#26a69a", true, a.top_countries, a.total_countries, T("u_countries"))
       + `</div>`
       + `<div class="analytics-charts">`
-      + `<div class="chart-box"><h4>Flights per year</h4><canvas id="ch-year" height="150"></canvas></div>`
-      + `<div class="chart-box"><h4>Flights per month</h4><canvas id="ch-month" height="150"></canvas></div>`
-      + `<div class="chart-box"><h4>Flights per weekday</h4><canvas id="ch-weekday" height="150"></canvas></div>`
+      + `<div class="chart-box"><h4>${T("per_year")}</h4><canvas id="ch-year" height="150"></canvas></div>`
+      + `<div class="chart-box"><h4>${T("per_month")}</h4><canvas id="ch-month" height="150"></canvas></div>`
+      + `<div class="chart-box"><h4>${T("per_weekday")}</h4><canvas id="ch-weekday" height="150"></canvas></div>`
       + `</div>`;
 
     let charted = false;
@@ -100,13 +101,13 @@
     const el = document.getElementById("stats");
     if (!s) { el.style.display = "none"; return; }
     const cells = [
-      { big: s.flights_total, unit: "flights",
-        sub: `${s.flights_complete} complete · ${s.flights_partial} partial` },
+      { big: s.flights_total, unit: T("flights"),
+        sub: `${s.flights_complete} ${T("complete")} · ${s.flights_partial} ${T("partial")}` },
       { big: fmt(s.distance_total_miles), unit: "miles",
         sub: `${fmt(s.distance_total_km)} km · ${fmt(s.distance_total_nm)} NM` },
       { big: s.block_time_human, unit: "",
-        sub: `${s.around_earth}× around Earth` },
-      { big: s.airports_visited.length, unit: "airports",
+        sub: `${s.around_earth}× ${T("around_earth")}` },
+      { big: s.airports_visited.length, unit: T("airports"),
         sub: s.airports_visited.join(" · ") || "—" },
     ];
     el.innerHTML = cells.map(c => `
@@ -447,10 +448,10 @@
 
   function renderList(rows) {
     const el = document.getElementById("list");
-    if (!rows.length) { el.innerHTML = `<div class="empty">沒有符合的飛行紀錄</div>`; return; }
+    if (!rows.length) { el.innerHTML = `<div class="empty">${T("empty")}</div>`; return; }
     el.innerHTML = rows.map(f => {
       const tags = (f.tags || []).map(t => `<span class="badge tag">${t}</span>`).join("");
-      const partial = !f.complete ? `<span class="badge">partial</span>` : "";
+      const partial = !f.complete ? `<span class="badge">${T("partial")}</span>` : "";
       const acLine = [f.aircraft, f.flight_no && f.flight_no !== "TEMP" ? f.flight_no : null]
         .filter(Boolean).join(" · ");
       return `<a class="flight ${f.complete ? "" : "partial"}" href="flight.html?id=${f.id}">
@@ -460,8 +461,8 @@
           <div class="ac">${acLine}</div>
         </div>
         <div class="num title">${f.title ? f.title : ""}</div>
-        <div class="num alt">${f.cruise_ft.toLocaleString()}<small>cruise ft</small></div>
-        <div class="num time">${human(f.block_min)}<small>block</small></div>
+        <div class="num alt">${f.cruise_ft.toLocaleString()}<small>${T("cell_cruise")}</small></div>
+        <div class="num time">${human(f.block_min)}<small>${T("cell_block")}</small></div>
         <div class="num">${f.distance_nm}<small>NM</small></div>
       </a>`;
     }).join("");

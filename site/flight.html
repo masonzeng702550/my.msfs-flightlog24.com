@@ -11,7 +11,7 @@
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
   <link rel="icon" type="image/png" href="assets/icon-192.png">
-  <link rel="stylesheet" href="assets/style.css?v=10">
+  <link rel="stylesheet" href="assets/style.css?v=12">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 </head>
 <body>
@@ -23,21 +23,22 @@
         d="M0,-11 L2,-3 L11,3 L11,5 L2,1 L2,7 L5,9.5 L5,10.5 L0,9 L-5,10.5 L-5,9.5 L-2,7 L-2,1 L-11,5 L-11,3 L-2,-3 Z"/></svg></div>
     </div>
     <div class="splash-brand">my.msfs-flightlog<span>24</span></div>
-    <div class="splash-sub">載入航班</div>
+    <div class="splash-sub" data-i18n="splash_flight">載入航班</div>
   </div>
 
   <header class="site-header">
     <span class="brand">my.msfs-flightlog<span class="dot">24</span></span>
-    <a class="back" href="index.html">← 回到全部飛行</a>
+    <a class="back" href="index.html" data-icon="back"><span data-i18n="back_to_all">回到全部飛行</span></a>
   </header>
 
   <div class="wrap" id="detail">
-    <div class="empty">載入中…</div>
+    <div class="empty" data-i18n="loading">載入中…</div>
   </div>
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-  <script src="assets/flight.js?v=8"></script>
+  <script src="assets/i18n.js?v=1"></script>
+  <script src="assets/flight.js?v=9"></script>
   <script>if("serviceWorker" in navigator){addEventListener("load",function(){navigator.serviceWorker.register("sw.js").catch(function(){})})}</script>
 </body>
 </html>

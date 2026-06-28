@@ -1,5 +1,7 @@
 // Flight detail: track map + replay (FR24-style) + altitude/speed profile.
 (async function () {
+  const T = k => (window.I18N ? window.I18N.t(k) : k);
+  const IC = n => (window.I18N ? window.I18N.ICONS[n] : "");
   const id = new URLSearchParams(location.search).get("id");
   const root = document.getElementById("detail");
   const hideSplash = () => {
@@ -8,13 +10,13 @@
     s.classList.add("hidden"); setTimeout(() => s.remove(), 700);
   };
   setTimeout(hideSplash, 8000);
-  if (!id) { root.innerHTML = `<div class="empty">缺少飛行 ID</div>`; hideSplash(); return; }
+  if (!id) { root.innerHTML = `<div class="empty">${T("missing_id")}</div>`; hideSplash(); return; }
 
   let f;
   try {
     f = await fetch(`data/flights/${id}.json`, { cache: "no-cache" }).then(r => { if (!r.ok) throw 0; return r.json(); });
   } catch {
-    root.innerHTML = `<div class="empty">找不到這趟飛行</div>`;
+    root.innerHTML = `<div class="empty">${T("not_found")}</div>`;
     hideSplash();
     return;
   }
@@ -26,7 +28,7 @@
   const duration = f.duration_sec || (S.length ? S[S.length - 1][0] : 0);
   const sourceURL = rawSourceURL(f.source_file);
 
-  const partial = !f.complete ? `<span class="badge">partial</span>` : "";
+  const partial = !f.complete ? `<span class="badge">${T("partial")}</span>` : "";
   const acLine = [ac.title, ac.flight_no && ac.flight_no !== "TEMP" ? ac.flight_no : null,
                   ac.registration].filter(Boolean).join(" · ");
 
@@ -42,7 +44,7 @@
     <div id="map"></div>
 
     <div class="replay">
-      <button class="play" id="rp-play" aria-label="play">▶</button>
+      <button class="play" id="rp-play" aria-label="play">${IC("play")}</button>
       <input class="seek" id="rp-seek" type="range" min="0" max="${duration}" step="0.1" value="0">
       <span class="time" id="rp-time">00:00 / ${mmss(duration)}</span>
       <select id="rp-speed">
@@ -59,32 +61,32 @@
     </div>
 
     <div class="kpis">
-      <div class="kpi"><div class="v">${f.distance.track_nm}<small> NM</small></div><div class="k">track distance</div></div>
-      <div class="kpi"><div class="v">${f.altitude.cruise_ft.toLocaleString()}<small> ft</small></div><div class="k">cruise altitude</div></div>
-      <div class="kpi"><div class="v">${human(f.times.block_min)}</div><div class="k">block time</div></div>
-      <div class="kpi"><div class="v">${f.times.air_min != null ? human(f.times.air_min) : "—"}</div><div class="k">air time</div></div>
+      <div class="kpi"><div class="v">${f.distance.track_nm}<small> NM</small></div><div class="k">${T("k_track")}</div></div>
+      <div class="kpi"><div class="v">${f.altitude.cruise_ft.toLocaleString()}<small> ft</small></div><div class="k">${T("k_cruise")}</div></div>
+      <div class="kpi"><div class="v">${human(f.times.block_min)}</div><div class="k">${T("k_block")}</div></div>
+      <div class="kpi"><div class="v">${f.times.air_min != null ? human(f.times.air_min) : "—"}</div><div class="k">${T("k_air")}</div></div>
     </div>
 
     <div class="chart-card">
-      <h3>Altitude &amp; speed profile</h3>
+      <h3>${T("profile_title")}</h3>
       <div class="chart-wrap"><canvas id="profile" height="110"></canvas><div class="chart-cursor" id="rp-cursor"></div></div>
     </div>
 
     <div class="meta-card">
-      <h3>Flight data</h3>
+      <h3>${T("flight_data")}</h3>
       <div class="meta-grid">
-        ${row("Departure", dep.name ? `${dep.icao} · ${dep.name}` : dep.icao)}
-        ${row("Arrival", arr.name ? `${arr.icao} · ${arr.name}` : arr.icao)}
-        ${row("Aircraft", `${ac.title}${ac.model ? ` (${ac.model})` : ""}`)}
-        ${row("Airline", ac.airline || "—")}
-        ${row("Max altitude", `${f.altitude.max_ft.toLocaleString()} ft`)}
-        ${row("Max ground speed", f.stats.max_ground_speed_kt != null ? `${f.stats.max_ground_speed_kt} kt` : "—")}
-        ${row("Direct distance", f.distance.direct_nm != null ? `${f.distance.direct_nm} NM` : "—")}
-        ${row("Landing", f.landing ? `${Math.abs(f.landing.fpm)} fpm · ${f.landing.rating}` : "—")}
-        ${row("Frames recorded", f.frames.toLocaleString())}
-        ${row("Recording", `<a href="${sourceURL}" download>${f.source_file.split("/").pop()} ⭳</a>`)}
+        ${row(T("l_departure"), dep.name ? `${dep.icao} · ${dep.name}` : dep.icao)}
+        ${row(T("l_arrival"), arr.name ? `${arr.icao} · ${arr.name}` : arr.icao)}
+        ${row(T("l_aircraft"), `${ac.title}${ac.model ? ` (${ac.model})` : ""}`)}
+        ${row(T("l_airline"), ac.airline || "—")}
+        ${row(T("l_maxalt"), `${f.altitude.max_ft.toLocaleString()} ft`)}
+        ${row(T("l_maxgs"), f.stats.max_ground_speed_kt != null ? `${f.stats.max_ground_speed_kt} kt` : "—")}
+        ${row(T("l_direct"), f.distance.direct_nm != null ? `${f.distance.direct_nm} NM` : "—")}
+        ${row(T("l_landing"), f.landing ? `${Math.abs(f.landing.fpm)} fpm · ${T("rate_" + f.landing.rating)}` : "—")}
+        ${row(T("l_frames"), f.frames.toLocaleString())}
+        ${row(T("l_recording"), `<a href="${sourceURL}" download>${f.source_file.split("/").pop()} ${IC("download")}</a>`)}
       </div>
-      ${f.notes ? `<div class="notes">📝 ${f.notes}</div>` : ""}
+      ${f.notes ? `<div class="notes">${IC("note")} ${f.notes}</div>` : ""}
     </div>`;
 
   const map = buildMap();
@@ -252,10 +254,10 @@
     }
     function play() {
       if (t >= duration) t = 0;
-      playing = true; last = null; btn.textContent = "⏸";
+      playing = true; last = null; btn.innerHTML = IC("pause");
       requestAnimationFrame(tick);
     }
-    function pause() { playing = false; btn.textContent = "▶"; }
+    function pause() { playing = false; btn.innerHTML = IC("play"); }
 
     btn.addEventListener("click", () => playing ? pause() : play());
     seek.addEventListener("input", () => { t = +seek.value; last = null; render(t); });

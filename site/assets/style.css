@@ -23,6 +23,17 @@ html, body {
 a { color: var(--accent); text-decoration: none; }
 a:hover { text-decoration: underline; }
 
+/* consistent inline-SVG icons */
+.icon { width: 1.05em; height: 1.05em; display: inline-block; vertical-align: -.16em; flex: none; }
+
+/* language switcher */
+.lang-select {
+  margin-left: auto; align-self: center;
+  background: var(--panel-2); color: var(--text);
+  border: 1px solid var(--line); border-radius: 7px;
+  padding: 5px 8px; font-size: 13px; cursor: pointer;
+}
+
 /* PWA / first-load splash */
 #splash {
   position: fixed; inset: 0; z-index: 9999;
@@ -106,6 +117,7 @@ a:hover { text-decoration: underline; }
   position: absolute;
   top: 14px; left: 14px;
   z-index: 600;
+  display: inline-flex; align-items: center; gap: 6px;
   background: rgba(13,19,32,.92);
   color: var(--text);
   border: 1px solid var(--line);
@@ -114,14 +126,17 @@ a:hover { text-decoration: underline; }
   font-size: 13px;
   cursor: pointer;
 }
+.to-globe[hidden] { display: none; }
 .to-globe:hover { border-color: var(--accent); }
-#globe .globe-hint {
+.globe-hint {
   position: absolute;
   left: 16px; bottom: 12px;
+  z-index: 5;
   color: var(--muted);
   font-size: 12px;
   pointer-events: none;
 }
+#stage.map-mode .globe-hint { display: none; }
 .globe-tooltip {
   font-family: inherit;
   font-size: 12px;
@@ -163,7 +178,8 @@ a:hover { text-decoration: underline; }
   padding: 14px 18px; color: var(--text); font-size: 15px; font-weight: 600; cursor: pointer;
 }
 .analytics-toggle:hover { border-color: var(--accent); }
-.analytics-toggle .chev { color: var(--muted); transition: transform .3s ease; }
+.analytics-toggle .atitle { display: inline-flex; align-items: center; gap: 9px; }
+.analytics-toggle .chev { color: var(--muted); transition: transform .3s ease; display: inline-flex; }
 .analytics-toggle[aria-expanded="true"] .chev { transform: rotate(180deg); }
 .analytics { display: grid; grid-template-rows: 0fr; transition: grid-template-rows .45s ease; }
 .analytics.open { grid-template-rows: 1fr; }
@@ -234,7 +250,7 @@ a:hover { text-decoration: underline; }
 .empty { color: var(--muted); padding: 40px; text-align: center; }
 
 /* ── flight detail ─────────────────────────────────────────────────── */
-.back { color: var(--muted); font-size: 13px; }
+.back { color: var(--muted); font-size: 13px; display: inline-flex; align-items: center; gap: 5px; }
 .detail-head { display: flex; align-items: flex-end; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin: 14px 0 18px; }
 .detail-head .route-big { font-size: 30px; font-weight: 700; }
 .detail-head .route-big .arrow { color: var(--accent); margin: 0 10px; }
