@@ -1,5 +1,229 @@
 [
  {
+  "id": "2026-07-07-VHHH-VMMC-a887a4",
+  "date": "2026-07-07",
+  "time_local": "18:03",
+  "aircraft": "Boeing 787-10 ANA",
+  "model": "B78X",
+  "airline": "NH",
+  "flight_no": "919",
+  "departure": "VHHH",
+  "arrival": "VMMC",
+  "dep_country": "HK",
+  "arr_country": "MO",
+  "dep_pos": [
+   113.91486,
+   22.31184
+  ],
+  "arr_pos": [
+   113.592,
+   22.1496
+  ],
+  "distance_nm": 64.9,
+  "cruise_ft": 3000,
+  "block_min": 37.9,
+  "air_min": 18.4,
+  "complete": true,
+  "title": null,
+  "tags": []
+ },
+ {
+  "id": "2026-07-07-VHHH-VHSS-114db8",
+  "date": "2026-07-07",
+  "time_local": "17:22",
+  "aircraft": "Boeing 787-10 ANA",
+  "model": "B78X",
+  "airline": "NH",
+  "flight_no": "919",
+  "departure": "VHHH",
+  "arrival": "VHSS",
+  "dep_country": "HK",
+  "arr_country": "HK",
+  "dep_pos": [
+   113.91486,
+   22.31184
+  ],
+  "arr_pos": [
+   114.15237,
+   22.28887
+  ],
+  "distance_nm": 20.3,
+  "cruise_ft": 0,
+  "block_min": 12.4,
+  "air_min": 5.1,
+  "complete": true,
+  "title": null,
+  "tags": []
+ },
+ {
+  "id": "2026-07-06-VHHH-VHSS-08f01e",
+  "date": "2026-07-06",
+  "time_local": "00:42",
+  "aircraft": "Boeing 777-300ER China Airlines B-18003",
+  "model": "B773",
+  "airline": "China Airlines",
+  "flight_no": "TEMP",
+  "departure": "VHHH",
+  "arrival": "VHSS",
+  "dep_country": "HK",
+  "arr_country": "HK",
+  "dep_pos": [
+   113.91486,
+   22.31184
+  ],
+  "arr_pos": [
+   114.15237,
+   22.28887
+  ],
+  "distance_nm": 18.4,
+  "cruise_ft": 2000,
+  "block_min": 7.4,
+  "air_min": 5.0,
+  "complete": true,
+  "title": null,
+  "tags": []
+ },
+ {
+  "id": "2026-07-06-VHHH-VHSS-2518fb",
+  "date": "2026-07-06",
+  "time_local": "00:07",
+  "aircraft": "Airbus A320 Neo Tigerair Taiwan SoccerYCA",
+  "model": "A20N",
+  "airline": "Smart Cat",
+  "flight_no": "IT231",
+  "departure": "VHHH",
+  "arrival": "VHSS",
+  "dep_country": "HK",
+  "arr_country": "HK",
+  "dep_pos": [
+   113.91486,
+   22.31184
+  ],
+  "arr_pos": [
+   114.15237,
+   22.28887
+  ],
+  "distance_nm": 20.0,
+  "cruise_ft": 0,
+  "block_min": 16.9,
+  "air_min": 5.2,
+  "complete": true,
+  "title": null,
+  "tags": []
+ },
+ {
+  "id": "2026-07-03-RCTP-RCSS-3b5280",
+  "date": "2026-07-03",
+  "time_local": "15:57",
+  "aircraft": "Airbus A320 Neo Tigerair Taiwan SoccerYCA",
+  "model": "A20N",
+  "airline": "Smart Cat",
+  "flight_no": "IT231",
+  "departure": "RCTP",
+  "arrival": "RCSS",
+  "dep_country": "TW",
+  "arr_country": "TW",
+  "dep_pos": [
+   121.233,
+   25.0777
+  ],
+  "arr_pos": [
+   121.55282,
+   25.06724
+  ],
+  "distance_nm": 99.4,
+  "cruise_ft": 4000,
+  "block_min": 29.4,
+  "air_min": 26.3,
+  "complete": true,
+  "title": null,
+  "tags": []
+ },
+ {
+  "id": "2026-06-29-RCTP-RCSS-1804c8",
+  "date": "2026-06-29",
+  "time_local": "22:14",
+  "aircraft": "Boeing 777-300ER China Airlines B-18003",
+  "model": "B773",
+  "airline": "China Airlines",
+  "flight_no": "TEMP",
+  "departure": "RCTP",
+  "arrival": "RCSS",
+  "dep_country": "TW",
+  "arr_country": "TW",
+  "dep_pos": [
+   121.233,
+   25.0777
+  ],
+  "arr_pos": [
+   121.55282,
+   25.06724
+  ],
+  "distance_nm": 20.6,
+  "cruise_ft": 500,
+  "block_min": 11.5,
+  "air_min": 5.6,
+  "complete": true,
+  "title": null,
+  "tags": []
+ },
+ {
+  "id": "2026-06-29-RCFN-RCFN-d23963",
+  "date": "2026-06-29",
+  "time_local": "21:41",
+  "aircraft": "DA62 Asobo",
+  "model": "DA62",
+  "airline": null,
+  "flight_no": null,
+  "departure": "RCFN",
+  "arrival": "RCFN",
+  "dep_country": "TW",
+  "arr_country": "TW",
+  "dep_pos": [
+   121.10179,
+   22.75486
+  ],
+  "arr_pos": [
+   121.10179,
+   22.75486
+  ],
+  "distance_nm": 19.1,
+  "cruise_ft": 500,
+  "block_min": 16.8,
+  "air_min": 9.0,
+  "complete": true,
+  "title": null,
+  "tags": []
+ },
+ {
+  "id": "2026-06-29-RCTP-RJFF-87ff8d",
+  "date": "2026-06-29",
+  "time_local": "16:18",
+  "aircraft": "Boeing 777-300ER Japan Airlines JA737J",
+  "model": "B773",
+  "airline": "Japan Airlines",
+  "flight_no": "JA777",
+  "departure": "RCTP",
+  "arrival": "RJFF",
+  "dep_country": "TW",
+  "arr_country": "JP",
+  "dep_pos": [
+   121.233,
+   25.0777
+  ],
+  "arr_pos": [
+   130.451,
+   33.5859
+  ],
+  "distance_nm": 765.6,
+  "cruise_ft": 39000,
+  "block_min": 129.5,
+  "air_min": 109.5,
+  "complete": true,
+  "title": null,
+  "tags": []
+ },
+ {
   "id": "2026-06-28-RCTP-RJAA-35bf39",
   "date": "2026-06-28",
   "time_local": "23:48",
