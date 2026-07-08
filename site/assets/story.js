@@ -21,8 +21,9 @@
 
   // layout bands (y, logical) — includes a route/procedure info band and a
   // reserved safe zone for an Instagram link sticker
-  const TITLE = [0, 86], VID = [86, 496], READ = [496, 542], MAP = [542, 982],
-        INFO = [982, 1118], PROF = [1118, 1248], FOOT = [1248, 1280];
+  const TITLE = [0, 86], VID = [86, 496], READ = [496, 542], MAP = [542, 924],
+        INFO = [924, 1058], PROF = [1058, 1180], LINK = [1180, 1250], FOOT = [1250, 1280];
+  // LINK is intentionally left blank — a clean safe zone for an Instagram link sticker
 
   let flight = null, S = [], coords = [], duration = 0, groundAlt = 0;
   let mapStyle = "dark", follow = true, routeView = null, preloadKey = "";
