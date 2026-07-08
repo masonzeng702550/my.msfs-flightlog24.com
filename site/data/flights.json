@@ -1,5 +1,61 @@
 [
  {
+  "id": "2026-07-08-RCTP-ROAH-cc747c",
+  "date": "2026-07-08",
+  "time_local": "23:42",
+  "aircraft": "Boeing 777-300ER EVA Air 8K",
+  "model": "B773",
+  "airline": "EVA Air",
+  "flight_no": "TEMP",
+  "departure": "RCTP",
+  "arrival": "ROAH",
+  "dep_country": "TW",
+  "arr_country": "JP",
+  "dep_pos": [
+   121.233,
+   25.0777
+  ],
+  "arr_pos": [
+   127.6398,
+   26.19244
+  ],
+  "distance_nm": 370.6,
+  "cruise_ft": 24500,
+  "block_min": 79.0,
+  "air_min": 56.6,
+  "complete": true,
+  "title": null,
+  "tags": []
+ },
+ {
+  "id": "2026-07-08-RCQC-RCNN-604ef0",
+  "date": "2026-07-08",
+  "time_local": "19:27",
+  "aircraft": "Airbus A320 Neo Tigerair Taiwan SoccerYCA",
+  "model": "A20N",
+  "airline": "Smart Cat",
+  "flight_no": "IT231",
+  "departure": "RCQC",
+  "arrival": "RCNN",
+  "dep_country": "TW",
+  "arr_country": "TW",
+  "dep_pos": [
+   119.628,
+   23.5687
+  ],
+  "arr_pos": [
+   120.206,
+   22.9504
+  ],
+  "distance_nm": 57.9,
+  "cruise_ft": 3000,
+  "block_min": 25.4,
+  "air_min": 14.4,
+  "complete": true,
+  "title": null,
+  "tags": []
+ },
+ {
   "id": "2026-07-07-VHHH-VMMC-a887a4",
   "date": "2026-07-07",
   "time_local": "18:03",

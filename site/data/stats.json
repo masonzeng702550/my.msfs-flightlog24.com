@@ -1,20 +1,20 @@
 {
- "flights_total": 61,
- "flights_complete": 43,
+ "flights_total": 63,
+ "flights_complete": 45,
  "flights_partial": 18,
- "domestic": 35,
- "international": 8,
- "distance_total_nm": 13422.0,
- "distance_total_km": 24858.0,
- "distance_total_miles": 15446.0,
- "around_earth": 0.62,
- "block_time_total_min": 1740.0,
- "block_time_human": "29h 00m",
+ "domestic": 36,
+ "international": 9,
+ "distance_total_nm": 13851.0,
+ "distance_total_km": 25651.0,
+ "distance_total_miles": 15939.0,
+ "around_earth": 0.64,
+ "block_time_total_min": 1844.0,
+ "block_time_human": "30h 44m",
  "by_aircraft": [
   {
    "aircraft": "A20N",
-   "flights": 29,
-   "nm": 1239.9
+   "flights": 30,
+   "nm": 1297.8000000000002
   },
   {
    "aircraft": "B78X",
@@ -23,8 +23,8 @@
   },
   {
    "aircraft": "B773",
-   "flights": 10,
-   "nm": 6088.0
+   "flights": 11,
+   "nm": 6458.6
   },
   {
    "aircraft": "DA40",
@@ -57,6 +57,7 @@
   "RCFN",
   "RCGI",
   "RCKH",
+  "RCNN",
   "RCQC",
   "RCQS",
   "RCSS",
@@ -100,7 +101,7 @@
   },
   {
    "month": "2026-07",
-   "flights": 5
+   "flights": 7
   }
  ],
  "analytics": {
@@ -111,7 +112,7 @@
    },
    {
     "label": "RCTP",
-    "count": 21
+    "count": 22
    },
    {
     "label": "RCFN",
@@ -122,26 +123,26 @@
     "count": 7
    },
    {
-    "label": "VHHH",
-    "count": 4
+    "label": "RCQC",
+    "count": 5
    }
   ],
-  "total_airports": 23,
+  "total_airports": 24,
   "top_airlines": [
    {
     "label": "Smart Cat",
-    "count": 9
+    "count": 10
    },
    {
     "label": "China Airlines",
     "count": 7
    },
    {
-    "label": "NH",
-    "count": 2
+    "label": "EVA Air",
+    "count": 3
    },
    {
-    "label": "EVA Air",
+    "label": "NH",
     "count": 2
    },
    {
@@ -153,7 +154,7 @@
   "top_aircraft": [
    {
     "label": "A20N",
-    "count": 29
+    "count": 30
    },
    {
     "label": "B78X",
@@ -161,7 +162,7 @@
    },
    {
     "label": "B773",
-    "count": 10
+    "count": 11
    },
    {
     "label": "DA40",
@@ -195,15 +196,15 @@
     "count": 2
    }
   ],
-  "total_routes": 21,
+  "total_routes": 23,
   "top_countries": [
    {
     "label": "TW",
-    "count": 66
+    "count": 69
    },
    {
     "label": "JP",
-    "count": 23
+    "count": 24
    },
    {
     "label": "HK",
@@ -222,7 +223,7 @@
   "by_year": [
    {
     "label": "2026",
-    "count": 61
+    "count": 63
    }
   ],
   "by_month_of_year": [
@@ -252,7 +253,7 @@
    },
    {
     "label": 7,
-    "count": 5
+    "count": 7
    },
    {
     "label": 8,
@@ -286,7 +287,7 @@
    },
    {
     "label": 2,
-    "count": 7
+    "count": 9
    },
    {
     "label": 3,
