@@ -53,6 +53,7 @@
         <option value="16">16×</option>
         <option value="60">60×</option>
       </select>
+      <button class="follow" id="rp-follow" aria-pressed="false" title="${T("follow")}">${IC("target")}</button>
     </div>
     <div class="replay-readout">
       <span>ALT <b id="rp-alt">—</b> ft</span>
@@ -107,7 +108,7 @@
       { maxZoom: 19, attribution: "Imagery © Esri, Maxar, Earthstar Geographics" });
     dark.addTo(map);                                  // default base layer
     L.control.attribution({ prefix: false }).addTo(map);
-    L.control.layers({ "深色地圖": dark, "衛星影像": satellite }, null,
+    L.control.layers({ [T("map_dark")]: dark, [T("map_satellite")]: satellite }, null,
                      { position: "topright" }).addTo(map);
 
     if (coords.length) {
@@ -188,10 +189,23 @@
     const timeEl = document.getElementById("rp-time");
     const speedEl = document.getElementById("rp-speed");
     const cursor = document.getElementById("rp-cursor");
+    const followBtn = document.getElementById("rp-follow");
     const altEl = document.getElementById("rp-alt"), iasEl = document.getElementById("rp-ias"), hdgEl = document.getElementById("rp-hdg");
     if (!S.length) { btn.disabled = true; return; }
 
-    let t = 0, playing = false, last = null, speed = 4;
+    let t = 0, playing = false, last = null, speed = 4, follow = false;
+
+    function setFollow(on) {
+      follow = on;
+      followBtn.classList.toggle("active", on);
+      followBtn.setAttribute("aria-pressed", on ? "true" : "false");
+      if (on) {                                   // snap to the plane at a chase zoom
+        const p = interp(t);
+        map.setView([p.lat, p.lon], Math.max(map.getZoom(), 11), { animate: true });
+      }
+    }
+    followBtn.addEventListener("click", () => setFollow(!follow));
+    map.on("dragstart", () => { if (follow) setFollow(false); });   // manual pan releases follow
 
     const interp = (time) => {
       // binary search for the segment [i, i+1] containing `time`
@@ -219,6 +233,7 @@
         const svg = plane.getElement() && plane.getElement().querySelector("svg");
         if (svg) svg.style.transform = `rotate(${p.hdg}deg)`;
       }
+      if (follow) map.panTo([p.lat, p.lon], { animate: false });
       if (window.__flown) {
         const flown = coords.slice(0, p.idx + 1);
         flown.push([p.lat, p.lon]);

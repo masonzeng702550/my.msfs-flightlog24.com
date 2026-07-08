@@ -26,6 +26,7 @@
       l_maxalt: "Max altitude", l_maxgs: "Max ground speed", l_direct: "Direct distance",
       l_landing: "Landing", l_frames: "Frames recorded", l_recording: "Recording",
       rate_greaser: "greaser", rate_normal: "normal", rate_firm: "firm", rate_hard: "hard",
+      follow: "Follow aircraft", map_dark: "Dark map", map_satellite: "Satellite",
     },
     zh: {
       tagline: "Microsoft Flight Simulator · 個人飛行日誌",
@@ -50,6 +51,7 @@
       l_maxalt: "最高高度", l_maxgs: "最大地速", l_direct: "直線距離",
       l_landing: "落地", l_frames: "紀錄幀數", l_recording: "錄影檔",
       rate_greaser: "完美", rate_normal: "正常", rate_firm: "偏重", rate_hard: "重落地",
+      follow: "鎖定跟隨飛機", map_dark: "深色地圖", map_satellite: "衛星影像",
     },
     ja: {
       tagline: "Microsoft Flight Simulator · 個人フライトログ",
@@ -74,6 +76,7 @@
       l_maxalt: "最高高度", l_maxgs: "最大対地速度", l_direct: "直線距離",
       l_landing: "着陸", l_frames: "記録フレーム数", l_recording: "録画ファイル",
       rate_greaser: "完璧", rate_normal: "普通", rate_firm: "やや強め", rate_hard: "ハード",
+      follow: "機体を追従", map_dark: "ダークマップ", map_satellite: "衛星写真",
     },
     ko: {
       tagline: "Microsoft Flight Simulator · 개인 비행 일지",
@@ -98,6 +101,7 @@
       l_maxalt: "최고 고도", l_maxgs: "최대 대지속도", l_direct: "직선 거리",
       l_landing: "착륙", l_frames: "기록 프레임", l_recording: "녹화 파일",
       rate_greaser: "완벽", rate_normal: "보통", rate_firm: "약간 강함", rate_hard: "하드",
+      follow: "항공기 따라가기", map_dark: "다크 지도", map_satellite: "위성",
     },
   };
 
@@ -127,6 +131,7 @@
     note: I(`<path d="M5 4h14v11l-4 5H5z"/><path d="M15 20v-5h4"/>`),
     play: `<svg class="icon" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>`,
     pause: `<svg class="icon" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg>`,
+    target: I(`<circle cx="12" cy="12" r="7"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/><circle cx="12" cy="12" r="1.6" fill="currentColor" stroke="none"/>`),
   };
 
   function applyStatic() {
