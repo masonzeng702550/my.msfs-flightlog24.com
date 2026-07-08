@@ -30,7 +30,7 @@
   let route = "", sid = "", star = "";
   let raf = null, recorder = null, drawScheduled = false;
   const tiles = new Map();                 // "style/z/x/y" -> Image | null | Promise
-  const Z_GROUND = 16, Z_NORMAL = 10.5;    // follow zoom on the ground vs in the air
+  const Z_GROUND = 16, AGL_FULL = 5000;    // ground = taxiway zoom; by 5000 ft AGL show the whole route
 
   const status = (msg) => { statusEl.textContent = msg || ""; statusEl.style.display = msg ? "block" : "none"; };
 
@@ -56,11 +56,15 @@
     tiles.set(k, pr); return pr;
   }
 
-  // altitude-based follow zoom: very close on the ground (taxiways visible),
-  // easing out to the normal zoom by 3000 ft AGL (symmetric on descent)
-  function zoomForAlt(alt) {
-    const agl = Math.max(0, alt - groundAlt);
-    return agl >= 3000 ? Z_NORMAL : Z_GROUND + (Z_NORMAL - Z_GROUND) * (agl / 3000);
+  // altitude-based follow view: on the ground it is zoomed right in (taxiways),
+  // easing out AND panning to the route centre so the whole route is in frame by
+  // 5000 ft AGL; symmetric on descent
+  function followView(p) {
+    const agl = Math.max(0, p.alt - groundAlt);
+    const t = routeView ? Math.min(1, agl / AGL_FULL) : 0;
+    const rz = routeView ? routeView.z : Z_GROUND;
+    const rLat = routeView ? routeView.cLat : p.lat, rLon = routeView ? routeView.cLon : p.lon;
+    return { cLat: p.lat + (rLat - p.lat) * t, cLon: p.lon + (rLon - p.lon) * t, zf: Z_GROUND + (rz - Z_GROUND) * t };
   }
 
   // whole-route framing for the non-follow view
@@ -113,7 +117,7 @@
     const key = mapStyle + ":" + (flight && flight.id) + ":" + (follow ? "F" : "R");
     if (preloadKey === key) return;
     const mw = W, mh = MAP[1] - MAP[0], need = new Set();
-    if (follow) { const steps = 160; for (let i = 0; i <= steps; i++) { const p = at(i / steps * duration); tilesForView(p.lat, p.lon, zoomForAlt(p.alt), mw, mh, need); } }
+    if (follow) { const steps = 160; for (let i = 0; i <= steps; i++) { const p = at(i / steps * duration); const v = followView(p); tilesForView(v.cLat, v.cLon, v.zf, mw, mh, need); } }
     if (routeView) tilesForView(routeView.cLat, routeView.cLon, routeView.z, mw, mh, need);
     const keys = [...need]; let done = 0;
     status(T("story_building") + " 0%");
@@ -243,7 +247,7 @@
     ctx.fillStyle = "#0a1424"; ctx.fillRect(mx, my, mw, mh);
     let toS = null;
     if (coords.length) {
-      if (follow && p) toS = drawTiles(p.lat, p.lon, zoomForAlt(p.alt), mx, my, mw, mh);
+      if (follow && p) { const v = followView(p); toS = drawTiles(v.cLat, v.cLon, v.zf, mx, my, mw, mh); }
       else if (routeView) toS = drawTiles(routeView.cLat, routeView.cLon, routeView.z, mx, my, mw, mh);
     }
     if (toS) {
