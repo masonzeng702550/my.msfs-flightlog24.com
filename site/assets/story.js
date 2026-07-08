@@ -21,13 +21,15 @@
 
   // layout bands (y, logical) — includes a route/procedure info band and a
   // reserved safe zone for an Instagram link sticker
-  const TITLE = [0, 86], VID = [86, 496], READ = [496, 542], MAP = [542, 902],
-        INFO = [902, 1046], PROF = [1046, 1176], LINK = [1176, 1250], FOOT = [1250, 1280];
+  const TITLE = [0, 86], VID = [86, 496], READ = [496, 542], MAP = [542, 982],
+        INFO = [982, 1118], PROF = [1118, 1248], FOOT = [1248, 1280];
 
-  let flight = null, S = [], coords = [], duration = 0;
-  let mosaic = null, mapStyle = "dark", follow = true;
+  let flight = null, S = [], coords = [], duration = 0, groundAlt = 0;
+  let mapStyle = "dark", follow = true, routeView = null, preloadKey = "";
   let route = "", sid = "", star = "";
-  let raf = null, recorder = null, building = false;
+  let raf = null, recorder = null, drawScheduled = false;
+  const tiles = new Map();                 // "style/z/x/y" -> Image | null | Promise
+  const Z_GROUND = 16, Z_NORMAL = 10.5;    // follow zoom on the ground vs in the air
 
   const status = (msg) => { statusEl.textContent = msg || ""; statusEl.style.display = msg ? "block" : "none"; };
 
@@ -38,38 +40,88 @@
     ? `https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/${z}/${y}/${x}`
     : `https://a.basemaps.cartocdn.com/dark_all/${z}/${x}/${y}.png`;
 
-  async function buildMosaic() {
-    if (!coords.length) { mosaic = null; return; }
-    building = true; status(T("story_building"));
+  // ── dynamic tile map ────────────────────────────────────────────────
+  const tileKey = (z, x, y) => `${mapStyle}/${z}/${x}/${y}`;
+  const tileImg = (z, x, y) => { const v = tiles.get(tileKey(z, x, y)); return v instanceof HTMLImageElement ? v : null; };
+  function loadTile(z, x, y) {
+    const k = tileKey(z, x, y), have = tiles.get(k);
+    if (have !== undefined) return have instanceof Promise ? have : Promise.resolve(have);
+    const pr = new Promise(res => {
+      const img = new Image(); img.crossOrigin = "anonymous";
+      img.onload = () => { tiles.set(k, img); res(img); };
+      img.onerror = () => { tiles.set(k, null); res(null); };
+      img.src = tileURL(mapStyle === "sat" ? "sat" : "dark", z, x, y);
+    });
+    tiles.set(k, pr); return pr;
+  }
+
+  // altitude-based follow zoom: very close on the ground (taxiways visible),
+  // easing out to the normal zoom by 3000 ft AGL (symmetric on descent)
+  function zoomForAlt(alt) {
+    const agl = Math.max(0, alt - groundAlt);
+    return agl >= 3000 ? Z_NORMAL : Z_GROUND + (Z_NORMAL - Z_GROUND) * (agl / 3000);
+  }
+
+  // whole-route framing for the non-follow view
+  function computeRouteView(mw, mh) {
+    groundAlt = S.length ? Math.min(...S.map(s => s[3])) : 0;
+    if (!coords.length) { routeView = null; return; }
     const lats = coords.map(c => c[0]), lons = coords.map(c => c[1]);
-    let minLat = Math.min(...lats), maxLat = Math.max(...lats), minLon = Math.min(...lons), maxLon = Math.max(...lons);
-    const dLat = (maxLat - minLat) * 0.14 + 0.02, dLon = (maxLon - minLon) * 0.14 + 0.02;
-    minLat -= dLat; maxLat += dLat; minLon -= dLon; maxLon += dLon;
+    const minLat = Math.min(...lats), maxLat = Math.max(...lats), minLon = Math.min(...lons), maxLon = Math.max(...lons);
     let z = 3;
-    for (let zz = 13; zz >= 3; zz--) {
-      const nx = Math.floor(worldX(maxLon, zz) / 256) - Math.floor(worldX(minLon, zz) / 256) + 1;
-      const ny = Math.floor(worldY(minLat, zz) / 256) - Math.floor(worldY(maxLat, zz) / 256) + 1;
-      if (nx * ny <= 42 && nx * 256 <= 2400 && ny * 256 <= 2400) { z = zz; break; }
+    for (let zz = 17; zz >= 2; zz--) {
+      const w = Math.abs(worldX(maxLon, zz) - worldX(minLon, zz)), h = Math.abs(worldY(minLat, zz) - worldY(maxLat, zz));
+      if (w <= mw * 0.86 && h <= mh * 0.86) { z = zz; break; }
     }
-    const tminX = Math.floor(worldX(minLon, z) / 256), tmaxX = Math.floor(worldX(maxLon, z) / 256);
-    const tminY = Math.floor(worldY(maxLat, z) / 256), tmaxY = Math.floor(worldY(minLat, z) / 256);
-    const mw = (tmaxX - tminX + 1) * 256, mh = (tmaxY - tminY + 1) * 256;
-    const cv = document.createElement("canvas"); cv.width = mw; cv.height = mh;
-    const cx = cv.getContext("2d"); cx.fillStyle = "#0a1424"; cx.fillRect(0, 0, mw, mh);
-    const style = mapStyle === "sat" ? "sat" : "dark";
-    const jobs = [];
-    for (let tx = tminX; tx <= tmaxX; tx++) for (let ty = tminY; ty <= tmaxY; ty++) {
-      jobs.push(new Promise(res => {
-        const img = new Image(); img.crossOrigin = "anonymous";
-        img.onload = () => { try { cx.drawImage(img, (tx - tminX) * 256, (ty - tminY) * 256); } catch (e) {} res(); };
-        img.onerror = () => res();
-        img.src = tileURL(style, z, tx, ty);
-      }));
+    routeView = { z, cLat: (minLat + maxLat) / 2, cLon: (minLon + maxLon) / 2 };
+  }
+
+  // draw tiles filling [mx,my,mw,mh] centred on (cLat,cLon) at fractional zoom zf;
+  // returns a lat/lon -> screen projector for the route + plane
+  function drawTiles(cLat, cLon, zf, mx, my, mw, mh) {
+    const z = Math.max(2, Math.min(19, Math.round(zf))), scale = Math.pow(2, zf - z);
+    const cxp = worldX(cLon, z), cyp = worldY(cLat, z);
+    const halfW = (mw / 2) / scale, halfH = (mh / 2) / scale;
+    const minTx = Math.floor((cxp - halfW) / 256), maxTx = Math.floor((cxp + halfW) / 256);
+    const minTy = Math.floor((cyp - halfH) / 256), maxTy = Math.floor((cyp + halfH) / 256);
+    for (let tx = minTx; tx <= maxTx; tx++) for (let ty = minTy; ty <= maxTy; ty++) {
+      const img = tileImg(z, tx, ty);
+      const sx = mx + mw / 2 + (tx * 256 - cxp) * scale, sy = my + mh / 2 + (ty * 256 - cyp) * scale, sz = 256 * scale;
+      if (img) ctx.drawImage(img, sx, sy, sz + 1, sz + 1);
+      else if (tiles.get(tileKey(z, tx, ty)) === undefined) loadTile(z, tx, ty).then(scheduleDraw);
     }
-    await Promise.all(jobs);
-    mosaic = { canvas: cv, z, ox: tminX * 256, oy: tminY * 256, w: mw, h: mh };
-    building = false; status("");
-    drawFrame(0);
+    return (lat, lon) => [mx + mw / 2 + (worldX(lon, z) - cxp) * scale, my + mh / 2 + (worldY(lat, z) - cyp) * scale];
+  }
+
+  function scheduleDraw() {
+    if (drawScheduled || (recorder && recorder.state === "recording")) return;
+    drawScheduled = true;
+    requestAnimationFrame(() => { drawScheduled = false; if (videoEl.paused) drawFrame(currentProgress()); });
+  }
+
+  function tilesForView(cLat, cLon, zf, mw, mh, set) {
+    const z = Math.max(2, Math.min(19, Math.round(zf))), scale = Math.pow(2, zf - z);
+    const cxp = worldX(cLon, z), cyp = worldY(cLat, z), halfW = (mw / 2) / scale, halfH = (mh / 2) / scale;
+    for (let tx = Math.floor((cxp - halfW) / 256); tx <= Math.floor((cxp + halfW) / 256); tx++)
+      for (let ty = Math.floor((cyp - halfH) / 256); ty <= Math.floor((cyp + halfH) / 256); ty++) set.add(z + "|" + tx + "|" + ty);
+  }
+
+  // pre-load every tile the clip needs so recording has no blank frames
+  async function preloadTiles() {
+    if (!coords.length) return;
+    const key = mapStyle + ":" + (flight && flight.id) + ":" + (follow ? "F" : "R");
+    if (preloadKey === key) return;
+    const mw = W, mh = MAP[1] - MAP[0], need = new Set();
+    if (follow) { const steps = 160; for (let i = 0; i <= steps; i++) { const p = at(i / steps * duration); tilesForView(p.lat, p.lon, zoomForAlt(p.alt), mw, mh, need); } }
+    if (routeView) tilesForView(routeView.cLat, routeView.cLon, routeView.z, mw, mh, need);
+    const keys = [...need]; let done = 0;
+    status(T("story_building") + " 0%");
+    await runConcurrent(keys, 12, k => { const [z, x, y] = k.split("|").map(Number); return loadTile(z, x, y).then(() => { done++; if (done % 6 === 0 || done === keys.length) status(T("story_building") + " " + Math.round(done / keys.length * 100) + "%"); }); });
+    preloadKey = key; status(""); drawFrame(currentProgress());
+  }
+  function runConcurrent(items, n, fn) {
+    let i = 0; const next = () => i < items.length ? fn(items[i++]).then(next) : Promise.resolve();
+    return Promise.all(Array.from({ length: Math.min(n, items.length) }, next));
   }
 
   // ── replay interpolation ────────────────────────────────────────────
@@ -141,9 +193,6 @@
     // profile
     drawProfile(progress);
 
-    // reserved safe zone for an Instagram link sticker
-    drawLinkZone();
-
     // footer: progress + brand
     ctx.fillStyle = "#131c2e"; ctx.fillRect(0, FOOT[0], W, 4);
     ctx.fillStyle = "#36c5ff"; ctx.fillRect(0, FOOT[0], W * progress, 4);
@@ -164,16 +213,6 @@
     ctx.fillText("SID", x, y); ctx.fillText("STAR", W / 2 + 4, y);
     ctx.fillStyle = "#dbe6f5"; ctx.font = "500 15px sans-serif";
     ctx.fillText(sid || "—", x + 44, y); ctx.fillText(star || "—", W / 2 + 56, y);
-  }
-
-  function drawLinkZone() {
-    const y0 = LINK[0], h = LINK[1] - y0;
-    ctx.save();
-    ctx.setLineDash([7, 6]); ctx.strokeStyle = "#334763"; ctx.lineWidth = 1.5;
-    roundRect(24, y0 + 4, W - 48, h - 8, 11); ctx.stroke();
-    ctx.restore();
-    ctx.fillStyle = "#5a6b88"; ctx.font = "500 14px sans-serif"; ctx.textAlign = "center"; ctx.textBaseline = "middle";
-    ctx.fillText("place your website link sticker here", W / 2, y0 + h / 2); ctx.textAlign = "left";
   }
 
   // word-wrap into at most maxLines lines; returns the y after the last line
@@ -201,20 +240,18 @@
     const mx = 0, my = MAP[0], mw = W, mh = MAP[1] - MAP[0];
     ctx.save(); ctx.beginPath(); ctx.rect(mx, my, mw, mh); ctx.clip();
     ctx.fillStyle = "#0a1424"; ctx.fillRect(mx, my, mw, mh);
-    if (mosaic && p) {
-      const fit = Math.min(mw / mosaic.w, mh / mosaic.h);
-      const scale = follow ? fit * 2.4 : fit;
-      const cx = follow ? (worldX(p.lon, mosaic.z) - mosaic.ox) : mosaic.w / 2;
-      const cy = follow ? (worldY(p.lat, mosaic.z) - mosaic.oy) : mosaic.h / 2;
-      const dx = mx + mw / 2 - cx * scale, dy = my + mh / 2 - cy * scale;
-      ctx.drawImage(mosaic.canvas, dx, dy, mosaic.w * scale, mosaic.h * scale);
-      const toS = (lat, lon) => [dx + (worldX(lon, mosaic.z) - mosaic.ox) * scale, dy + (worldY(lat, mosaic.z) - mosaic.oy) * scale];
-      // full route (dim) + flown (bright)
-      strokePath(coords, toS, "#2a4d6e", 3);
-      strokePath(coords.slice(0, p.idx + 1).concat([[p.lat, p.lon]]), toS, "#36c5ff", 4);
-      // plane
-      const [sx, sy] = toS(p.lat, p.lon);
-      drawPlane(sx, sy, p.hdg);
+    let toS = null;
+    if (coords.length) {
+      if (follow && p) toS = drawTiles(p.lat, p.lon, zoomForAlt(p.alt), mx, my, mw, mh);
+      else if (routeView) toS = drawTiles(routeView.cLat, routeView.cLon, routeView.z, mx, my, mw, mh);
+    }
+    if (toS) {
+      strokePath(coords, toS, "#2a4d6e", 3);                                         // full route (dim)
+      if (p) {
+        strokePath(coords.slice(0, p.idx + 1).concat([[p.lat, p.lon]]), toS, "#36c5ff", 4);  // flown (bright)
+        const [sx, sy] = toS(p.lat, p.lon);
+        drawPlane(sx, sy, p.hdg);
+      }
     }
     ctx.restore();
   }
@@ -262,7 +299,9 @@
       S = flight.replay || [];
       coords = S.map(s => [s[1], s[2]]);
       duration = flight.duration_sec || (S.length ? S[S.length - 1][0] : 0);
-      await buildMosaic();
+      computeRouteView(W, MAP[1] - MAP[0]);
+      preloadKey = ""; drawFrame(0);
+      preloadTiles();                       // start fetching tiles in the background
     } catch (e) { status("load error"); }
   }
 
@@ -273,14 +312,17 @@
     drawFrame(prog);
     if (!videoEl.paused && !videoEl.ended) raf = requestAnimationFrame(loop);
   }
-  function startPreview() {
+  async function startPreview() {
     if (videoEl.readyState < 2) { status(T("story_need_video")); drawFrame(0); return; }
+    await preloadTiles();
     videoEl.currentTime = 0; videoEl.play(); cancelAnimationFrame(raf); loop();
   }
 
-  function startRecord() {
+  async function startRecord() {
     if (!window.MediaRecorder) { status("MediaRecorder unsupported"); return; }
     if (videoEl.readyState < 2) { status(T("story_need_video")); return; }
+    recBtn.disabled = true;
+    await preloadTiles();                   // ensure every tile is cached first
     const stream = canvas.captureStream(30);
     try {
       const vs = videoEl.captureStream ? videoEl.captureStream() : (videoEl.mozCaptureStream && videoEl.mozCaptureStream());
@@ -319,12 +361,16 @@
     route = routeIn.value.trim(); sid = sidIn.value.trim(); star = starIn.value.trim();
     if (!recorder || recorder.state === "inactive") drawFrame(currentProgress());
   }));
-  followBtn.addEventListener("click", () => { follow = !follow; followBtn.classList.toggle("active", follow); followBtn.setAttribute("aria-pressed", follow); drawFrame(currentProgress()); });
-  mapBtn.addEventListener("click", async () => {
+  followBtn.addEventListener("click", () => {
+    follow = !follow; followBtn.classList.toggle("active", follow);
+    followBtn.setAttribute("aria-pressed", follow);
+    drawFrame(currentProgress()); preloadTiles();
+  });
+  mapBtn.addEventListener("click", () => {
     mapStyle = mapStyle === "dark" ? "sat" : "dark";
     mapBtn.classList.toggle("active", mapStyle === "sat");
     mapBtn.querySelector("span").textContent = mapStyle === "sat" ? T("story_dark") : T("story_satellite");
-    await buildMosaic();
+    preloadKey = ""; drawFrame(currentProgress()); preloadTiles();
   });
   playBtn.addEventListener("click", startPreview);
   recBtn.addEventListener("click", startRecord);
