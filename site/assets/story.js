@@ -7,21 +7,26 @@
   const $ = id => document.getElementById(id);
 
   const canvas = $("story-canvas"), ctx = canvas.getContext("2d");
-  const W = canvas.width, H = canvas.height;                 // 720 x 1280
+  // logical drawing space; the backing store is 1080x1920 (exact Instagram-story
+  // 9:16), so the context is scaled up from these 720x1280 logical units.
+  const W = 720, H = 1280;
   const statusEl = $("story-status");
   const flightSel = $("story-flight"), videoInput = $("story-video");
   const mapBtn = $("story-map"), followBtn = $("story-follow");
+  const routeIn = $("story-route"), sidIn = $("story-sid"), starIn = $("story-star");
   const playBtn = $("story-play"), recBtn = $("story-record"), dl = $("story-download");
 
   const videoEl = document.createElement("video");
   videoEl.muted = false; videoEl.playsInline = true; videoEl.preload = "auto";
 
-  // layout bands (y)
-  const TITLE = [0, 96], VID = [96, 540], READ = [540, 596],
-        MAP = [596, 1040], PROF = [1040, 1212], FOOT = [1212, 1280];
+  // layout bands (y, logical) — includes a route/procedure info band and a
+  // reserved safe zone for an Instagram link sticker
+  const TITLE = [0, 86], VID = [86, 496], READ = [496, 542], MAP = [542, 902],
+        INFO = [902, 1046], PROF = [1046, 1176], LINK = [1176, 1250], FOOT = [1250, 1280];
 
   let flight = null, S = [], coords = [], duration = 0;
   let mosaic = null, mapStyle = "dark", follow = true;
+  let route = "", sid = "", star = "";
   let raf = null, recorder = null, building = false;
 
   const status = (msg) => { statusEl.textContent = msg || ""; statusEl.style.display = msg ? "block" : "none"; };
@@ -86,6 +91,7 @@
   function drawFrame(progress) {
     progress = Math.max(0, Math.min(1, progress || 0));
     const p = at(progress * duration);
+    ctx.setTransform(canvas.width / W, 0, 0, canvas.height / H, 0, 0);   // scale logical -> 1080x1920
     ctx.fillStyle = "#05070d"; ctx.fillRect(0, 0, W, H);
 
     // title
@@ -109,7 +115,7 @@
       try { ctx.drawImage(videoEl, 0, vy, vw, vh); } catch (e) {}
     } else {
       ctx.fillStyle = "#5b6b86"; ctx.font = "500 18px sans-serif"; ctx.textAlign = "center";
-      ctx.fillText(T("story_video"), W / 2, (VID[0] + VID[1]) / 2); ctx.textAlign = "left";
+      ctx.fillText("Upload your landscape flight recording", W / 2, (VID[0] + VID[1]) / 2); ctx.textAlign = "left";
     }
 
     // readout
@@ -129,14 +135,64 @@
     // map
     drawMap(p);
 
+    // route + procedures
+    drawInfo();
+
     // profile
     drawProfile(progress);
+
+    // reserved safe zone for an Instagram link sticker
+    drawLinkZone();
 
     // footer: progress + brand
     ctx.fillStyle = "#131c2e"; ctx.fillRect(0, FOOT[0], W, 4);
     ctx.fillStyle = "#36c5ff"; ctx.fillRect(0, FOOT[0], W * progress, 4);
     ctx.fillStyle = "#6d7d98"; ctx.font = "600 15px sans-serif"; ctx.textAlign = "center"; ctx.textBaseline = "middle";
-    ctx.fillText("my.msfs-flightlog24", W / 2, (FOOT[0] + FOOT[1]) / 2 + 4); ctx.textAlign = "left";
+    ctx.fillText("my.msfs-flightlog24", W / 2, (FOOT[0] + FOOT[1]) / 2 + 3); ctx.textAlign = "left";
+  }
+
+  function drawInfo() {
+    const x = 22, y0 = INFO[0];
+    ctx.fillStyle = "#0d1320"; roundRect(14, y0 + 4, W - 28, INFO[1] - y0 - 8, 10); ctx.fill();
+    ctx.textBaseline = "alphabetic"; ctx.textAlign = "left";
+    let y = y0 + 28;
+    ctx.fillStyle = "#6d7d98"; ctx.font = "700 12px sans-serif"; ctx.fillText("ROUTE", x, y);
+    ctx.fillStyle = "#dbe6f5"; ctx.font = "500 15px sans-serif";
+    y = wrapText(route || "—", x, y + 21, W - 44, 20, 2);
+    y += 10;
+    ctx.fillStyle = "#6d7d98"; ctx.font = "700 12px sans-serif";
+    ctx.fillText("SID", x, y); ctx.fillText("STAR", W / 2 + 4, y);
+    ctx.fillStyle = "#dbe6f5"; ctx.font = "500 15px sans-serif";
+    ctx.fillText(sid || "—", x + 44, y); ctx.fillText(star || "—", W / 2 + 56, y);
+  }
+
+  function drawLinkZone() {
+    const y0 = LINK[0], h = LINK[1] - y0;
+    ctx.save();
+    ctx.setLineDash([7, 6]); ctx.strokeStyle = "#334763"; ctx.lineWidth = 1.5;
+    roundRect(24, y0 + 4, W - 48, h - 8, 11); ctx.stroke();
+    ctx.restore();
+    ctx.fillStyle = "#5a6b88"; ctx.font = "500 14px sans-serif"; ctx.textAlign = "center"; ctx.textBaseline = "middle";
+    ctx.fillText("place your website link sticker here", W / 2, y0 + h / 2); ctx.textAlign = "left";
+  }
+
+  // word-wrap into at most maxLines lines; returns the y after the last line
+  function wrapText(text, x, y, maxW, lh, maxLines) {
+    const words = String(text).split(/\s+/); let line = "", lines = 0;
+    for (let i = 0; i < words.length; i++) {
+      const test = line ? line + " " + words[i] : words[i];
+      if (ctx.measureText(test).width > maxW && line) {
+        ctx.fillText(line, x, y); y += lh; line = words[i]; lines++;
+        if (lines >= maxLines - 1) {
+          let rest = words.slice(i).join(" ");
+          while (ctx.measureText(rest + "…").width > maxW && rest) rest = rest.slice(0, -1);
+          ctx.fillText(rest + (words.slice(i).join(" ").length > rest.length ? "…" : ""), x, y);
+          return y;
+        }
+      } else line = test;
+    }
+    if (line) ctx.fillText(line, x, y);
+    return y;
   }
 
   function drawRegionBg([y0, y1], col) { ctx.fillStyle = col; ctx.fillRect(0, y0, W, y1 - y0); }
@@ -182,8 +238,8 @@
   function drawProfile(progress) {
     const px = 20, py = PROF[0] + 26, pw = W - 40, ph = PROF[1] - PROF[0] - 40;
     ctx.fillStyle = "#0d1320"; roundRect(px - 6, PROF[0] + 8, pw + 12, PROF[1] - PROF[0] - 12, 10); ctx.fill();
-    ctx.fillStyle = "#8a99b3"; ctx.font = "600 13px sans-serif"; ctx.textAlign = "left"; ctx.textBaseline = "alphabetic";
-    ctx.fillText(T("profile_title"), px, PROF[0] + 24);
+    ctx.fillStyle = "#8a99b3"; ctx.font = "600 12px sans-serif"; ctx.textAlign = "left"; ctx.textBaseline = "alphabetic";
+    ctx.fillText("ALTITUDE & SPEED  ·  cyan alt / amber speed", px, PROF[0] + 22);
     if (!S.length) return;
     const maxAlt = Math.max(...S.map(s => s[3]), 1), maxIas = Math.max(...S.map(s => s[5]), 1);
     const xt = t => px + (t / duration) * pw;
@@ -259,6 +315,10 @@
     videoEl.onloadeddata = () => { status(""); drawFrame(0); };
   });
   flightSel.addEventListener("change", () => loadFlight(flightSel.value));
+  [routeIn, sidIn, starIn].forEach(el => el && el.addEventListener("input", () => {
+    route = routeIn.value.trim(); sid = sidIn.value.trim(); star = starIn.value.trim();
+    if (!recorder || recorder.state === "inactive") drawFrame(currentProgress());
+  }));
   followBtn.addEventListener("click", () => { follow = !follow; followBtn.classList.toggle("active", follow); followBtn.setAttribute("aria-pressed", follow); drawFrame(currentProgress()); });
   mapBtn.addEventListener("click", async () => {
     mapStyle = mapStyle === "dark" ? "sat" : "dark";

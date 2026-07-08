@@ -6,7 +6,7 @@
   <title>Story · my.msfs-flightlog24</title>
   <meta name="theme-color" content="#05070d">
   <link rel="icon" type="image/png" href="assets/icon-192.png">
-  <link rel="stylesheet" href="assets/style.css?v=14">
+  <link rel="stylesheet" href="assets/style.css?v=15">
 </head>
 <body>
   <header class="site-header">
@@ -16,7 +16,7 @@
 
   <div class="story-wrap">
     <div class="story-stage">
-      <canvas id="story-canvas" width="720" height="1280"></canvas>
+      <canvas id="story-canvas" width="1080" height="1920"></canvas>
       <div class="story-status" id="story-status"></div>
     </div>
 
@@ -34,6 +34,21 @@
         <input type="file" id="story-video" accept="video/*">
       </label>
 
+      <label class="story-field">
+        <span>Route <small data-i18n="story_route_hint">航路</small></span>
+        <input type="text" id="story-route" placeholder="RCTP DCT ANNNA A1 SALMI ... RJFF">
+      </label>
+      <div class="story-field two">
+        <label>
+          <span>SID <small data-i18n="story_sid_hint">離場程序</small></span>
+          <input type="text" id="story-sid" placeholder="CHALI 1D">
+        </label>
+        <label>
+          <span>STAR <small data-i18n="story_star_hint">到場程序</small></span>
+          <input type="text" id="story-star" placeholder="MOMOT 1A">
+        </label>
+      </div>
+
       <div class="story-toggles">
         <button class="story-tog" id="story-map" data-mode="dark"><span data-i18n="story_satellite">衛星地圖</span></button>
         <button class="story-tog active" id="story-follow" aria-pressed="true"><span data-i18n="follow">鎖定跟隨飛機</span></button>
@@ -49,8 +64,8 @@
     </div>
   </div>
 
-  <script src="assets/i18n.js?v=3"></script>
-  <script src="assets/story.js?v=1"></script>
+  <script src="assets/i18n.js?v=4"></script>
+  <script src="assets/story.js?v=2"></script>
   <script>if("serviceWorker" in navigator){addEventListener("load",function(){navigator.serviceWorker.register("sw.js").catch(function(){})})}</script>
 </body>
 </html>

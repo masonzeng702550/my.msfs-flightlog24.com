@@ -34,6 +34,7 @@
       story_preview: "Preview", story_record: "Record & download",
       story_note: "Exports as WebM; keep this tab in front while recording. The map and profile are compressed to match the video length (~1 min).",
       story_building: "Loading map…", story_recording: "Recording…", story_done: "Done — downloading", story_need_video: "Upload a video first",
+      story_route_hint: "airway/route", story_sid_hint: "departure", story_star_hint: "arrival",
     },
     zh: {
       tagline: "Microsoft Flight Simulator · 個人飛行日誌",
@@ -66,6 +67,7 @@
       story_preview: "預覽", story_record: "錄製並下載",
       story_note: "影片以 WebM 格式輸出;錄製時請保持此分頁在前景。地圖與剖面會自動濃縮到與影片同長(約 1 分鐘)。",
       story_building: "載入地圖中…", story_recording: "錄製中…", story_done: "完成,開始下載", story_need_video: "請先上傳影片",
+      story_route_hint: "航路", story_sid_hint: "離場程序", story_star_hint: "到場程序",
     },
     ja: {
       tagline: "Microsoft Flight Simulator · 個人フライトログ",
@@ -98,6 +100,7 @@
       story_preview: "プレビュー", story_record: "録画してダウンロード",
       story_note: "WebM 形式で書き出します。録画中はこのタブを前面に。地図とプロファイルは動画の長さ(約1分)に合わせて圧縮されます。",
       story_building: "地図を読み込み中…", story_recording: "録画中…", story_done: "完了、ダウンロード中", story_need_video: "先に動画をアップロード",
+      story_route_hint: "経路", story_sid_hint: "出発方式", story_star_hint: "到着方式",
     },
     ko: {
       tagline: "Microsoft Flight Simulator · 개인 비행 일지",
@@ -130,6 +133,7 @@
       story_preview: "미리보기", story_record: "녹화 및 다운로드",
       story_note: "WebM으로 내보냅니다. 녹화 중에는 이 탭을 앞에 두세요. 지도와 프로파일은 영상 길이(약 1분)에 맞춰 압축됩니다.",
       story_building: "지도 불러오는 중…", story_recording: "녹화 중…", story_done: "완료, 다운로드 중", story_need_video: "먼저 영상을 업로드하세요",
+      story_route_hint: "항로", story_sid_hint: "출발 절차", story_star_hint: "도착 절차",
     },
   };
 
