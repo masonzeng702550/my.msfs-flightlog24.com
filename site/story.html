@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Story · my.msfs-flightlog24</title>
+  <meta name="theme-color" content="#05070d">
+  <link rel="icon" type="image/png" href="assets/icon-192.png">
+  <link rel="stylesheet" href="assets/style.css?v=14">
+</head>
+<body>
+  <header class="site-header">
+    <span class="brand">my.msfs-flightlog<span class="dot">24</span></span>
+    <a class="back" href="index.html" data-icon="back"><span data-i18n="back_to_all">回到全部飛行</span></a>
+  </header>
+
+  <div class="story-wrap">
+    <div class="story-stage">
+      <canvas id="story-canvas" width="720" height="1280"></canvas>
+      <div class="story-status" id="story-status"></div>
+    </div>
+
+    <div class="story-panel">
+      <h2 data-i18n="story_title">限時動態產生器</h2>
+      <p class="story-desc" data-i18n="story_desc">上傳你的橫式飛行錄影,合成 1 分鐘直式動態(地圖航線 + 高度速度剖面 + 航班資訊)。</p>
+
+      <label class="story-field">
+        <span data-i18n="story_flight">航班</span>
+        <select id="story-flight"></select>
+      </label>
+
+      <label class="story-field">
+        <span data-i18n="story_video">飛行錄影(橫式,約 1 分鐘)</span>
+        <input type="file" id="story-video" accept="video/*">
+      </label>
+
+      <div class="story-toggles">
+        <button class="story-tog" id="story-map" data-mode="dark"><span data-i18n="story_satellite">衛星地圖</span></button>
+        <button class="story-tog active" id="story-follow" aria-pressed="true"><span data-i18n="follow">鎖定跟隨飛機</span></button>
+      </div>
+
+      <div class="story-actions">
+        <button class="story-btn ghost" id="story-play" data-i18n="story_preview">預覽</button>
+        <button class="story-btn primary" id="story-record" data-i18n="story_record">錄製並下載</button>
+      </div>
+
+      <p class="story-note" data-i18n="story_note">影片以 WebM 格式輸出;錄製時請保持此分頁在前景。地圖與剖面會自動濃縮到與影片同長(約 1 分鐘)。</p>
+      <a id="story-download" hidden></a>
+    </div>
+  </div>
+
+  <script src="assets/i18n.js?v=3"></script>
+  <script src="assets/story.js?v=1"></script>
+  <script>if("serviceWorker" in navigator){addEventListener("load",function(){navigator.serviceWorker.register("sw.js").catch(function(){})})}</script>
+</body>
+</html>

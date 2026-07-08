@@ -38,7 +38,9 @@
         <div class="route-big">${dep.icao}<span class="arrow">→</span>${arr.icao} ${partial}</div>
         <div class="sub">${acLine}</div>
       </div>
-      <div class="when">${f.date || ""} ${f.time_local || ""}<br>${f.title || ""}</div>
+      <div class="when">${f.date || ""} ${f.time_local || ""}<br>${f.title || ""}
+        <br><a class="make-story-btn" href="story.html?id=${id}">${IC("film")}<span>${T("make_story")}</span></a>
+      </div>
     </div>
 
     <div id="map"></div>

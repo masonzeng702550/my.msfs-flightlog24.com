@@ -337,6 +337,29 @@ a:hover { text-decoration: underline; }
 }
 .site-footer { color: var(--muted); font-size: 12px; text-align: center; padding: 24px; border-top: 1px solid var(--line); }
 
+/* story maker */
+.story-wrap { max-width: 1000px; margin: 0 auto; padding: 22px; display: grid; grid-template-columns: minmax(0, 340px) 1fr; gap: 28px; align-items: start; }
+.story-stage { position: relative; }
+#story-canvas { width: 100%; max-width: 340px; aspect-ratio: 9 / 16; background: #05070d; border: 1px solid var(--line); border-radius: 14px; display: block; }
+.story-status { position: absolute; left: 8px; right: 8px; bottom: 12px; text-align: center; color: var(--text); background: rgba(5,7,13,.82); border: 1px solid var(--line); border-radius: 8px; padding: 8px; font-size: 13px; display: none; }
+.story-panel h2 { margin: 0 0 6px; font-size: 21px; }
+.story-desc { color: var(--muted); font-size: 14px; line-height: 1.65; margin: 0 0 18px; }
+.story-field { display: block; margin-bottom: 16px; }
+.story-field > span { display: block; color: var(--muted); font-size: 13px; margin-bottom: 6px; }
+.story-field select, .story-field input[type=file] { width: 100%; background: var(--panel-2); color: var(--text); border: 1px solid var(--line); border-radius: 8px; padding: 9px 10px; font-size: 14px; }
+.story-toggles { display: flex; gap: 10px; margin-bottom: 18px; flex-wrap: wrap; }
+.story-tog { background: var(--panel-2); color: var(--muted); border: 1px solid var(--line); border-radius: 8px; padding: 9px 14px; font-size: 13px; cursor: pointer; }
+.story-tog.active { background: var(--accent); color: #04121c; border-color: var(--accent); }
+.story-actions { display: flex; gap: 12px; margin-bottom: 16px; }
+.story-btn { flex: 1; border-radius: 9px; padding: 12px; font-size: 15px; font-weight: 600; cursor: pointer; border: 1px solid var(--line); }
+.story-btn.ghost { background: var(--panel-2); color: var(--text); }
+.story-btn.primary { background: var(--accent); color: #04121c; border-color: var(--accent); }
+.story-btn:disabled { opacity: .5; cursor: default; }
+.story-note { color: var(--muted); font-size: 12px; line-height: 1.6; }
+.make-story-btn { display: inline-flex; align-items: center; gap: 6px; margin-top: 8px; background: var(--panel-2); border: 1px solid var(--line); border-radius: 8px; padding: 7px 12px; font-size: 13px; color: var(--text); }
+.make-story-btn:hover { border-color: var(--accent); text-decoration: none; }
+@media (max-width: 760px) { .story-wrap { grid-template-columns: 1fr; } #story-canvas { margin: 0 auto; } }
+
 @media (max-width: 720px) {
   .stats { grid-template-columns: repeat(2, 1fr); }
 

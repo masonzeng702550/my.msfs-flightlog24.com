@@ -27,6 +27,13 @@
       l_landing: "Landing", l_frames: "Frames recorded", l_recording: "Recording",
       rate_greaser: "greaser", rate_normal: "normal", rate_firm: "firm", rate_hard: "hard",
       follow: "Follow aircraft", map_dark: "Dark map", map_satellite: "Satellite",
+      make_story: "Make story", story_title: "Story maker",
+      story_desc: "Upload your horizontal flight recording to compose a 1-minute vertical story (map route + altitude/speed profile + flight info).",
+      story_flight: "Flight", story_video: "Flight recording (landscape, ~1 min)",
+      story_satellite: "Satellite map", story_dark: "Dark map",
+      story_preview: "Preview", story_record: "Record & download",
+      story_note: "Exports as WebM; keep this tab in front while recording. The map and profile are compressed to match the video length (~1 min).",
+      story_building: "Loading map…", story_recording: "Recording…", story_done: "Done — downloading", story_need_video: "Upload a video first",
     },
     zh: {
       tagline: "Microsoft Flight Simulator · 個人飛行日誌",
@@ -52,6 +59,13 @@
       l_landing: "落地", l_frames: "紀錄幀數", l_recording: "錄影檔",
       rate_greaser: "完美", rate_normal: "正常", rate_firm: "偏重", rate_hard: "重落地",
       follow: "鎖定跟隨飛機", map_dark: "深色地圖", map_satellite: "衛星影像",
+      make_story: "製作限時動態", story_title: "限時動態產生器",
+      story_desc: "上傳你的橫式飛行錄影,合成 1 分鐘直式動態(地圖航線 + 高度速度剖面 + 航班資訊)。",
+      story_flight: "航班", story_video: "飛行錄影(橫式,約 1 分鐘)",
+      story_satellite: "衛星地圖", story_dark: "深色地圖",
+      story_preview: "預覽", story_record: "錄製並下載",
+      story_note: "影片以 WebM 格式輸出;錄製時請保持此分頁在前景。地圖與剖面會自動濃縮到與影片同長(約 1 分鐘)。",
+      story_building: "載入地圖中…", story_recording: "錄製中…", story_done: "完成,開始下載", story_need_video: "請先上傳影片",
     },
     ja: {
       tagline: "Microsoft Flight Simulator · 個人フライトログ",
@@ -77,6 +91,13 @@
       l_landing: "着陸", l_frames: "記録フレーム数", l_recording: "録画ファイル",
       rate_greaser: "完璧", rate_normal: "普通", rate_firm: "やや強め", rate_hard: "ハード",
       follow: "機体を追従", map_dark: "ダークマップ", map_satellite: "衛星写真",
+      make_story: "ストーリー作成", story_title: "ストーリー作成",
+      story_desc: "横向きのフライト録画をアップロードして、1分の縦型ストーリー(地図ルート+高度速度プロファイル+フライト情報)を作成します。",
+      story_flight: "フライト", story_video: "フライト録画(横向き・約1分)",
+      story_satellite: "衛星地図", story_dark: "ダークマップ",
+      story_preview: "プレビュー", story_record: "録画してダウンロード",
+      story_note: "WebM 形式で書き出します。録画中はこのタブを前面に。地図とプロファイルは動画の長さ(約1分)に合わせて圧縮されます。",
+      story_building: "地図を読み込み中…", story_recording: "録画中…", story_done: "完了、ダウンロード中", story_need_video: "先に動画をアップロード",
     },
     ko: {
       tagline: "Microsoft Flight Simulator · 개인 비행 일지",
@@ -102,6 +123,13 @@
       l_landing: "착륙", l_frames: "기록 프레임", l_recording: "녹화 파일",
       rate_greaser: "완벽", rate_normal: "보통", rate_firm: "약간 강함", rate_hard: "하드",
       follow: "항공기 따라가기", map_dark: "다크 지도", map_satellite: "위성",
+      make_story: "스토리 만들기", story_title: "스토리 만들기",
+      story_desc: "가로 비행 녹화를 업로드해 1분 세로 스토리(지도 항로 + 고도·속도 프로파일 + 비행 정보)를 만듭니다.",
+      story_flight: "비행", story_video: "비행 녹화 (가로, 약 1분)",
+      story_satellite: "위성 지도", story_dark: "다크 지도",
+      story_preview: "미리보기", story_record: "녹화 및 다운로드",
+      story_note: "WebM으로 내보냅니다. 녹화 중에는 이 탭을 앞에 두세요. 지도와 프로파일은 영상 길이(약 1분)에 맞춰 압축됩니다.",
+      story_building: "지도 불러오는 중…", story_recording: "녹화 중…", story_done: "완료, 다운로드 중", story_need_video: "먼저 영상을 업로드하세요",
     },
   };
 
@@ -132,6 +160,7 @@
     play: `<svg class="icon" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>`,
     pause: `<svg class="icon" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg>`,
     target: I(`<circle cx="12" cy="12" r="7"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/><circle cx="12" cy="12" r="1.6" fill="currentColor" stroke="none"/>`),
+    film: I(`<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h4M17 9h4M3 15h4M17 15h4M8 4v16M16 4v16"/>`),
   };
 
   function applyStatic() {
