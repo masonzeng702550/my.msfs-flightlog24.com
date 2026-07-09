@@ -143,12 +143,7 @@
   function detect() {
     const saved = localStorage.getItem("lang");
     if (saved && SUPPORTED.includes(saved)) return saved;
-    const n = (navigator.language || "en").toLowerCase();
-    if (n.startsWith("zh")) return "zh";
-    if (n.startsWith("ja")) return "ja";
-    if (n.startsWith("ko")) return "ko";
-    if (n.startsWith("en")) return "en";
-    return "zh";
+    return "en";
   }
   const lang = detect();
   const t = key => (T[lang] && T[lang][key]) || T.en[key] || key;
