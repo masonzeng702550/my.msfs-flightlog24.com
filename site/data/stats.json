@@ -1,15 +1,15 @@
 {
- "flights_total": 63,
- "flights_complete": 45,
+ "flights_total": 64,
+ "flights_complete": 46,
  "flights_partial": 18,
  "domestic": 36,
- "international": 9,
- "distance_total_nm": 13851.0,
- "distance_total_km": 25651.0,
- "distance_total_miles": 15939.0,
- "around_earth": 0.64,
- "block_time_total_min": 1844.0,
- "block_time_human": "30h 44m",
+ "international": 10,
+ "distance_total_nm": 14362.0,
+ "distance_total_km": 26599.0,
+ "distance_total_miles": 16528.0,
+ "around_earth": 0.66,
+ "block_time_total_min": 1943.0,
+ "block_time_human": "32h 23m",
  "by_aircraft": [
   {
    "aircraft": "A20N",
@@ -17,14 +17,14 @@
    "nm": 1297.8000000000002
   },
   {
+   "aircraft": "B773",
+   "flights": 12,
+   "nm": 6970.1
+  },
+  {
    "aircraft": "B78X",
    "flights": 12,
    "nm": 4953.3
-  },
-  {
-   "aircraft": "B773",
-   "flights": 11,
-   "nm": 6458.6
   },
   {
    "aircraft": "DA40",
@@ -101,7 +101,7 @@
   },
   {
    "month": "2026-07",
-   "flights": 7
+   "flights": 8
   }
  ],
  "analytics": {
@@ -112,7 +112,7 @@
    },
    {
     "label": "RCTP",
-    "count": 22
+    "count": 23
    },
    {
     "label": "RCFN",
@@ -123,7 +123,7 @@
     "count": 7
    },
    {
-    "label": "RCQC",
+    "label": "VHHH",
     "count": 5
    }
   ],
@@ -139,7 +139,7 @@
    },
    {
     "label": "EVA Air",
-    "count": 3
+    "count": 4
    },
    {
     "label": "NH",
@@ -157,12 +157,12 @@
     "count": 30
    },
    {
-    "label": "B78X",
+    "label": "B773",
     "count": 12
    },
    {
-    "label": "B773",
-    "count": 11
+    "label": "B78X",
+    "count": 12
    },
    {
     "label": "DA40",
@@ -196,11 +196,11 @@
     "count": 2
    }
   ],
-  "total_routes": 23,
+  "total_routes": 24,
   "top_countries": [
    {
     "label": "TW",
-    "count": 69
+    "count": 70
    },
    {
     "label": "JP",
@@ -208,7 +208,7 @@
    },
    {
     "label": "HK",
-    "count": 8
+    "count": 9
    },
    {
     "label": "MO",
@@ -223,7 +223,7 @@
   "by_year": [
    {
     "label": "2026",
-    "count": 63
+    "count": 64
    }
   ],
   "by_month_of_year": [
@@ -253,7 +253,7 @@
    },
    {
     "label": 7,
-    "count": 7
+    "count": 8
    },
    {
     "label": 8,
@@ -291,7 +291,7 @@
    },
    {
     "label": 3,
-    "count": 4
+    "count": 5
    },
    {
     "label": 4,

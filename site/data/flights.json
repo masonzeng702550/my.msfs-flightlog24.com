@@ -1,5 +1,33 @@
 [
  {
+  "id": "2026-07-09-RCTP-VHHH-0ee00b",
+  "date": "2026-07-09",
+  "time_local": "12:59",
+  "aircraft": "Boeing 777-300ER EVA Air 8K",
+  "model": "B773",
+  "airline": "EVA Air",
+  "flight_no": "TEMP",
+  "departure": "RCTP",
+  "arrival": "VHHH",
+  "dep_country": "TW",
+  "arr_country": "HK",
+  "dep_pos": [
+   121.233,
+   25.0777
+  ],
+  "arr_pos": [
+   113.91486,
+   22.31184
+  ],
+  "distance_nm": 511.5,
+  "cruise_ft": 30000,
+  "block_min": 98.6,
+  "air_min": 73.3,
+  "complete": true,
+  "title": null,
+  "tags": []
+ },
+ {
   "id": "2026-07-08-RCTP-ROAH-cc747c",
   "date": "2026-07-08",
   "time_local": "23:42",
