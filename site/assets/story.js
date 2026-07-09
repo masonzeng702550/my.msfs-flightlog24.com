@@ -339,14 +339,22 @@
       const at = vs && vs.getAudioTracks ? vs.getAudioTracks() : [];
       if (at[0]) stream.addTrack(at[0]);
     } catch (e) {}
-    const mime = ["video/webm;codecs=vp9,opus", "video/webm;codecs=vp8,opus", "video/webm"].find(m => MediaRecorder.isTypeSupported(m)) || "video/webm";
+    const mime = [
+      "video/mp4;codecs=avc1.42E01E,mp4a.40.2",
+      "video/mp4;codecs=h264,aac",
+      "video/mp4",
+      "video/webm;codecs=vp9,opus",
+      "video/webm;codecs=vp8,opus",
+      "video/webm"
+    ].find(m => MediaRecorder.isTypeSupported(m)) || "video/webm";
+    const ext = mime.startsWith("video/mp4") ? "mp4" : "webm";
     recorder = new MediaRecorder(stream, { mimeType: mime, videoBitsPerSecond: 6e6 });
     const chunks = [];
     recorder.ondataavailable = e => { if (e.data.size) chunks.push(e.data); };
     recorder.onstop = () => {
-      const blob = new Blob(chunks, { type: "video/webm" });
+      const blob = new Blob(chunks, { type: mime });
       dl.href = URL.createObjectURL(blob);
-      dl.download = `flightlog24-${flight ? flight.route.departure.icao + "-" + flight.route.arrival.icao : "story"}.webm`;
+      dl.download = `flightlog24-${flight ? flight.route.departure.icao + "-" + flight.route.arrival.icao : "story"}.${ext}`;
       status(T("story_done")); dl.hidden = false; dl.click();
       recBtn.disabled = false;
     };
