@@ -1,5 +1,61 @@
 [
  {
+  "id": "2026-07-13-RCTP-RCTP-92f80c",
+  "date": "2026-07-13",
+  "time_local": "16:33",
+  "aircraft": "Boeing 777-300ER China Airlines B-18003",
+  "model": "B773",
+  "airline": "China Airlines",
+  "flight_no": "TEMP",
+  "departure": "RCTP",
+  "arrival": "RCTP",
+  "dep_country": "TW",
+  "arr_country": "TW",
+  "dep_pos": [
+   121.233,
+   25.0777
+  ],
+  "arr_pos": [
+   121.233,
+   25.0777
+  ],
+  "distance_nm": 173.2,
+  "cruise_ft": 5000,
+  "block_min": 54.6,
+  "air_min": 46.7,
+  "complete": true,
+  "title": "Local Check",
+  "tags": []
+ },
+ {
+  "id": "2026-07-10-ROIG-UNKN-d43ef9",
+  "date": "2026-07-10",
+  "time_local": "20:58",
+  "aircraft": "Airbus A320 Neo Asobo",
+  "model": "A20N",
+  "airline": null,
+  "flight_no": "1123",
+  "departure": "ROIG",
+  "arrival": "UNKN",
+  "dep_country": "JP",
+  "arr_country": null,
+  "dep_pos": [
+   124.245,
+   24.39639
+  ],
+  "arr_pos": [
+   125.11862,
+   24.65507
+  ],
+  "distance_nm": 474.9,
+  "cruise_ft": 19000,
+  "block_min": 66.1,
+  "air_min": 65.0,
+  "complete": false,
+  "title": null,
+  "tags": []
+ },
+ {
   "id": "2026-07-09-RCTP-VHHH-0ee00b",
   "date": "2026-07-09",
   "time_local": "12:59",

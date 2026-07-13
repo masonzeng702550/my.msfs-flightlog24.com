@@ -1,25 +1,25 @@
 {
- "flights_total": 64,
- "flights_complete": 46,
- "flights_partial": 18,
- "domestic": 36,
+ "flights_total": 66,
+ "flights_complete": 47,
+ "flights_partial": 19,
+ "domestic": 37,
  "international": 10,
- "distance_total_nm": 14362.0,
- "distance_total_km": 26599.0,
- "distance_total_miles": 16528.0,
- "around_earth": 0.66,
- "block_time_total_min": 1943.0,
- "block_time_human": "32h 23m",
+ "distance_total_nm": 15010.0,
+ "distance_total_km": 27799.0,
+ "distance_total_miles": 17273.0,
+ "around_earth": 0.69,
+ "block_time_total_min": 2063.0,
+ "block_time_human": "34h 23m",
  "by_aircraft": [
   {
    "aircraft": "A20N",
-   "flights": 30,
-   "nm": 1297.8000000000002
+   "flights": 31,
+   "nm": 1772.7
   },
   {
    "aircraft": "B773",
-   "flights": 12,
-   "nm": 6970.1
+   "flights": 13,
+   "nm": 7143.3
   },
   {
    "aircraft": "B78X",
@@ -72,6 +72,7 @@
   "RJTT",
   "RKPK",
   "ROAH",
+  "ROIG",
   "VHHH",
   "VHSS",
   "VMMC",
@@ -101,18 +102,18 @@
   },
   {
    "month": "2026-07",
-   "flights": 8
+   "flights": 10
   }
  ],
  "analytics": {
   "top_airports": [
    {
-    "label": "RCSS",
+    "label": "RCTP",
     "count": 25
    },
    {
-    "label": "RCTP",
-    "count": 23
+    "label": "RCSS",
+    "count": 25
    },
    {
     "label": "RCFN",
@@ -127,7 +128,7 @@
     "count": 5
    }
   ],
-  "total_airports": 24,
+  "total_airports": 25,
   "top_airlines": [
    {
     "label": "Smart Cat",
@@ -135,7 +136,7 @@
    },
    {
     "label": "China Airlines",
-    "count": 7
+    "count": 8
    },
    {
     "label": "EVA Air",
@@ -154,11 +155,11 @@
   "top_aircraft": [
    {
     "label": "A20N",
-    "count": 30
+    "count": 31
    },
    {
     "label": "B773",
-    "count": 12
+    "count": 13
    },
    {
     "label": "B78X",
@@ -196,15 +197,15 @@
     "count": 2
    }
   ],
-  "total_routes": 24,
+  "total_routes": 25,
   "top_countries": [
    {
     "label": "TW",
-    "count": 70
+    "count": 72
    },
    {
     "label": "JP",
-    "count": 24
+    "count": 25
    },
    {
     "label": "HK",
@@ -223,7 +224,7 @@
   "by_year": [
    {
     "label": "2026",
-    "count": 64
+    "count": 66
    }
   ],
   "by_month_of_year": [
@@ -253,7 +254,7 @@
    },
    {
     "label": 7,
-    "count": 8
+    "count": 10
    },
    {
     "label": 8,
@@ -279,7 +280,7 @@
   "by_weekday": [
    {
     "label": 0,
-    "count": 15
+    "count": 16
    },
    {
     "label": 1,
@@ -295,7 +296,7 @@
    },
    {
     "label": 4,
-    "count": 6
+    "count": 7
    },
    {
     "label": 5,
