@@ -179,7 +179,13 @@
       ctx.textBaseline = "middle";
       ctx.fillStyle = "#eaf1fb"; ctx.font = "700 34px -apple-system,Segoe UI,sans-serif";
       ctx.textAlign = "left";
-      ctx.fillText(`${flight.route.departure.icao}  →  ${flight.route.arrival.icao}`, 24, 40);
+      const routeText = `${flight.route.departure.icao}  →  ${flight.route.arrival.icao}`;
+      ctx.fillText(routeText, 24, 40);
+      if (flight.title) {
+        const routeW = ctx.measureText(routeText).width;
+        ctx.fillStyle = "#8a99b3"; ctx.font = "600 20px -apple-system,Segoe UI,sans-serif";
+        ctx.fillText(flight.title, 24 + routeW + 14, 40);
+      }
       ctx.fillStyle = "#8a99b3"; ctx.font = "500 17px -apple-system,Segoe UI,sans-serif";
       ctx.fillText(`${flight.aircraft.title}`, 24, 72);
       ctx.textAlign = "right";
