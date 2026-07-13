@@ -42,7 +42,7 @@
    "nm": 19.1
   },
   {
-   "aircraft": "Unknown aircraft",
+   "aircraft": "Airbus A320neo",
    "flights": 1,
    "nm": 951.4
   },
@@ -151,7 +151,7 @@
     "count": 2
    }
   ],
-  "total_airlines": 10,
+  "total_airlines": 11,
   "top_aircraft": [
    {
     "label": "A20N",
@@ -174,7 +174,7 @@
     "count": 2
    }
   ],
-  "total_aircraft": 7,
+  "total_aircraft": 8,
   "top_routes": [
    {
     "label": "RCTP–RCSS",

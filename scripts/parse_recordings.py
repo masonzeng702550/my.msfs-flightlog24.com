@@ -294,6 +294,10 @@ def parse_recording(path, airports):
 
     # sidecar overrides
     sidecar = load_sidecar(path.with_suffix(".meta.yml"))
+    for key, field in (("aircraft_title", "title"), ("aircraft_model", "model"),
+                        ("aircraft_airline", "airline")):
+        if sidecar.get(key):
+            aircraft[field] = sidecar[key]
 
     detail = {
         "id": fid,

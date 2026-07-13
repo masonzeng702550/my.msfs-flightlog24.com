@@ -1487,9 +1487,9 @@
   "id": "2026-02-04-RCTP-RJBE-02d2d4",
   "date": "2026-02-04",
   "time_local": "22:39",
-  "aircraft": "Unknown aircraft",
+  "aircraft": "Airbus A320neo",
   "model": "",
-  "airline": null,
+  "airline": "Tigerair Taiwan",
   "flight_no": null,
   "departure": "RCTP",
   "arrival": "RJBE",
@@ -1816,7 +1816,7 @@
   "block_min": 27.6,
   "air_min": 17.2,
   "complete": true,
-  "title": null,
+  "title": "SOLO",
   "tags": []
  },
  {
