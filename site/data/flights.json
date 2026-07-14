@@ -1,5 +1,33 @@
 [
  {
+  "id": "2026-07-14-RCTP-RJFT-b8707b",
+  "date": "2026-07-14",
+  "time_local": "16:52",
+  "aircraft": "Airbus A320 Neo China Airlines",
+  "model": "A20N",
+  "airline": "Dynasty",
+  "flight_no": "1123",
+  "departure": "RCTP",
+  "arrival": "RJFT",
+  "dep_country": "TW",
+  "arr_country": "JP",
+  "dep_pos": [
+   121.233,
+   25.0777
+  ],
+  "arr_pos": [
+   130.855,
+   32.8373
+  ],
+  "distance_nm": 707.7,
+  "cruise_ft": 35500,
+  "block_min": 119.8,
+  "air_min": 101.4,
+  "complete": true,
+  "title": null,
+  "tags": []
+ },
+ {
   "id": "2026-07-13-RCTP-RCTP-92f80c",
   "date": "2026-07-13",
   "time_local": "16:33",

@@ -1,20 +1,20 @@
 {
- "flights_total": 66,
- "flights_complete": 47,
+ "flights_total": 67,
+ "flights_complete": 48,
  "flights_partial": 19,
  "domestic": 37,
- "international": 10,
- "distance_total_nm": 15010.0,
- "distance_total_km": 27799.0,
- "distance_total_miles": 17273.0,
- "around_earth": 0.69,
- "block_time_total_min": 2063.0,
- "block_time_human": "34h 23m",
+ "international": 11,
+ "distance_total_nm": 15718.0,
+ "distance_total_km": 29110.0,
+ "distance_total_miles": 18088.0,
+ "around_earth": 0.73,
+ "block_time_total_min": 2183.0,
+ "block_time_human": "36h 23m",
  "by_aircraft": [
   {
    "aircraft": "A20N",
-   "flights": 31,
-   "nm": 1772.7
+   "flights": 32,
+   "nm": 2480.4
   },
   {
    "aircraft": "B773",
@@ -66,6 +66,7 @@
   "RJAA",
   "RJBE",
   "RJFF",
+  "RJFT",
   "RJGG",
   "RJNA",
   "RJOO",
@@ -102,14 +103,14 @@
   },
   {
    "month": "2026-07",
-   "flights": 10
+   "flights": 11
   }
  ],
  "analytics": {
   "top_airports": [
    {
     "label": "RCTP",
-    "count": 25
+    "count": 26
    },
    {
     "label": "RCSS",
@@ -128,7 +129,7 @@
     "count": 5
    }
   ],
-  "total_airports": 25,
+  "total_airports": 26,
   "top_airlines": [
    {
     "label": "Smart Cat",
@@ -143,11 +144,11 @@
     "count": 4
    },
    {
-    "label": "NH",
-    "count": 2
+    "label": "Dynasty",
+    "count": 3
    },
    {
-    "label": "Dynasty",
+    "label": "NH",
     "count": 2
    }
   ],
@@ -155,7 +156,7 @@
   "top_aircraft": [
    {
     "label": "A20N",
-    "count": 31
+    "count": 32
    },
    {
     "label": "B773",
@@ -197,15 +198,15 @@
     "count": 2
    }
   ],
-  "total_routes": 25,
+  "total_routes": 26,
   "top_countries": [
    {
     "label": "TW",
-    "count": 72
+    "count": 73
    },
    {
     "label": "JP",
-    "count": 25
+    "count": 26
    },
    {
     "label": "HK",
@@ -224,7 +225,7 @@
   "by_year": [
    {
     "label": "2026",
-    "count": 66
+    "count": 67
    }
   ],
   "by_month_of_year": [
@@ -254,7 +255,7 @@
    },
    {
     "label": 7,
-    "count": 10
+    "count": 11
    },
    {
     "label": 8,
@@ -284,7 +285,7 @@
    },
    {
     "label": 1,
-    "count": 7
+    "count": 8
    },
    {
     "label": 2,
