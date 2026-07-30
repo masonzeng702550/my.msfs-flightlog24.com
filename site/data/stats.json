@@ -1,30 +1,30 @@
 {
- "flights_total": 67,
- "flights_complete": 48,
+ "flights_total": 80,
+ "flights_complete": 61,
  "flights_partial": 19,
- "domestic": 37,
- "international": 11,
- "distance_total_nm": 15718.0,
- "distance_total_km": 29110.0,
- "distance_total_miles": 18088.0,
- "around_earth": 0.73,
- "block_time_total_min": 2183.0,
- "block_time_human": "36h 23m",
+ "domestic": 46,
+ "international": 15,
+ "distance_total_nm": 20164.0,
+ "distance_total_km": 37343.0,
+ "distance_total_miles": 23204.0,
+ "around_earth": 0.93,
+ "block_time_total_min": 3001.0,
+ "block_time_human": "50h 01m",
  "by_aircraft": [
   {
    "aircraft": "A20N",
-   "flights": 32,
-   "nm": 2480.4
+   "flights": 35,
+   "nm": 3684.8
   },
   {
    "aircraft": "B773",
-   "flights": 13,
-   "nm": 7143.3
+   "flights": 18,
+   "nm": 7325.3
   },
   {
    "aircraft": "B78X",
-   "flights": 12,
-   "nm": 4953.3
+   "flights": 16,
+   "nm": 7993.7
   },
   {
    "aircraft": "DA40",
@@ -35,6 +35,11 @@
    "aircraft": "B748",
    "flights": 2,
    "nm": 48.9
+  },
+  {
+   "aircraft": "A03N",
+   "flights": 1,
+   "nm": 18.8
   },
   {
    "aircraft": "DA62",
@@ -64,6 +69,7 @@
   "RCTP",
   "RCYU",
   "RJAA",
+  "RJBB",
   "RJBE",
   "RJFF",
   "RJFT",
@@ -103,18 +109,18 @@
   },
   {
    "month": "2026-07",
-   "flights": 11
+   "flights": 24
   }
  ],
  "analytics": {
   "top_airports": [
    {
     "label": "RCTP",
-    "count": 26
+    "count": 31
    },
    {
     "label": "RCSS",
-    "count": 25
+    "count": 26
    },
    {
     "label": "RCFN",
@@ -122,49 +128,49 @@
    },
    {
     "label": "RJTT",
-    "count": 7
+    "count": 8
    },
    {
-    "label": "VHHH",
-    "count": 5
+    "label": "RJFF",
+    "count": 8
    }
   ],
-  "total_airports": 26,
+  "total_airports": 27,
   "top_airlines": [
    {
-    "label": "Smart Cat",
-    "count": 10
+    "label": "China Airlines",
+    "count": 11
    },
    {
-    "label": "China Airlines",
-    "count": 8
+    "label": "Smart Cat",
+    "count": 11
+   },
+   {
+    "label": "Dynasty",
+    "count": 4
    },
    {
     "label": "EVA Air",
     "count": 4
    },
    {
-    "label": "Dynasty",
+    "label": "Japan Airlines",
     "count": 3
-   },
-   {
-    "label": "NH",
-    "count": 2
    }
   ],
-  "total_airlines": 11,
+  "total_airlines": 14,
   "top_aircraft": [
    {
     "label": "A20N",
-    "count": 32
+    "count": 35
    },
    {
     "label": "B773",
-    "count": 13
+    "count": 18
    },
    {
     "label": "B78X",
-    "count": 12
+    "count": 16
    },
    {
     "label": "DA40",
@@ -175,11 +181,11 @@
     "count": 2
    }
   ],
-  "total_aircraft": 8,
+  "total_aircraft": 9,
   "top_routes": [
    {
     "label": "RCTP–RCSS",
-    "count": 16
+    "count": 17
    },
    {
     "label": "VHHH–VHSS",
@@ -194,38 +200,38 @@
     "count": 3
    },
    {
-    "label": "RCSS–RJTT",
+    "label": "RCTP–RJBB",
     "count": 2
    }
   ],
-  "total_routes": 26,
+  "total_routes": 36,
   "top_countries": [
    {
     "label": "TW",
-    "count": 73
+    "count": 80
    },
    {
     "label": "JP",
-    "count": 26
+    "count": 39
    },
    {
     "label": "HK",
-    "count": 9
+    "count": 11
+   },
+   {
+    "label": "KR",
+    "count": 4
    },
    {
     "label": "MO",
     "count": 3
-   },
-   {
-    "label": "KR",
-    "count": 1
    }
   ],
   "total_countries": 8,
   "by_year": [
    {
     "label": "2026",
-    "count": 67
+    "count": 80
    }
   ],
   "by_month_of_year": [
@@ -255,7 +261,7 @@
    },
    {
     "label": 7,
-    "count": 11
+    "count": 24
    },
    {
     "label": 8,
@@ -285,23 +291,23 @@
    },
    {
     "label": 1,
-    "count": 8
+    "count": 11
    },
    {
     "label": 2,
-    "count": 9
+    "count": 13
    },
    {
     "label": 3,
-    "count": 5
-   },
-   {
-    "label": 4,
     "count": 7
    },
    {
+    "label": 4,
+    "count": 10
+   },
+   {
     "label": 5,
-    "count": 12
+    "count": 13
    },
    {
     "label": 6,
