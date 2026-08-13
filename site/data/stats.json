@@ -1,30 +1,30 @@
 {
- "flights_total": 80,
- "flights_complete": 61,
- "flights_partial": 19,
- "domestic": 46,
- "international": 15,
- "distance_total_nm": 20164.0,
- "distance_total_km": 37343.0,
- "distance_total_miles": 23204.0,
- "around_earth": 0.93,
- "block_time_total_min": 3001.0,
- "block_time_human": "50h 01m",
+ "flights_total": 94,
+ "flights_complete": 73,
+ "flights_partial": 21,
+ "domestic": 51,
+ "international": 22,
+ "distance_total_nm": 35312.0,
+ "distance_total_km": 65398.0,
+ "distance_total_miles": 40637.0,
+ "around_earth": 1.63,
+ "block_time_total_min": 5192.0,
+ "block_time_human": "86h 32m",
  "by_aircraft": [
   {
    "aircraft": "A20N",
-   "flights": 35,
-   "nm": 3684.8
-  },
-  {
-   "aircraft": "B773",
-   "flights": 18,
-   "nm": 7325.3
+   "flights": 40,
+   "nm": 4150.8
   },
   {
    "aircraft": "B78X",
-   "flights": 16,
-   "nm": 7993.7
+   "flights": 23,
+   "nm": 22081.800000000003
+  },
+  {
+   "aircraft": "B773",
+   "flights": 19,
+   "nm": 7836.8
   },
   {
    "aircraft": "DA40",
@@ -35,6 +35,11 @@
    "aircraft": "B748",
    "flights": 2,
    "nm": 48.9
+  },
+  {
+   "aircraft": "FA18E",
+   "flights": 1,
+   "nm": 83.1
   },
   {
    "aircraft": "A03N",
@@ -59,6 +64,7 @@
  ],
  "airports_visited": [
   "KPHX",
+  "PHNL",
   "RCFN",
   "RCGI",
   "RCKH",
@@ -82,9 +88,13 @@
   "ROIG",
   "VHHH",
   "VHSS",
+  "VIDP",
   "VMMC",
+  "WADD",
   "WIDD",
-  "WSSS"
+  "WSSS",
+  "ZSPD",
+  "ZSSS"
  ],
  "by_month": [
   {
@@ -109,68 +119,72 @@
   },
   {
    "month": "2026-07",
-   "flights": 24
+   "flights": 26
+  },
+  {
+   "month": "2026-08",
+   "flights": 12
   }
  ],
  "analytics": {
   "top_airports": [
    {
     "label": "RCTP",
-    "count": 31
+    "count": 39
    },
    {
     "label": "RCSS",
-    "count": 26
+    "count": 32
+   },
+   {
+    "label": "RJTT",
+    "count": 9
    },
    {
     "label": "RCFN",
     "count": 9
    },
    {
-    "label": "RJTT",
-    "count": 8
-   },
-   {
     "label": "RJFF",
     "count": 8
    }
   ],
-  "total_airports": 27,
+  "total_airports": 32,
   "top_airlines": [
+   {
+    "label": "Smart Cat",
+    "count": 13
+   },
    {
     "label": "China Airlines",
     "count": 11
    },
    {
-    "label": "Smart Cat",
-    "count": 11
+    "label": "Dynasty",
+    "count": 6
    },
    {
-    "label": "Dynasty",
-    "count": 4
+    "label": "EVA",
+    "count": 6
    },
    {
     "label": "EVA Air",
-    "count": 4
-   },
-   {
-    "label": "Japan Airlines",
-    "count": 3
+    "count": 5
    }
   ],
   "total_airlines": 14,
   "top_aircraft": [
    {
     "label": "A20N",
-    "count": 35
-   },
-   {
-    "label": "B773",
-    "count": 18
+    "count": 40
    },
    {
     "label": "B78X",
-    "count": 16
+    "count": 23
+   },
+   {
+    "label": "B773",
+    "count": 19
    },
    {
     "label": "DA40",
@@ -181,11 +195,15 @@
     "count": 2
    }
   ],
-  "total_aircraft": 9,
+  "total_aircraft": 10,
   "top_routes": [
    {
     "label": "RCTP–RCSS",
     "count": 17
+   },
+   {
+    "label": "RCSS–RJTT",
+    "count": 3
    },
    {
     "label": "VHHH–VHSS",
@@ -198,40 +216,36 @@
    {
     "label": "RCQC–RCKH",
     "count": 3
-   },
-   {
-    "label": "RCTP–RJBB",
-    "count": 2
    }
   ],
-  "total_routes": 36,
+  "total_routes": 43,
   "top_countries": [
    {
     "label": "TW",
-    "count": 80
+    "count": 97
    },
    {
     "label": "JP",
-    "count": 39
+    "count": 41
    },
    {
     "label": "HK",
-    "count": 11
+    "count": 12
    },
    {
     "label": "KR",
     "count": 4
    },
    {
-    "label": "MO",
+    "label": "SG",
     "count": 3
    }
   ],
-  "total_countries": 8,
+  "total_countries": 10,
   "by_year": [
    {
     "label": "2026",
-    "count": 80
+    "count": 94
    }
   ],
   "by_month_of_year": [
@@ -261,11 +275,11 @@
    },
    {
     "label": 7,
-    "count": 24
+    "count": 26
    },
    {
     "label": 8,
-    "count": 0
+    "count": 12
    },
    {
     "label": 9,
@@ -287,11 +301,11 @@
   "by_weekday": [
    {
     "label": 0,
-    "count": 16
+    "count": 19
    },
    {
     "label": 1,
-    "count": 11
+    "count": 12
    },
    {
     "label": 2,
@@ -299,11 +313,11 @@
    },
    {
     "label": 3,
-    "count": 7
+    "count": 12
    },
    {
     "label": 4,
-    "count": 10
+    "count": 11
    },
    {
     "label": 5,
@@ -311,7 +325,7 @@
    },
    {
     "label": 6,
-    "count": 10
+    "count": 14
    }
   ],
   "year_span": 1

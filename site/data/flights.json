@@ -1,5 +1,369 @@
 [
  {
+  "id": "2026-08-13-RCTP-PHNL-a525d5",
+  "date": "2026-08-13",
+  "time_local": "23:46",
+  "aircraft": "China Airlines Boeing 787-10",
+  "model": "B78X",
+  "airline": "Dynasty",
+  "flight_no": "1123",
+  "departure": "RCTP",
+  "arrival": "PHNL",
+  "dep_country": "TW",
+  "arr_country": "US",
+  "dep_pos": [
+   121.233,
+   25.0777
+  ],
+  "arr_pos": [
+   -157.92567,
+   21.31839
+  ],
+  "distance_nm": 5052.6,
+  "cruise_ft": 39000,
+  "block_min": 615.7,
+  "air_min": 611.3,
+  "complete": true,
+  "title": null,
+  "tags": []
+ },
+ {
+  "id": "2026-08-13-RCTP-VIDP-b690bb",
+  "date": "2026-08-13",
+  "time_local": "01:01",
+  "aircraft": "Boeing 787-10 EVA AIR",
+  "model": "B78X",
+  "airline": "EVA",
+  "flight_no": "9",
+  "departure": "RCTP",
+  "arrival": "VIDP",
+  "dep_country": "TW",
+  "arr_country": "IN",
+  "dep_pos": [
+   121.233,
+   25.0777
+  ],
+  "arr_pos": [
+   77.09519,
+   28.55563
+  ],
+  "distance_nm": 2610.7,
+  "cruise_ft": 35000,
+  "block_min": 348.1,
+  "air_min": 332.3,
+  "complete": true,
+  "title": null,
+  "tags": []
+ },
+ {
+  "id": "2026-08-11-RCSS-RJTT-c5626b",
+  "date": "2026-08-11",
+  "time_local": "14:47",
+  "aircraft": "Boeing 787-10 ANA",
+  "model": "B78X",
+  "airline": "NH",
+  "flight_no": "919",
+  "departure": "RCSS",
+  "arrival": "RJTT",
+  "dep_country": "TW",
+  "arr_country": "JP",
+  "dep_pos": [
+   121.55282,
+   25.06724
+  ],
+  "arr_pos": [
+   139.78696,
+   35.54968
+  ],
+  "distance_nm": 1203.3,
+  "cruise_ft": 39000,
+  "block_min": 183.3,
+  "air_min": 160.5,
+  "complete": true,
+  "title": null,
+  "tags": []
+ },
+ {
+  "id": "2026-08-10-ZSSS-ZSPD-3f444b",
+  "date": "2026-08-10",
+  "time_local": "01:10",
+  "aircraft": "Airbus A320 Neo Asobo",
+  "model": "A20N",
+  "airline": null,
+  "flight_no": "1123",
+  "departure": "ZSSS",
+  "arrival": "ZSPD",
+  "dep_country": "CN",
+  "arr_country": "CN",
+  "dep_pos": [
+   121.33426,
+   31.1981
+  ],
+  "arr_pos": [
+   121.805,
+   31.1434
+  ],
+  "distance_nm": 89.1,
+  "cruise_ft": 2500,
+  "block_min": 30.8,
+  "air_min": 24.0,
+  "complete": true,
+  "title": null,
+  "tags": []
+ },
+ {
+  "id": "2026-08-09-RJBB-RCTP-528767",
+  "date": "2026-08-09",
+  "time_local": "21:25",
+  "aircraft": "Boeing 787-10 ANA",
+  "model": "B78X",
+  "airline": "NH",
+  "flight_no": "919",
+  "departure": "RJBB",
+  "arrival": "RCTP",
+  "dep_country": "JP",
+  "arr_country": "TW",
+  "dep_pos": [
+   135.244,
+   34.4273
+  ],
+  "arr_pos": [
+   121.233,
+   25.0777
+  ],
+  "distance_nm": 956.5,
+  "cruise_ft": 35000,
+  "block_min": 154.2,
+  "air_min": 133.5,
+  "complete": true,
+  "title": null,
+  "tags": []
+ },
+ {
+  "id": "2026-08-06-RCYU-RCSS-80f62d",
+  "date": "2026-08-06",
+  "time_local": "01:11",
+  "aircraft": "Boeing F/A 18E Super Hornet Asobo",
+  "model": "FA18E",
+  "airline": null,
+  "flight_no": null,
+  "departure": "RCYU",
+  "arrival": "RCSS",
+  "dep_country": "TW",
+  "arr_country": "TW",
+  "dep_pos": [
+   121.61799,
+   24.02316
+  ],
+  "arr_pos": [
+   121.55282,
+   25.06724
+  ],
+  "distance_nm": 83.1,
+  "cruise_ft": 7500,
+  "block_min": 16.8,
+  "air_min": 15.3,
+  "complete": true,
+  "title": null,
+  "tags": []
+ },
+ {
+  "id": "2026-08-06-RCSS-RCYU-0189be",
+  "date": "2026-08-06",
+  "time_local": "00:50",
+  "aircraft": "Airbus A320 Neo EVA Airline",
+  "model": "A20N",
+  "airline": "Eva",
+  "flight_no": "BR911",
+  "departure": "RCSS",
+  "arrival": "RCYU",
+  "dep_country": "TW",
+  "arr_country": "TW",
+  "dep_pos": [
+   121.55282,
+   25.06724
+  ],
+  "arr_pos": [
+   121.61799,
+   24.02316
+  ],
+  "distance_nm": 135.0,
+  "cruise_ft": 8000,
+  "block_min": 50.8,
+  "air_min": 32.7,
+  "complete": true,
+  "title": null,
+  "tags": []
+ },
+ {
+  "id": "2026-08-03-RCTP-RCTP-28a547",
+  "date": "2026-08-03",
+  "time_local": "21:55",
+  "aircraft": "Boeing 787-10 EVA AIR",
+  "model": "B78X",
+  "airline": "EVA",
+  "flight_no": "9",
+  "departure": "RCTP",
+  "arrival": "RCTP",
+  "dep_country": "TW",
+  "arr_country": "TW",
+  "dep_pos": [
+   121.233,
+   25.0777
+  ],
+  "arr_pos": [
+   121.233,
+   25.0777
+  ],
+  "distance_nm": 130.2,
+  "cruise_ft": 3000,
+  "block_min": 39.8,
+  "air_min": 31.2,
+  "complete": true,
+  "title": null,
+  "tags": []
+ },
+ {
+  "id": "2026-08-03-WSSS-RCTP-495c1a",
+  "date": "2026-08-03",
+  "time_local": "17:38",
+  "aircraft": "Boeing 787-10 EVA AIR",
+  "model": "B78X",
+  "airline": "EVA",
+  "flight_no": "9",
+  "departure": "WSSS",
+  "arrival": "RCTP",
+  "dep_country": "SG",
+  "arr_country": "TW",
+  "dep_pos": [
+   103.994,
+   1.35019
+  ],
+  "arr_pos": [
+   121.233,
+   25.0777
+  ],
+  "distance_nm": 1908.1,
+  "cruise_ft": 40000,
+  "block_min": 293.9,
+  "air_min": 258.4,
+  "complete": true,
+  "title": null,
+  "tags": []
+ },
+ {
+  "id": "2026-08-02-RCSS-RCSS-0905c6",
+  "date": "2026-08-02",
+  "time_local": "23:14",
+  "aircraft": "Airbus A320 Neo Tigerair Taiwan SoccerYCA",
+  "model": "A20N",
+  "airline": "Smart Cat",
+  "flight_no": "IT231",
+  "departure": "RCSS",
+  "arrival": "RCSS",
+  "dep_country": "TW",
+  "arr_country": "TW",
+  "dep_pos": [
+   121.55282,
+   25.06724
+  ],
+  "arr_pos": [
+   121.55282,
+   25.06724
+  ],
+  "distance_nm": 55.9,
+  "cruise_ft": 4000,
+  "block_min": 22.4,
+  "air_min": 15.8,
+  "complete": true,
+  "title": null,
+  "tags": []
+ },
+ {
+  "id": "2026-08-02-UNKN-RCSS-f661d0",
+  "date": "2026-08-02",
+  "time_local": "22:41",
+  "aircraft": "Airbus A320 Neo Tigerair Taiwan SoccerYCA",
+  "model": "A20N",
+  "airline": null,
+  "flight_no": null,
+  "departure": "UNKN",
+  "arrival": "RCSS",
+  "dep_country": null,
+  "arr_country": "TW",
+  "dep_pos": [
+   121.77719,
+   24.96227
+  ],
+  "arr_pos": [
+   121.55282,
+   25.06724
+  ],
+  "distance_nm": 28.9,
+  "cruise_ft": 3000,
+  "block_min": 12.8,
+  "air_min": null,
+  "complete": false,
+  "title": null,
+  "tags": []
+ },
+ {
+  "id": "2026-08-02-RCQC-UNKN-839138",
+  "date": "2026-08-02",
+  "time_local": "22:25",
+  "aircraft": "Airbus A320 Neo Tigerair Taiwan SoccerYCA",
+  "model": "A20N",
+  "airline": "Smart Cat",
+  "flight_no": "IT231",
+  "departure": "RCQC",
+  "arrival": "UNKN",
+  "dep_country": "TW",
+  "arr_country": null,
+  "dep_pos": [
+   119.628,
+   23.5687
+  ],
+  "arr_pos": [
+   121.77634,
+   24.96145
+  ],
+  "distance_nm": 157.1,
+  "cruise_ft": 15000,
+  "block_min": 29.6,
+  "air_min": null,
+  "complete": false,
+  "title": null,
+  "tags": []
+ },
+ {
+  "id": "2026-07-31-RCTP-WADD-e87148",
+  "date": "2026-07-31",
+  "time_local": "16:41",
+  "aircraft": "China Airlines Boeing 787-10",
+  "model": "B78X",
+  "airline": "Dynasty",
+  "flight_no": "1123",
+  "departure": "RCTP",
+  "arrival": "WADD",
+  "dep_country": "TW",
+  "arr_country": "ID",
+  "dep_pos": [
+   121.233,
+   25.0777
+  ],
+  "arr_pos": [
+   115.16712,
+   -8.74841
+  ],
+  "distance_nm": 2226.7,
+  "cruise_ft": 37000,
+  "block_min": 294.8,
+  "air_min": 289.0,
+  "complete": true,
+  "title": null,
+  "tags": []
+ },
+ {
   "id": "2026-07-31-RCTP-RJBB-bd0039",
   "date": "2026-07-31",
   "time_local": "00:27",
@@ -451,6 +815,34 @@
   "id": "2026-07-09-RCTP-VHHH-0ee00b",
   "date": "2026-07-09",
   "time_local": "12:59",
+  "aircraft": "Boeing 777-300ER EVA Air 8K",
+  "model": "B773",
+  "airline": "EVA Air",
+  "flight_no": "TEMP",
+  "departure": "RCTP",
+  "arrival": "VHHH",
+  "dep_country": "TW",
+  "arr_country": "HK",
+  "dep_pos": [
+   121.233,
+   25.0777
+  ],
+  "arr_pos": [
+   113.91486,
+   22.31184
+  ],
+  "distance_nm": 511.5,
+  "cruise_ft": 30000,
+  "block_min": 98.6,
+  "air_min": 73.3,
+  "complete": true,
+  "title": null,
+  "tags": []
+ },
+ {
+  "id": "2026-07-09-RCTP-VHHH-f9341d",
+  "date": "2026-07-09",
+  "time_local": "12:57",
   "aircraft": "Boeing 777-300ER EVA Air 8K",
   "model": "B773",
   "airline": "EVA Air",
