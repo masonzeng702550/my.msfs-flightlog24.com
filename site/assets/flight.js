@@ -519,9 +519,7 @@
   const TERRAIN_CREDIT = "Imagery © Esri · Elevation: AWS Terrain Tiles";
   const ELEV_MAX_Z = 14;        // terrarium coverage tops out here
   const TILE_SEGS = 24;         // vertices per tile edge - 1
-  const GRID = 5;               // detailed tiles kept around the aircraft
-  const BACKDROP_DZ = 5;        // backdrop sits this many zoom levels coarser
-  const BACKDROP_GRID = 5;      // ...so it reaches ~16x further for 25 tiles
+  const GRID = 7;               // GRID x GRID tiles kept around the aircraft
 
   const tile2lon = (x, z) => x / Math.pow(2, z) * 360 - 180;
   const tile2lat = (y, z) => {
@@ -534,17 +532,18 @@
     return (1 - Math.log(Math.tan(r) + 1 / Math.cos(r)) / Math.PI) / 2 * Math.pow(2, z);
   };
 
-  // higher up you see further, so drop zoom (wider tiles) as altitude grows;
-  // on the ground we want taxiway-level detail, which needs z17
+  // One tile grid, sized so the horizon roughly matches what you'd really see:
+  // fine enough for taxiways on the ground, and coarse enough at altitude that
+  // GRID tiles still reach hundreds of km. A second, coarser "backdrop" layer
+  // was tried here and removed — overlapping it with these tiles put two nearly
+  // coplanar surfaces in the same place and the ground flickered (z-fighting).
   function zoomForAltitude(altM) {
-    if (altM < 200) return 17;
-    if (altM < 500) return 16;
-    if (altM < 1200) return 15;
-    if (altM < 2500) return 14;
-    if (altM < 5000) return 13;
-    if (altM < 9000) return 12;
-    if (altM < 13000) return 11;
-    return 10;
+    if (altM < 200) return 16;    //   ~4 km across
+    if (altM < 700) return 14;    //  ~17 km
+    if (altM < 2500) return 12;   //  ~68 km
+    if (altM < 7000) return 11;   // ~137 km
+    if (altM < 12000) return 10;  // ~274 km
+    return 9;                     // ~547 km
   }
 
   function loadImage(url) {
@@ -606,7 +605,7 @@
     scene.add(group);
     const tiles = new Map();       // "z/x/y" -> {mesh, elev}
     const elevCache = new Map();   // "z/x/y" -> Float32Array | null
-    let key = "", building = false;
+    let key = "", building = false, pending = null;
 
     // `sub` maps this tile onto its (possibly lower-zoom) elevation tile, so
     // relief still works when imagery is zoomed in past the terrarium max zoom.
@@ -655,9 +654,9 @@
       return mesh;
     }
 
-    // load one layer's worth of tiles around (lat,lon); `depth` pushes a layer
-    // slightly down so a coarse backdrop never z-fights the detailed tiles on top
-    function layerJobs(z, lat, lon, grid, depth, want, origin, project) {
+    // load the tiles around (lat,lon) at one zoom level
+
+    function layerJobs(z, lat, lon, grid, want, origin, project) {
       const cx = Math.floor(lon2tile(lon, z)), cy = Math.floor(lat2tile(lat, z));
       const half = (grid - 1) / 2, jobs = [];
       for (let dx = -half; dx <= half; dx++) {
@@ -693,7 +692,7 @@
             const px = Math.floor(wx / scale), py = Math.floor(ty / scale);
             const sub = scale === 1 ? null : { scale, ox: wx - px * scale, oy: ty - py * scale };
             const mesh = buildTile(z, tx, ty, elevCache.get(ekey), tex, origin, project, sub);
-            if (depth) mesh.position.y -= depth;
+
             if (tiles.has(id)) {                     // another pass won the race
               mesh.geometry.dispose(); if (tex) tex.dispose(); mesh.material.dispose();
               return;
@@ -706,35 +705,41 @@
       return jobs;
     }
 
+    function drop(id) {
+      const mesh = tiles.get(id);
+      if (!mesh) return;
+      group.remove(mesh);
+      mesh.geometry.dispose();
+      if (mesh.material.map) mesh.material.map.dispose();
+      mesh.material.dispose();
+      tiles.delete(id);
+    }
+
     async function rebuild(lat, lon, altM, origin, project) {
       const z = zoomForAltitude(altM);
-      const bz = Math.max(4, z - BACKDROP_DZ);
       const cx = Math.floor(lon2tile(lon, z)), cy = Math.floor(lat2tile(lat, z));
-      const bcx = Math.floor(lon2tile(lon, bz)), bcy = Math.floor(lat2tile(lat, bz));
-      const k = `${z}/${cx}/${cy}|${bz}/${bcx}/${bcy}`;
-      if (k === key || building) return;
+      const k = `${z}/${cx}/${cy}`;
+      if (k === key) return;
+      // A request that lands mid-build used to be dropped, which during a climb
+      // meant the view could end up with no ground at all. Remember the latest
+      // one instead and run it as soon as this build finishes.
+      if (building) { pending = [lat, lon, altM, origin, project]; return; }
       building = true;
       key = k;
 
-      // the horizon is set by the coarse backdrop, not the detailed tiles
-      const backdropTileM = 40075017 * Math.cos(lat * DEG2RAD) / Math.pow(2, bz);
-      if (onCoverage) onCoverage(backdropTileM * BACKDROP_GRID / 2);
+      const tileM = 40075017 * Math.cos(lat * DEG2RAD) / Math.pow(2, z);
+      if (onCoverage) onCoverage(tileM * GRID / 2);
+
+      // Tiles from another zoom cover the same ground as the ones we're about to
+      // load. Drop them up front rather than after the loads: letting the two
+      // sets coexist is exactly what makes the ground flicker.
+      for (const id of [...tiles.keys()]) if (!id.startsWith(z + "/")) drop(id);
 
       const want = new Set();
-      const jobs = [
-        ...layerJobs(z, lat, lon, GRID, 0, want, origin, project),
-        ...layerJobs(bz, lat, lon, BACKDROP_GRID, 60, want, origin, project),
-      ];
-      await Promise.all(jobs);
-      for (const [id, mesh] of [...tiles]) {         // retire tiles we moved away from
-        if (want.has(id)) continue;
-        group.remove(mesh);
-        mesh.geometry.dispose();
-        if (mesh.material.map) mesh.material.map.dispose();
-        mesh.material.dispose();
-        tiles.delete(id);
-      }
+      await Promise.all(layerJobs(z, lat, lon, GRID, want, origin, project));
+      for (const id of [...tiles.keys()]) if (!want.has(id)) drop(id);
       building = false;
+      if (pending) { const p = pending; pending = null; rebuild(...p); }
     }
 
     return {
