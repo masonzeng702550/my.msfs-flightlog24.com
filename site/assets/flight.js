@@ -490,6 +490,199 @@
   const metersPerDegLat = 110540;
   const metersPerDegLon = lat => 111320 * Math.cos(lat * DEG2RAD);
 
+  // ── satellite terrain ──────────────────────────────────────────────────
+  // Real ground under the aircraft, FR24-style, from two key-free CORS-enabled
+  // sources: Esri World Imagery for the texture and AWS Terrain Tiles
+  // (terrarium PNG, elevation packed into RGB) for the height field.
+  const IMAGERY_URL = (z, x, y) =>
+    `https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/${z}/${y}/${x}`;
+  const ELEVATION_URL = (z, x, y) =>
+    `https://s3.amazonaws.com/elevation-tiles-prod/terrarium/${z}/${x}/${y}.png`;
+  const TERRAIN_CREDIT = "Imagery © Esri · Elevation: AWS Terrain Tiles";
+  const ELEV_MAX_Z = 14;        // terrarium coverage tops out here
+  const TILE_SEGS = 24;         // vertices per tile edge - 1
+  const GRID = 7;               // GRID x GRID tiles kept around the aircraft
+
+  const tile2lon = (x, z) => x / Math.pow(2, z) * 360 - 180;
+  const tile2lat = (y, z) => {
+    const n = Math.PI - 2 * Math.PI * y / Math.pow(2, z);
+    return 180 / Math.PI * Math.atan(.5 * (Math.exp(n) - Math.exp(-n)));
+  };
+  const lon2tile = (lon, z) => (lon + 180) / 360 * Math.pow(2, z);
+  const lat2tile = (lat, z) => {
+    const r = lat * DEG2RAD;
+    return (1 - Math.log(Math.tan(r) + 1 / Math.cos(r)) / Math.PI) / 2 * Math.pow(2, z);
+  };
+
+  // higher up you see further, so drop zoom (wider tiles) as altitude grows;
+  // on the ground we want taxiway-level detail, which needs z17
+  function zoomForAltitude(altM) {
+    if (altM < 200) return 17;
+    if (altM < 500) return 16;
+    if (altM < 1200) return 15;
+    if (altM < 2500) return 14;
+    if (altM < 5000) return 13;
+    if (altM < 9000) return 12;
+    if (altM < 13000) return 11;
+    return 10;
+  }
+
+  function loadImage(url) {
+    return new Promise(resolve => {
+      const img = new Image();
+      img.crossOrigin = "anonymous";
+      img.onload = () => resolve(img);
+      img.onerror = () => resolve(null);
+      img.src = url;
+    });
+  }
+
+  // terrarium packs metres as (R * 256 + G + B / 256) - 32768
+  const elevCanvas = document.createElement("canvas");
+  elevCanvas.width = elevCanvas.height = 256;
+  const elevCtx = elevCanvas.getContext("2d", { willReadFrequently: true });
+  function decodeElevation(img) {
+    elevCtx.clearRect(0, 0, 256, 256);
+    elevCtx.drawImage(img, 0, 0, 256, 256);
+    let data;
+    try { data = elevCtx.getImageData(0, 0, 256, 256).data; }
+    catch (e) { return null; }                       // tainted canvas — skip relief
+    const out = new Float32Array(256 * 256);
+    for (let i = 0, p = 0; i < out.length; i++, p += 4) {
+      out[i] = (data[p] * 256 + data[p + 1] + data[p + 2] / 256) - 32768;
+    }
+    return out;
+  }
+
+  function createTerrain(scene, renderer, onCoverage) {
+    const maxAniso = renderer.capabilities.getMaxAnisotropy ? renderer.capabilities.getMaxAnisotropy() : 1;
+    const group = new THREE.Group();
+    scene.add(group);
+    const tiles = new Map();       // "z/x/y" -> {mesh, elev}
+    const elevCache = new Map();   // "z/x/y" -> Float32Array | null
+    let key = "", building = false;
+
+    // `sub` maps this tile onto its (possibly lower-zoom) elevation tile, so
+    // relief still works when imagery is zoomed in past the terrarium max zoom
+    function sampleElev(elev, i, j, sub) {
+      if (!elev) return 0;
+      const u = sub ? (sub.ox + i / TILE_SEGS) / sub.scale : i / TILE_SEGS;
+      const v = sub ? (sub.oy + j / TILE_SEGS) / sub.scale : j / TILE_SEGS;
+      const px = Math.max(0, Math.min(255, Math.round(u * 255)));
+      const py = Math.max(0, Math.min(255, Math.round(v * 255)));
+      return elev[py * 256 + px];
+    }
+
+    // Vertices are stored relative to the tile's own centre and the mesh is then
+    // placed with project(), so when the local metre frame recentres we only have
+    // to move each tile rather than rebuild its geometry.
+    function buildTile(z, x, y, elev, texture, origin, project, sub) {
+      const geo = new THREE.PlaneGeometry(1, 1, TILE_SEGS, TILE_SEGS);
+      const pos = geo.attributes.position;
+      const lon0 = tile2lon(x, z), lon1 = tile2lon(x + 1, z);
+      const lat0 = tile2lat(y, z), lat1 = tile2lat(y + 1, z);
+      const clon = (lon0 + lon1) / 2, clat = (lat0 + lat1) / 2;
+      const mLon = metersPerDegLon(origin.lat);       // match project()'s scale
+      for (let j = 0; j <= TILE_SEGS; j++) {
+        for (let i = 0; i <= TILE_SEGS; i++) {
+          const idx = j * (TILE_SEGS + 1) + i;
+          const lon = lon0 + (lon1 - lon0) * (i / TILE_SEGS);
+          const lat = lat0 + (lat1 - lat0) * (j / TILE_SEGS);
+          pos.setXYZ(idx, (lon - clon) * mLon, sampleElev(elev, i, j, sub), -(lat - clat) * metersPerDegLat);
+        }
+      }
+      pos.needsUpdate = true;
+      geo.computeVertexNormals();
+      const mat = new THREE.MeshLambertMaterial({ map: texture || null, color: texture ? 0xffffff : 0x3b5a44 });
+      const mesh = new THREE.Mesh(geo, mat);
+      mesh.renderOrder = -1;
+      mesh.userData.centre = [clat, clon];
+      const [px, pz] = project(clat, clon);
+      mesh.position.set(px, 0, pz);
+      return mesh;
+    }
+
+    async function rebuild(lat, lon, altM, origin, project) {
+      const z = zoomForAltitude(altM);
+      const cx = Math.floor(lon2tile(lon, z)), cy = Math.floor(lat2tile(lat, z));
+      const k = `${z}/${cx}/${cy}`;
+      if (k === key || building) return;
+      building = true;
+      key = k;
+      // pull the fog in to just inside the loaded area so the edge of the tile
+      // grid dissolves into haze instead of ending in a visible straight line
+      const tileM = 40075017 * Math.cos(lat * DEG2RAD) / Math.pow(2, z);
+      const radius = tileM * GRID / 2;
+      if (onCoverage) onCoverage(radius);
+
+      const half = (GRID - 1) / 2, want = new Set();
+      const jobs = [];
+      for (let dx = -half; dx <= half; dx++) {
+        for (let dy = -half; dy <= half; dy++) {
+          const tx = cx + dx, ty = cy + dy, n = Math.pow(2, z);
+          if (ty < 0 || ty >= n) continue;
+          const wx = ((tx % n) + n) % n;             // wrap at the antimeridian
+          const id = `${z}/${tx}/${ty}`;
+          want.add(id);
+          if (tiles.has(id)) continue;
+          jobs.push((async () => {
+            const ez = Math.min(z, ELEV_MAX_Z);
+            const scale = Math.pow(2, z - ez);
+            const ekey = `${ez}/${Math.floor(wx / scale)}/${Math.floor(ty / scale)}`;
+            if (!elevCache.has(ekey)) {
+              const [exs, eys] = ekey.split("/").slice(1).map(Number);
+              const img = await loadImage(ELEVATION_URL(ez, exs, eys));
+              elevCache.set(ekey, img ? decodeElevation(img) : null);
+            }
+            const img = await loadImage(IMAGERY_URL(z, wx, ty));
+            let tex = null;
+            if (img) {
+              tex = new THREE.Texture(img);
+              // 256px tiles are power-of-two, so mipmaps + anisotropy are available
+              // and stop the ground smearing into mush toward the horizon
+              tex.minFilter = THREE.LinearMipmapLinearFilter;
+              tex.magFilter = THREE.LinearFilter;
+              tex.generateMipmaps = true;
+              tex.anisotropy = Math.min(8, maxAniso);
+              tex.wrapS = tex.wrapT = THREE.ClampToEdgeWrapping;
+              tex.needsUpdate = true;
+            }
+            const px = Math.floor(wx / scale), py = Math.floor(ty / scale);
+            const sub = scale === 1 ? null : { scale, ox: wx - px * scale, oy: ty - py * scale };
+            const mesh = buildTile(z, tx, ty, elevCache.get(ekey), tex, origin, project, sub);
+            tiles.set(id, mesh);
+            group.add(mesh);
+          })());
+        }
+      }
+      await Promise.all(jobs);
+      for (const [id, mesh] of [...tiles]) {         // retire tiles we moved away from
+        if (want.has(id)) continue;
+        group.remove(mesh);
+        mesh.geometry.dispose();
+        if (mesh.material.map) mesh.material.map.dispose();
+        mesh.material.dispose();
+        tiles.delete(id);
+      }
+      building = false;
+    }
+
+    return {
+      update(lat, lon, altM, origin, project) {
+        if (!origin) return;
+        rebuild(lat, lon, altM, origin, project);
+      },
+      // the local metre frame moved under us — re-place every tile from its centre
+      relocate(project) {
+        for (const [, mesh] of tiles) {
+          const [clat, clon] = mesh.userData.centre;
+          const [px, pz] = project(clat, clon);
+          mesh.position.set(px, 0, pz);
+        }
+      },
+    };
+  }
+
   let scene3d = null, scene3dError = null;
   function ensureScene3D() {
     if (scene3d) return scene3d;
@@ -508,31 +701,31 @@
     container.appendChild(renderer.domElement);
 
     const scene = new THREE.Scene();
-    scene.background = new THREE.Color(0x05070d);
-    scene.fog = new THREE.Fog(0x05070d, 300, 2600);
-    const camera = new THREE.PerspectiveCamera(55, 1, 1, 20000);
+    const SKY = 0x8fb6de;
+    scene.background = new THREE.Color(SKY);
+    scene.fog = new THREE.Fog(SKY, 4000, 90000);
+    const camera = new THREE.PerspectiveCamera(55, 1, 1, 400000);
     camera.position.set(0, 40, 90);
 
-    scene.add(new THREE.HemisphereLight(0x8fb8ff, 0x0a1220, 1.15));
-    const sun = new THREE.DirectionalLight(0xffffff, .9);
+    scene.add(new THREE.HemisphereLight(0xbcd8f5, 0x33404d, 1.05));
+    const sun = new THREE.DirectionalLight(0xffffff, .75);
     sun.position.set(600, 900, 300); scene.add(sun);
 
-    // ground: a repeating grid texture that follows the aircraft, so it always
-    // looks endless without ever fetching real map tiles (cheap at any replay speed)
-    const gcv = document.createElement("canvas"); gcv.width = gcv.height = 256;
-    const gctx = gcv.getContext("2d");
-    gctx.fillStyle = "#0a1424"; gctx.fillRect(0, 0, 256, 256);
-    gctx.strokeStyle = "rgba(54,197,255,.16)"; gctx.lineWidth = 2; gctx.strokeRect(1, 1, 254, 254);
-    gctx.strokeStyle = "rgba(54,197,255,.07)"; gctx.lineWidth = 1;
-    for (let i = 32; i < 256; i += 32) {
-      gctx.beginPath(); gctx.moveTo(i, 0); gctx.lineTo(i, 256); gctx.moveTo(0, i); gctx.lineTo(256, i); gctx.stroke();
-    }
-    const groundTex = new THREE.CanvasTexture(gcv);
-    groundTex.wrapS = groundTex.wrapT = THREE.RepeatWrapping;
-    groundTex.repeat.set(300, 300);
-    const ground = new THREE.Mesh(new THREE.PlaneGeometry(24000, 24000), new THREE.MeshBasicMaterial({ map: groundTex }));
-    ground.rotation.x = -Math.PI / 2;
-    scene.add(ground);
+    // a plain sea plane sits under everything so oceans (which have no imagery
+    // detail worth fetching at cruise) still read as water rather than void
+    const sea = new THREE.Mesh(
+      new THREE.PlaneGeometry(1200000, 1200000),
+      new THREE.MeshBasicMaterial({ color: 0x25415c }));
+    sea.rotation.x = -Math.PI / 2;
+    sea.position.y = -1;
+    scene.add(sea);
+
+    const terrain = createTerrain(scene, renderer, radius => {
+      scene.fog.near = radius * .45;
+      scene.fog.far = radius * .98;
+      camera.far = Math.max(40000, radius * 4);
+      camera.updateProjectionMatrix();
+    });
 
     // trailing flight path (windowed, so it stays cheap regardless of flight length)
     const trailGeo = new THREE.BufferGeometry();
@@ -562,11 +755,11 @@
       applyFraming();
       initialised = false;                      // re-frame now that the true size is known
       if (lastP) update(lastP, lastSimTime || 0);
-      if (attribEl) attribEl.textContent = res.credit || "";
+      if (attribEl) attribEl.textContent = [res.credit, TERRAIN_CREDIT].filter(Boolean).join(" · ");
     });
     const groundElevM = S.length ? Math.min(...S.map(s => s[3])) * .3048 : 0;
 
-    let origin = null, initialised = false, raf3d = null, lastSimTime = null, lastP = null;
+    let origin = null, initialised = false, raf3d = null, lastSimTime = null, lastP = null, prevAC = null;
 
     function project(lat, lon) {
       return [(lon - origin.lon) * metersPerDegLon(origin.lat), -(lat - origin.lat) * metersPerDegLat];
@@ -575,7 +768,11 @@
       if (!origin) { origin = { lat, lon }; return; }
       const [dx, dz] = project(lat, lon);          // offset measured against the OLD origin
       origin = { lat, lon };
+      // everything expressed in the old frame has to move with it
       camera.position.x -= dx; camera.position.z -= dz;   // keep the camera visually still
+      controls.target.x -= dx; controls.target.z -= dz;
+      if (prevAC) { prevAC.x -= dx; prevAC.z -= dz; }
+      terrain.relocate(project);
     }
 
     function resize() {
@@ -610,7 +807,8 @@
       planeGroup.position.set(x, y, z);
       planeGroup.rotation.order = "YXZ";
       planeGroup.rotation.set((p.pitch || 0) * DEG2RAD, -p.hdg * DEG2RAD, -(p.bank || 0) * DEG2RAD);
-      ground.position.set(x, 0, z);
+      sea.position.set(x, -1, z);
+      terrain.update(p.lat, p.lon, y, origin, project);
       updateTrail(time);
 
       const agl = Math.max(0, y - groundElevM);
@@ -631,7 +829,14 @@
         const back = L * 1.1, up = L * .45, hdgRad = p.hdg * DEG2RAD;
         camera.position.set(x - Math.sin(hdgRad) * back, y + up, z + Math.cos(hdgRad) * back);
         initialised = true;
+      } else if (prevAC) {
+        // carry the camera along with the aircraft so it stays a chase view,
+        // preserving whatever offset the user set by orbiting
+        camera.position.x += x - prevAC.x;
+        camera.position.y += y - prevAC.y;
+        camera.position.z += z - prevAC.z;
       }
+      prevAC = { x, y, z };
       controls.target.set(x, y, z);
     }
 
@@ -643,7 +848,7 @@
 
     scene3d = {
       update, resize,
-      resetView() { initialised = false; lastSimTime = null; },
+      resetView() { initialised = false; lastSimTime = null; prevAC = null; },
       start() { resize(); if (!raf3d) animate(); },
       stop() { cancelAnimationFrame(raf3d); raf3d = null; },
     };

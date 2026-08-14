@@ -98,6 +98,7 @@ python3 -m http.server -d site 8000   # open http://localhost:8000 · 開啟預�
 - **Airports / 機場資料**: [OurAirports](https://ourairports.com/data/) (public domain / 公眾領域)
 - **3D globe / 地球**: [globe.gl](https://github.com/vasturiano/globe.gl) · **Maps / 地圖**: Leaflet + Esri satellite · **Charts / 圖表**: Chart.js
 - **3D chase view / 3D 追機視角**: [three.js](https://threejs.org/) — real glTF aircraft models where available, procedural low-poly shapes otherwise / 有對應機型時使用真實 glTF 模型,否則使用程序化低多邊形機身
+- **3D terrain / 立體地形**: satellite imagery from Esri World Imagery draped over a height field decoded from [AWS Terrain Tiles](https://registry.opendata.aws/terrain-tiles/) (terrarium PNG) — both key-free and CORS-enabled / 衛星影像取自 Esri World Imagery,地形高度取自 AWS Terrain Tiles(terrarium PNG),兩者皆免金鑰且支援 CORS
 - **Hosting / 托管**: GitHub Pages + GitHub Actions · **PWA**: offline-capable service worker / 可離線的 service worker
 
 ---
