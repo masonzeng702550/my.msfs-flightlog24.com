@@ -14,6 +14,7 @@ distance, duration, ground track) and write:
 Standard library only — no dependencies.
 """
 
+import argparse
 import csv
 import hashlib
 import json
@@ -27,6 +28,7 @@ RECORDINGS = ROOT / "recordings"
 AIRPORTS_CSV = ROOT / "scripts" / "airports.csv"
 OUT = ROOT / "site" / "data"
 OUT_FLIGHTS = OUT / "flights"
+MANIFEST = OUT / "manifest.json"   # source-file -> parsed-flight, for incremental runs
 
 # ── tuning ────────────────────────────────────────────────────────────────
 AIRPORT_MATCH_NM = 5.0     # nearest-airport must be within this distance
@@ -469,39 +471,111 @@ def build_analytics(flights):
     }
 
 
+# ── incremental support ────────────────────────────────────────────────────
+def source_key(path):
+    """Identity of a recording *and* its sidecar, so either one changing re-parses."""
+    h = hashlib.sha1()
+    h.update(path.read_bytes())
+    side = path.with_suffix(".meta.yml")
+    if side.exists():
+        h.update(b"\0meta\0")
+        h.update(side.read_bytes())
+    return h.hexdigest()
+
+
+def load_manifest():
+    try:
+        return json.loads(MANIFEST.read_text(encoding="utf-8"))
+    except Exception:
+        return {}
+
+
+def read_inventory(arg):
+    """Authoritative list of recording names, for CI runs that check out only the
+    recordings that actually changed (`git ls-tree` writes this file). Without it
+    we simply trust whatever is on disk."""
+    if not arg:
+        return None
+    names = set()
+    for line in Path(arg).read_text(encoding="utf-8").splitlines():
+        line = line.strip()
+        if line.endswith(".fltrec"):
+            names.add(Path(line).name)
+    return names
+
+
 def main():
+    ap = argparse.ArgumentParser(description=__doc__)
+    ap.add_argument("--full", action="store_true",
+                    help="re-parse every recording, ignoring the manifest")
+    ap.add_argument("--inventory", metavar="FILE",
+                    help="file listing every recording in the repo (one path per line); "
+                         "entries not checked out are reused from the manifest")
+    args = ap.parse_args()
+
     airports = load_airports()
     OUT_FLIGHTS.mkdir(parents=True, exist_ok=True)
-    # drop stale output so renamed/removed flights don't linger
-    for old in OUT_FLIGHTS.glob("*.json"):
-        old.unlink()
-    for old in OUT_FLIGHTS.glob("*.geojson"):
-        old.unlink()
-    files = sorted(RECORDINGS.glob("*.fltrec"))
-    print(f"Found {len(files)} recording(s)")
+    OUT.mkdir(parents=True, exist_ok=True)
 
-    flights = []
-    for path in files:
+    manifest = {} if args.full else load_manifest()
+    inventory = read_inventory(args.inventory)
+    on_disk = {p.name: p for p in sorted(RECORDINGS.glob("*.fltrec"))}
+    names = sorted(inventory if inventory is not None else on_disk)
+    print(f"Found {len(names)} recording(s)"
+          + (f" ({len(on_disk)} checked out)" if inventory is not None else ""))
+
+    flights, keep, parsed, reused = [], set(), 0, 0
+    for name in names:
+        path, entry = on_disk.get(name), manifest.get(name)
+        cached = OUT_FLIGHTS / f"{entry['id']}.json" if entry else None
+
+        # reuse when the source is byte-identical, or when it wasn't checked out
+        if entry and cached.exists() and (path is None or entry.get("key") == source_key(path)):
+            try:
+                detail = json.loads(cached.read_text(encoding="utf-8"))
+            except Exception as e:
+                print(f"  !! {name}: cached flight unreadable ({e}), re-parsing")
+            else:
+                flights.append(summarize(detail))
+                keep.add(cached.name)
+                manifest[name] = entry
+                reused += 1
+                continue
+
+        if path is None:
+            print(f"  !! {name}: not checked out and no cached flight — skipped")
+            continue
         try:
             detail = parse_recording(path, airports)
         except Exception as e:  # never let one bad file break the build
-            print(f"  !! {path.name}: {type(e).__name__}: {e}")
+            print(f"  !! {name}: {type(e).__name__}: {e}")
+            manifest.pop(name, None)
             continue
-        (OUT_FLIGHTS / f"{detail['id']}.json").write_text(
-            json.dumps(detail, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
+        out = OUT_FLIGHTS / f"{detail['id']}.json"
+        out.write_text(json.dumps(detail, ensure_ascii=False, separators=(",", ":")),
+                       encoding="utf-8")
         flights.append(summarize(detail))
+        keep.add(out.name)
+        manifest[name] = {"key": source_key(path), "id": detail["id"]}
+        parsed += 1
         route = f"{detail['route']['departure'].get('icao')}→{detail['route']['arrival'].get('icao')}"
         flag = "" if detail["complete"] else "  [partial]"
-        print(f"  ok {path.name}: {detail['aircraft']['model'] or detail['aircraft']['title']} "
+        print(f"  ok {name}: {detail['aircraft']['model'] or detail['aircraft']['title']} "
               f"{route} {detail['distance']['track_nm']}nm{flag}")
 
+    # drop output for recordings that no longer exist
+    for old in list(OUT_FLIGHTS.glob("*.json")) + list(OUT_FLIGHTS.glob("*.geojson")):
+        if old.name not in keep:
+            old.unlink()
+    manifest = {k: v for k, v in manifest.items() if k in set(names)}
+
     flights.sort(key=lambda f: (f["date"] or "", f["time_local"] or ""), reverse=True)
-    OUT.mkdir(parents=True, exist_ok=True)
     (OUT / "flights.json").write_text(
         json.dumps(flights, ensure_ascii=False, indent=1), encoding="utf-8")
     (OUT / "stats.json").write_text(
         json.dumps(build_stats(flights), ensure_ascii=False, indent=1), encoding="utf-8")
-    print(f"Wrote {len(flights)} flight(s) -> site/data/")
+    MANIFEST.write_text(json.dumps(manifest, ensure_ascii=False, indent=1), encoding="utf-8")
+    print(f"Wrote {len(flights)} flight(s) -> site/data/  ({parsed} parsed, {reused} reused)")
 
 
 if __name__ == "__main__":
