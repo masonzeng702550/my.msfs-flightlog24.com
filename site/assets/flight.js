@@ -24,7 +24,14 @@
   const dep = f.route.departure, arr = f.route.arrival;
   const ac = f.aircraft;
   const S = f.replay || [];                 // [t, lat, lon, alt, hdg, ias]
+  unwrapLongitudes(S);                      // must run before anything reads S[..][2]
   const coords = S.map(s => [s[1], s[2]]);
+  // pins come from the airport table in raw ±180 form — move them onto the same
+  // "world copy" as the track so they don't land a lap away from it
+  if (coords.length) {
+    if (dep.lon != null) dep.lon = sameWorldAs(dep.lon, coords[0][1]);
+    if (arr.lon != null) arr.lon = sameWorldAs(arr.lon, coords[coords.length - 1][1]);
+  }
   const duration = f.duration_sec || (S.length ? S[S.length - 1][0] : 0);
   const sourceURL = rawSourceURL(f.source_file);
 
@@ -798,6 +805,25 @@
     const z = Math.min(Math.log2(1406 / lonSpan), Math.log2(703 / latSpan));
     return Math.max(3, Math.min(12, Math.floor(z)));
   }
+  // A flight crossing the antimeridian arrives as a ±180 discontinuity: a small
+  // step east reads as a ~360° jump west, which sends the track line, the replay
+  // interpolation and the 3D camera halfway around the globe. Rewrite the series
+  // as one continuous run (longitudes may leave [-180,180] — Leaflet and our own
+  // projection both handle that correctly).
+  function unwrapLongitudes(samples) {
+    if (samples.length < 2) return;
+    let shift = 0, prevRaw = samples[0][2];
+    for (let i = 1; i < samples.length; i++) {
+      const raw = samples[i][2], d = raw - prevRaw;
+      if (d > 180) shift -= 360;
+      else if (d < -180) shift += 360;
+      prevRaw = raw;
+      samples[i][2] = raw + shift;
+    }
+  }
+  // shift `lon` by whole turns so it sits closest to `ref`
+  function sameWorldAs(lon, ref) { return lon + 360 * Math.round((ref - lon) / 360); }
+
   function lerpAngle(a, b, r) {
     let d = ((b - a + 540) % 360) - 180;
     return (a + d * r + 360) % 360;
