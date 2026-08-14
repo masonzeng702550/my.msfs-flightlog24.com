@@ -208,6 +208,7 @@
   function detectRealModel(model, title) {
     const s = `${model || ""} ${title || ""}`.toUpperCase();
     if (/\bDA-?40\b/.test(s)) return "da40";
+    if (/C-?17[28]|CESSNA\s*17[28]|SKYHAWK/.test(s)) return "c172";
     if (/\b747\b/.test(s)) return "747";
     if (/\b787\b/.test(s)) return "787";
     if (/\b777\b/.test(s)) return "777";
@@ -233,9 +234,9 @@
     a350: { credit: "A350 model © hakai315 (Sketchfab, CC-BY-4.0)",
       ground: { file: "assets/models/a350.glb", yaw: -Math.PI / 2, len: 54, sceneryRatio: 0 } },
     a330neo: { credit: "A330-900neo model (Sketchfab, CC-BY-4.0)",
-      ground: { file: "assets/models/a330neo.glb", yaw: 0, len: 63, sceneryRatio: 0 } },
+      ground: { file: "assets/models/a330neo.glb", yaw: Math.PI, len: 64, sceneryRatio: 0 } },
     a330: { credit: "A330-300 model (Sketchfab, CC-BY-4.0)",
-      ground: { file: "assets/models/a330.glb", yaw: 0, len: 63, sceneryRatio: 0 } },
+      ground: { file: "assets/models/a330.glb", yaw: Math.PI, len: 64, sceneryRatio: 0 } },
     b737: { credit: "737 model © Dlourine (Sketchfab, CC-BY-4.0)",
       ground: { file: "assets/models/b737.glb", yaw: -Math.PI / 2, len: 29, sceneryRatio: 0 } },
     a320: { credit: "A320 model © Dlourine (Sketchfab, CC-BY-4.0)",
@@ -243,9 +244,9 @@
     atr72: { credit: "ATR72 model © Isidor G (Sketchfab, CC-BY-4.0)",
       ground: { file: "assets/models/atr72.glb", yaw: Math.PI / 2, len: 20, sceneryRatio: 0 } },
     da40: { credit: "DA40 model (Sketchfab, CC-BY-4.0)",
-      ground: { file: "assets/models/da40.glb", yaw: 0, len: 8, sceneryRatio: 0 } },
-    ga: { credit: "GA aircraft model (Sketchfab, CC-BY-4.0)",
-      ground: { file: "assets/models/ga.glb", yaw: 0, len: 8, sceneryRatio: 0 } },
+      ground: { file: "assets/models/da40.glb", yaw: Math.PI, len: 12, sceneryRatio: 0 } },
+    c172: { credit: "Cessna 172 model (Sketchfab, CC-BY-4.0)",
+      ground: { file: "assets/models/c172.glb", yaw: Math.PI, len: 11, sceneryRatio: 0 } },
     747: { credit: "747-8i model (Sketchfab, CC-BY-4.0)",
       ground: { file: "assets/models/747-ground.glb", yaw: 0, len: 60, sceneryRatio: 0 },
       flight: { file: "assets/models/747-flight.glb", yaw: 0, len: 60, sceneryRatio: 0 } },
@@ -450,9 +451,9 @@
   // only one visible at a time, toggled from update() by AGL
   async function buildAircraftMesh(aircraft) {
     const category = planeCategory(aircraft.model, aircraft.title);
-    const key = detectRealModel(aircraft.model, aircraft.title) || (category === "ga" ? "ga" : null);
+    const key = detectRealModel(aircraft.model, aircraft.title);
     const spec = key && REAL_MODELS[key];
-    const result = { group: new THREE.Group(), wheels: [], credit: null, dual: false, groundMesh: null, flightMesh: null };
+    const result = { group: new THREE.Group(), wheels: [], credit: null, dual: false, groundMesh: null, flightMesh: null, acLen: 0 };
     if (spec) {
       const ground = await loadRealModel(spec.ground);
       if (ground) {
@@ -460,6 +461,7 @@
         result.wheels = ground.wheels;
         result.credit = spec.credit;
         result.groundMesh = ground.holder;
+        result.acLen = spec.ground.len;
         if (spec.flight) {
           const flight = await loadRealModel(spec.flight);
           if (flight) {
@@ -473,6 +475,7 @@
       }
     }
     result.group.add(buildProceduralPlane(category));
+    result.acLen = PROCEDURAL_LEN[category] || 20;
     return result;
   }
 
@@ -517,27 +520,37 @@
 
     // trailing flight path (windowed, so it stays cheap regardless of flight length)
     const trailGeo = new THREE.BufferGeometry();
+    trailGeo.setFromPoints([new THREE.Vector3()]);   // a Line with no position attribute throws on first render
     const trail = new THREE.Line(trailGeo, new THREE.LineBasicMaterial({ color: 0x36c5ff, transparent: true, opacity: .85 }));
     scene.add(trail);
 
     const controls = new THREE.OrbitControls(camera, renderer.domElement);
     controls.enableDamping = true; controls.dampingFactor = .08;
-    controls.minDistance = 12; controls.maxDistance = 600;
     controls.maxPolarAngle = Math.PI * .49;
 
     const attribEl = document.getElementById("rp-view3d-attrib");
     const planeGroup = new THREE.Group();
     scene.add(planeGroup);
-    const meshInfo = { wheels: [], credit: null, dual: false, groundMesh: null, flightMesh: null };
+    // acLen drives the chase framing so a DA40 isn't a speck and a 747 isn't clipped
+    const meshInfo = { wheels: [], credit: null, dual: false, groundMesh: null, flightMesh: null, acLen: 50 };
+    const applyFraming = () => {
+      controls.minDistance = meshInfo.acLen * .25;
+      controls.maxDistance = meshInfo.acLen * 12;
+    };
+    applyFraming();
     buildAircraftMesh(ac).then(res => {
       planeGroup.add(res.group);
       meshInfo.wheels = res.wheels; meshInfo.credit = res.credit; meshInfo.dual = res.dual;
       meshInfo.groundMesh = res.groundMesh; meshInfo.flightMesh = res.flightMesh;
+      meshInfo.acLen = res.acLen || 50;
+      applyFraming();
+      initialised = false;                      // re-frame now that the true size is known
+      if (lastP) update(lastP, lastSimTime || 0);
       if (attribEl) attribEl.textContent = res.credit || "";
     });
     const groundElevM = S.length ? Math.min(...S.map(s => s[3])) * .3048 : 0;
 
-    let origin = null, initialised = false, raf3d = null, lastSimTime = null;
+    let origin = null, initialised = false, raf3d = null, lastSimTime = null, lastP = null;
 
     function project(lat, lon) {
       return [(lon - origin.lon) * metersPerDegLon(origin.lat), -(lat - origin.lat) * metersPerDegLat];
@@ -569,6 +582,7 @@
     }
 
     function update(p, time) {
+      lastP = p;
       if (!origin || Math.abs(p.lat - origin.lat) + Math.abs(p.lon - origin.lon) > .03) recentre(p.lat, p.lon);
       const [x, z] = project(p.lat, p.lon), y = p.alt * .3048;
       planeGroup.position.set(x, y, z);
@@ -591,7 +605,8 @@
       }
 
       if (!initialised) {
-        const back = 55, up = 22, hdgRad = p.hdg * DEG2RAD;
+        const L = meshInfo.acLen;
+        const back = L * 1.1, up = L * .45, hdgRad = p.hdg * DEG2RAD;
         camera.position.set(x - Math.sin(hdgRad) * back, y + up, z + Math.cos(hdgRad) * back);
         initialised = true;
       }

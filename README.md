@@ -118,3 +118,13 @@ python3 -m http.server -d site 8000   # open http://localhost:8000 · 開啟預�
 - "Airbus A320-200" by [Dlourine](https://sketchfab.com/fDlruosne)
 - "Boeing 737 MAX 8" by [Dlourine](https://sketchfab.com/fDlruosne)
 - "ATR 72-600" by [Isidor G](https://sketchfab.com/AirplaneChef)
+- ["DA40 AR"](https://sketchfab.com/3d-models/da40-ar-e5db96b4a7d34bc397a5009721a43757) by SS_3D
+- ["Cessna 172"](https://sketchfab.com/3d-models/massey-da40-g1000-3961cdd472d24d22b4e379166ea5b307)
+- ["A330-941neo"](https://sketchfab.com/3d-models/a330-941neo-87d5b4104c50481a86fdfbb08241c408)
+- ["Airbus A330-300PW"](https://sketchfab.com/3d-models/airbus-a330-300pw-9cf6da60e67646c189b9aa25ba10699a)
+
+Models are downscaled and Draco-compressed for the web with
+[gltf-transform](https://gltf-transform.dev/); geometry structure is preserved
+so the landing-gear wheel detection still works.
+模型以 gltf-transform 縮小貼圖並做 Draco 壓縮以利網頁載入,幾何結構保持不變,
+起落架輪子偵測仍可正常運作。
