@@ -483,11 +483,20 @@
   const metersPerDegLat = 110540;
   const metersPerDegLon = lat => 111320 * Math.cos(lat * DEG2RAD);
 
-  let scene3d = null;
+  let scene3d = null, scene3dError = null;
   function ensureScene3D() {
-    if (scene3d || !window.THREE) return scene3d;
+    if (scene3d) return scene3d;
+    if (scene3dError) return null;                 // already failed once, don't retry
+    if (!window.THREE) { scene3dError = "three.js failed to load (blocked by an extension or offline?)"; return null; }
+    if (!THREE.OrbitControls || !THREE.GLTFLoader) { scene3dError = "three.js add-ons failed to load"; return null; }
     const container = document.getElementById("map3d");
-    const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: "low-power" });
+    let renderer;
+    try {
+      renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: "low-power" });
+    } catch (e) {
+      scene3dError = "WebGL is unavailable — enable hardware acceleration in your browser settings";
+      return null;
+    }
     renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
     container.appendChild(renderer.domElement);
 
@@ -563,7 +572,13 @@
     }
 
     function resize() {
-      const w = container.clientWidth || 1, h = container.clientHeight || 1;
+      // don't trust the stylesheet for the container's size — a stale cached
+      // style.css would leave it at 0 and the canvas would render blank
+      if (!container.clientHeight) container.style.height = "360px";
+      const w = container.clientWidth || container.parentElement.clientWidth || 640;
+      const h = container.clientHeight || 360;
+      renderer.domElement.style.width = "100%";
+      renderer.domElement.style.height = "100%";
       renderer.setSize(w, h, false);
       camera.aspect = w / h; camera.updateProjectionMatrix();
     }
@@ -666,9 +681,17 @@
       mapEl.hidden = view3D;
       map3dEl.hidden = !view3D;
       if (view3D) {
-        const sc = ensureScene3D();
+        let sc = null;
+        try { sc = ensureScene3D(); }
+        catch (e) { scene3dError = "3D view failed to start: " + (e && e.message || e); }
         if (sc) { sc.resetView(); sc.start(); sc.update(interp(t), t); }
-        else { view3D = false; view3dBtn.classList.remove("active"); mapEl.hidden = false; map3dEl.hidden = true; }
+        else {                                   // fall back to the map and say why
+          view3D = false;
+          view3dBtn.classList.remove("active");
+          view3dBtn.setAttribute("aria-pressed", "false");
+          mapEl.hidden = false; map3dEl.hidden = true; view3dHint.hidden = true;
+          alert("3D view unavailable\n\n" + (scene3dError || "unknown error"));
+        }
       } else if (scene3d) {
         scene3d.stop();
       }
