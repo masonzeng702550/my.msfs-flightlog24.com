@@ -328,6 +328,23 @@
     return wheels;
   }
 
+  // Everything to hide when the gear comes up. Named nodes are the reliable
+  // signal; the rigged wheel pivots are added so models with unnamed geometry
+  // still retract something visible.
+  function findGearParts(holder, wheels) {
+    const parts = new Set(wheels.map(w => w.pivot));
+    const NAME = /gear|wheel|tire|tyre|bogie|strut|undercarriage|\bnlg\b|\bmlg\b/i;
+    // "SeatGear" and "gearLever" are cabin/cockpit parts, not the undercarriage
+    const SKIP = /seat|interior|cabin|cockpit|lever|handle|steering|gearbox|door|light/i;
+    holder.traverse(o => {
+      if (!o.name || !NAME.test(o.name) || SKIP.test(o.name)) return;
+      // don't nest: if an ancestor already matched, the child comes along anyway
+      for (let p = o.parent; p; p = p.parent) if (parts.has(p)) return;
+      parts.add(o);
+    });
+    return [...parts];
+  }
+
   function processRealModel(scene, spec) {
     const holder = new THREE.Group();
     holder.add(scene);
@@ -399,7 +416,7 @@
     } catch (e) { console.warn("ground-clamp refine failed:", e); }
 
     const wheels = setupWheels(holder, spec.len);
-    return { holder, wheels };
+    return { holder, wheels, gearParts: findGearParts(holder, wheels) };
   }
 
   let sharedDraco = null;
@@ -460,12 +477,13 @@
     const category = planeCategory(aircraft.model, aircraft.title);
     const key = detectRealModel(aircraft.model, aircraft.title);
     const spec = key && REAL_MODELS[key];
-    const result = { group: new THREE.Group(), wheels: [], credit: null, dual: false, groundMesh: null, flightMesh: null, acLen: 0 };
+    const result = { group: new THREE.Group(), wheels: [], gearParts: [], credit: null, dual: false, groundMesh: null, flightMesh: null, acLen: 0 };
     if (spec) {
       const ground = await loadRealModel(spec.ground);
       if (ground) {
         result.group.add(ground.holder);
         result.wheels = ground.wheels;
+        result.gearParts = ground.gearParts;
         result.credit = spec.credit;
         result.groundMesh = ground.holder;
         result.acLen = spec.ground.len;
@@ -501,7 +519,9 @@
   const TERRAIN_CREDIT = "Imagery © Esri · Elevation: AWS Terrain Tiles";
   const ELEV_MAX_Z = 14;        // terrarium coverage tops out here
   const TILE_SEGS = 24;         // vertices per tile edge - 1
-  const GRID = 7;               // GRID x GRID tiles kept around the aircraft
+  const GRID = 5;               // detailed tiles kept around the aircraft
+  const BACKDROP_DZ = 5;        // backdrop sits this many zoom levels coarser
+  const BACKDROP_GRID = 5;      // ...so it reaches ~16x further for 25 tiles
 
   const tile2lon = (x, z) => x / Math.pow(2, z) * 360 - 180;
   const tile2lat = (y, z) => {
@@ -554,7 +574,33 @@
     return out;
   }
 
-  function createTerrain(scene, renderer, onCoverage) {
+  // Terrarium is ~10 m/px at best, so it renders airports as gently lumpy ground
+  // and puts runways on a slope. Where we know the real field elevation — the
+  // aircraft sat there at the start and end of the flight — flatten to it.
+  function flattenZones(samples) {
+    const zones = [];
+    const add = s => {
+      if (!s) return;
+      zones.push({ lat: s[1], lon: s[2], elev: s[3] * .3048, r: 2500, feather: 2000 });
+    };
+    add(samples[0]);
+    add(samples[samples.length - 1]);
+    return zones;
+  }
+  function flattenHeight(h, lat, lon, zones, mLon) {
+    for (const zn of zones) {
+      const dx = (lon - zn.lon) * mLon, dz = (lat - zn.lat) * metersPerDegLat;
+      const d = Math.hypot(dx, dz);
+      if (d > zn.r + zn.feather) continue;
+      // full flatten inside r, easing back to the DEM across the feather
+      const t = d <= zn.r ? 1 : 1 - (d - zn.r) / zn.feather;
+      const s = t * t * (3 - 2 * t);
+      return h + (zn.elev - h) * s;
+    }
+    return h;
+  }
+
+  function createTerrain(scene, renderer, onCoverage, zones) {
     const maxAniso = renderer.capabilities.getMaxAnisotropy ? renderer.capabilities.getMaxAnisotropy() : 1;
     const group = new THREE.Group();
     scene.add(group);
@@ -594,7 +640,8 @@
           const idx = j * (TILE_SEGS + 1) + i;
           const lon = lon0 + (lon1 - lon0) * (i / TILE_SEGS);
           const lat = lat0 + (lat1 - lat0) * (j / TILE_SEGS);
-          pos.setXYZ(idx, (lon - clon) * mLon, sampleElev(elev, i, j, sub), -(lat - clat) * metersPerDegLat);
+          const h = flattenHeight(sampleElev(elev, i, j, sub), lat, lon, zones, mLon);
+          pos.setXYZ(idx, (lon - clon) * mLon, h, -(lat - clat) * metersPerDegLat);
         }
       }
       pos.needsUpdate = true;
@@ -608,21 +655,11 @@
       return mesh;
     }
 
-    async function rebuild(lat, lon, altM, origin, project) {
-      const z = zoomForAltitude(altM);
+    // load one layer's worth of tiles around (lat,lon); `depth` pushes a layer
+    // slightly down so a coarse backdrop never z-fights the detailed tiles on top
+    function layerJobs(z, lat, lon, grid, depth, want, origin, project) {
       const cx = Math.floor(lon2tile(lon, z)), cy = Math.floor(lat2tile(lat, z));
-      const k = `${z}/${cx}/${cy}`;
-      if (k === key || building) return;
-      building = true;
-      key = k;
-      // pull the fog in to just inside the loaded area so the edge of the tile
-      // grid dissolves into haze instead of ending in a visible straight line
-      const tileM = 40075017 * Math.cos(lat * DEG2RAD) / Math.pow(2, z);
-      const radius = tileM * GRID / 2;
-      if (onCoverage) onCoverage(radius);
-
-      const half = (GRID - 1) / 2, want = new Set();
-      const jobs = [];
+      const half = (grid - 1) / 2, jobs = [];
       for (let dx = -half; dx <= half; dx++) {
         for (let dy = -half; dy <= half; dy++) {
           const tx = cx + dx, ty = cy + dy, n = Math.pow(2, z);
@@ -656,11 +693,38 @@
             const px = Math.floor(wx / scale), py = Math.floor(ty / scale);
             const sub = scale === 1 ? null : { scale, ox: wx - px * scale, oy: ty - py * scale };
             const mesh = buildTile(z, tx, ty, elevCache.get(ekey), tex, origin, project, sub);
+            if (depth) mesh.position.y -= depth;
+            if (tiles.has(id)) {                     // another pass won the race
+              mesh.geometry.dispose(); if (tex) tex.dispose(); mesh.material.dispose();
+              return;
+            }
             tiles.set(id, mesh);
             group.add(mesh);
           })());
         }
       }
+      return jobs;
+    }
+
+    async function rebuild(lat, lon, altM, origin, project) {
+      const z = zoomForAltitude(altM);
+      const bz = Math.max(4, z - BACKDROP_DZ);
+      const cx = Math.floor(lon2tile(lon, z)), cy = Math.floor(lat2tile(lat, z));
+      const bcx = Math.floor(lon2tile(lon, bz)), bcy = Math.floor(lat2tile(lat, bz));
+      const k = `${z}/${cx}/${cy}|${bz}/${bcx}/${bcy}`;
+      if (k === key || building) return;
+      building = true;
+      key = k;
+
+      // the horizon is set by the coarse backdrop, not the detailed tiles
+      const backdropTileM = 40075017 * Math.cos(lat * DEG2RAD) / Math.pow(2, bz);
+      if (onCoverage) onCoverage(backdropTileM * BACKDROP_GRID / 2);
+
+      const want = new Set();
+      const jobs = [
+        ...layerJobs(z, lat, lon, GRID, 0, want, origin, project),
+        ...layerJobs(bz, lat, lon, BACKDROP_GRID, 60, want, origin, project),
+      ];
       await Promise.all(jobs);
       for (const [id, mesh] of [...tiles]) {         // retire tiles we moved away from
         if (want.has(id)) continue;
@@ -731,7 +795,7 @@
       scene.fog.far = radius * .98;
       camera.far = Math.max(40000, radius * 4);
       camera.updateProjectionMatrix();
-    });
+    }, flattenZones(S));
 
     // trailing flight path (windowed, so it stays cheap regardless of flight length)
     const trailGeo = new THREE.BufferGeometry();
@@ -747,7 +811,7 @@
     const planeGroup = new THREE.Group();
     scene.add(planeGroup);
     // acLen drives the chase framing so a DA40 isn't a speck and a 747 isn't clipped
-    const meshInfo = { wheels: [], credit: null, dual: false, groundMesh: null, flightMesh: null, acLen: 50 };
+    const meshInfo = { wheels: [], gearParts: [], credit: null, dual: false, groundMesh: null, flightMesh: null, acLen: 50 };
     const applyFraming = () => {
       controls.minDistance = meshInfo.acLen * .25;
       controls.maxDistance = meshInfo.acLen * 12;
@@ -755,7 +819,7 @@
     applyFraming();
     buildAircraftMesh(ac).then(res => {
       planeGroup.add(res.group);
-      meshInfo.wheels = res.wheels; meshInfo.credit = res.credit; meshInfo.dual = res.dual;
+      meshInfo.wheels = res.wheels; meshInfo.gearParts = res.gearParts || []; meshInfo.credit = res.credit; meshInfo.dual = res.dual;
       meshInfo.groundMesh = res.groundMesh; meshInfo.flightMesh = res.flightMesh;
       meshInfo.acLen = res.acLen || 50;
       applyFraming();
@@ -812,16 +876,21 @@
       const [x, z] = project(p.lat, p.lon), y = p.alt * .3048;
       planeGroup.position.set(x, y, z);
       planeGroup.rotation.order = "YXZ";
-      planeGroup.rotation.set((p.pitch || 0) * DEG2RAD, -p.hdg * DEG2RAD, -(p.bank || 0) * DEG2RAD);
+      // YXZ = yaw, then pitch, then roll — the usual aircraft order
+      planeGroup.rotation.set((p.pitch || 0) * DEG2RAD, -p.hdg * DEG2RAD, (p.bank || 0) * DEG2RAD);
       sea.position.set(x, -40, z);
       terrain.update(p.lat, p.lon, y, origin, project);
       updateTrail(time);
 
       const agl = Math.max(0, y - groundElevM);
+      // gear state is recorded by the sim, so raise/lower at the moment the
+      // pilot actually moved the lever rather than at an altitude we invented
+      const gearDown = p.gearDown !== false;
       if (meshInfo.dual) {
-        const airborne = agl > GEAR_UP_AGL * .3048;
-        if (meshInfo.groundMesh) meshInfo.groundMesh.visible = !airborne;
-        if (meshInfo.flightMesh) meshInfo.flightMesh.visible = airborne;
+        if (meshInfo.groundMesh) meshInfo.groundMesh.visible = gearDown;
+        if (meshInfo.flightMesh) meshInfo.flightMesh.visible = !gearDown;
+      } else if (meshInfo.gearParts.length) {
+        for (const g of meshInfo.gearParts) g.visible = gearDown;
       }
       const simDt = lastSimTime == null ? 0 : Math.max(0, time - lastSimTime);
       lastSimTime = time;
@@ -927,29 +996,28 @@
     const interp = (time) => {
       // binary search for the segment [i, i+1] containing `time`
       let lo = 0, hi = S.length - 1;
-      if (time <= S[0][0]) return { ...sample(0), idx: 0, pitch: 0, bank: 0 };
-      if (time >= S[hi][0]) return { ...sample(hi), idx: hi, pitch: 0, bank: 0 };
+      if (time <= S[0][0]) return { ...sample(0), idx: 0 };
+      if (time >= S[hi][0]) return { ...sample(hi), idx: hi };
       while (lo + 1 < hi) { const m = (lo + hi) >> 1; (S[m][0] <= time ? lo = m : hi = m); }
       const a = S[lo], b = S[hi];
       const r = (time - a[0]) / (b[0] - a[0] || 1);
-      // pitch/bank are rough visual estimates from the bracketing samples, used
-      // only to tilt the 3D model — not a flight-dynamics-accurate computation
-      const dt = Math.max(0.1, b[0] - a[0]);
-      const climbMps = (b[3] - a[3]) * .3048 / dt;
-      const horizMps = Math.max(1, a[5] * .514444);
-      const pitch = Math.max(-25, Math.min(25, Math.atan2(climbMps, horizMps) * 180 / Math.PI));
-      const dHdg = ((b[4] - a[4] + 540) % 360) - 180;
-      const bank = Math.max(-28, Math.min(28, (dHdg / dt) * 1.6));
       return {
         lat: a[1] + (b[1] - a[1]) * r,
         lon: a[2] + (b[2] - a[2]) * r,
         alt: a[3] + (b[3] - a[3]) * r,
         hdg: lerpAngle(a[4], b[4], r),
         ias: a[5] + (b[5] - a[5]) * r,
-        idx: lo, pitch, bank,
+        // attitude is recorded by the sim, so interpolate it rather than guess
+        pitch: (a[6] || 0) + ((b[6] || 0) - (a[6] || 0)) * r,
+        bank: (a[7] || 0) + ((b[7] || 0) - (a[7] || 0)) * r,
+        gearDown: (r < .5 ? a[8] : b[8]) !== 0,
+        idx: lo,
       };
     };
-    function sample(i) { return { lat: S[i][1], lon: S[i][2], alt: S[i][3], hdg: S[i][4], ias: S[i][5] }; }
+    function sample(i) {
+      return { lat: S[i][1], lon: S[i][2], alt: S[i][3], hdg: S[i][4], ias: S[i][5],
+               pitch: S[i][6] || 0, bank: S[i][7] || 0, gearDown: (S[i][8] ?? 1) !== 0 };
+    }
 
     function render(time) {
       const p = interp(time);

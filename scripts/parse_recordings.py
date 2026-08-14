@@ -286,10 +286,15 @@ def parse_recording(path, airports):
     # replay samples — one time-stamped row drives the map, the chart and the
     # animated playback: [t_sec, lat, lon, alt_ft, heading_deg, ias_kt]
     t0 = times_ms[0]
+    # attitude and gear come straight from the sim rather than being guessed from
+    # the track. SimConnect signs: Pitch is positive nose-down and Bank positive
+    # rolling left, so both are negated here to the usual nose-up / roll-right.
     replay_full = [
         [round((t - t0) / 1000.0, 1), round(la, 5), round(lo, 5),
          round(a, 0), round(p.get("TrueHeading", 0) % 360, 1),
-         round(p.get("IndicatedAirspeed", 0), 0)]
+         round(p.get("IndicatedAirspeed", 0), 0),
+         round(-(p.get("Pitch") or 0), 1), round(-(p.get("Bank") or 0), 1),
+         1 if (p.get("GearHandlePosition") or 0) else 0]
         for t, la, lo, a, p in zip(times_ms, lats, lons, alts, pos)
     ]
     replay = decimate(replay_full, REPLAY_MAX_POINTS)
