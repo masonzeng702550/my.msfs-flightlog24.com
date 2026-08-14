@@ -27,6 +27,7 @@
       l_landing: "Landing", l_frames: "Frames recorded", l_recording: "Recording",
       rate_greaser: "greaser", rate_normal: "normal", rate_firm: "firm", rate_hard: "hard",
       follow: "Follow aircraft", map_dark: "Dark map", map_satellite: "Satellite",
+      view3d: "3D View", view3d_hint: "Drag to orbit · scroll to zoom",
       make_story: "Make story", story_title: "Story maker",
       story_desc: "Upload your horizontal flight recording to compose a 1-minute vertical story (map route + altitude/speed profile + flight info).",
       story_flight: "Flight", story_video: "Flight recording (landscape, ~1 min)",
@@ -60,6 +61,7 @@
       l_landing: "落地", l_frames: "紀錄幀數", l_recording: "錄影檔",
       rate_greaser: "完美", rate_normal: "正常", rate_firm: "偏重", rate_hard: "重落地",
       follow: "鎖定跟隨飛機", map_dark: "深色地圖", map_satellite: "衛星影像",
+      view3d: "3D 視角", view3d_hint: "拖曳環繞 · 滾輪縮放",
       make_story: "製作限時動態", story_title: "限時動態產生器",
       story_desc: "上傳你的橫式飛行錄影,合成 1 分鐘直式動態(地圖航線 + 高度速度剖面 + 航班資訊)。",
       story_flight: "航班", story_video: "飛行錄影(橫式,約 1 分鐘)",
@@ -93,6 +95,7 @@
       l_landing: "着陸", l_frames: "記録フレーム数", l_recording: "録画ファイル",
       rate_greaser: "完璧", rate_normal: "普通", rate_firm: "やや強め", rate_hard: "ハード",
       follow: "機体を追従", map_dark: "ダークマップ", map_satellite: "衛星写真",
+      view3d: "3Dビュー", view3d_hint: "ドラッグで周回 · スクロールでズーム",
       make_story: "ストーリー作成", story_title: "ストーリー作成",
       story_desc: "横向きのフライト録画をアップロードして、1分の縦型ストーリー(地図ルート+高度速度プロファイル+フライト情報)を作成します。",
       story_flight: "フライト", story_video: "フライト録画(横向き・約1分)",
@@ -126,6 +129,7 @@
       l_landing: "착륙", l_frames: "기록 프레임", l_recording: "녹화 파일",
       rate_greaser: "완벽", rate_normal: "보통", rate_firm: "약간 강함", rate_hard: "하드",
       follow: "항공기 따라가기", map_dark: "다크 지도", map_satellite: "위성",
+      view3d: "3D 뷰", view3d_hint: "드래그로 회전 · 스크롤로 확대",
       make_story: "스토리 만들기", story_title: "스토리 만들기",
       story_desc: "가로 비행 녹화를 업로드해 1분 세로 스토리(지도 항로 + 고도·속도 프로파일 + 비행 정보)를 만듭니다.",
       story_flight: "비행", story_video: "비행 녹화 (가로, 약 1분)",
@@ -160,6 +164,7 @@
     pause: `<svg class="icon" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg>`,
     target: I(`<circle cx="12" cy="12" r="7"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/><circle cx="12" cy="12" r="1.6" fill="currentColor" stroke="none"/>`),
     film: I(`<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h4M17 9h4M3 15h4M17 15h4M8 4v16M16 4v16"/>`),
+    cube: I(`<path d="M12 3l8 4.5v9L12 21l-8-4.5v-9L12 3z"/><path d="M12 3v9M4 7.5l8 4.5 8-4.5"/>`),
   };
 
   function applyStatic() {

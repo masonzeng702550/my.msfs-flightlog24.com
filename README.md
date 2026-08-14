@@ -97,4 +97,24 @@ python3 -m http.server -d site 8000   # open http://localhost:8000 · 開啟預�
 - **Parser / 解析器**: Python 3 standard library, no dependencies / 純標準庫,零相依
 - **Airports / 機場資料**: [OurAirports](https://ourairports.com/data/) (public domain / 公眾領域)
 - **3D globe / 地球**: [globe.gl](https://github.com/vasturiano/globe.gl) · **Maps / 地圖**: Leaflet + Esri satellite · **Charts / 圖表**: Chart.js
+- **3D chase view / 3D 追機視角**: [three.js](https://threejs.org/) — real glTF aircraft models where available, procedural low-poly shapes otherwise / 有對應機型時使用真實 glTF 模型,否則使用程序化低多邊形機身
 - **Hosting / 托管**: GitHub Pages + GitHub Actions · **PWA**: offline-capable service worker / 可離線的 service worker
+
+---
+
+## Credits / 致謝
+
+3D aircraft models used by the flight-detail page's 3D chase view, all licensed
+[CC-BY-4.0](http://creativecommons.org/licenses/by/4.0/) via Sketchfab (see
+`site/assets/models/*.license.txt` for the full required credit text):
+
+飛行詳情頁「3D 追機視角」使用的機型模型,均取自 Sketchfab,授權為
+[CC-BY-4.0](http://creativecommons.org/licenses/by/4.0/)(完整標準credit文字見
+`site/assets/models/*.license.txt`):
+
+- "Boeing 787-8" by [rocket0314](https://sketchfab.com/rocket0314)
+- "Boeing 777-300ER Model" by [hakai315](https://sketchfab.com/hakai315)
+- "[FREE] Airbus A350-1000" by [hakai315](https://sketchfab.com/hakai315)
+- "Airbus A320-200" by [Dlourine](https://sketchfab.com/fDlruosne)
+- "Boeing 737 MAX 8" by [Dlourine](https://sketchfab.com/fDlruosne)
+- "ATR 72-600" by [Isidor G](https://sketchfab.com/AirplaneChef)
