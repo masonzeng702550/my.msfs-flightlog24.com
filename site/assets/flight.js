@@ -563,14 +563,20 @@
     let key = "", building = false;
 
     // `sub` maps this tile onto its (possibly lower-zoom) elevation tile, so
-    // relief still works when imagery is zoomed in past the terrarium max zoom
+    // relief still works when imagery is zoomed in past the terrarium max zoom.
+    // Bilinear, because at z17 one elevation tile is stretched over 8x8 imagery
+    // tiles and nearest-neighbour turns gentle ground into visible terraces.
     function sampleElev(elev, i, j, sub) {
       if (!elev) return 0;
-      const u = sub ? (sub.ox + i / TILE_SEGS) / sub.scale : i / TILE_SEGS;
-      const v = sub ? (sub.oy + j / TILE_SEGS) / sub.scale : j / TILE_SEGS;
-      const px = Math.max(0, Math.min(255, Math.round(u * 255)));
-      const py = Math.max(0, Math.min(255, Math.round(v * 255)));
-      return elev[py * 256 + px];
+      const u = (sub ? (sub.ox + i / TILE_SEGS) / sub.scale : i / TILE_SEGS) * 255;
+      const v = (sub ? (sub.oy + j / TILE_SEGS) / sub.scale : j / TILE_SEGS) * 255;
+      const x0 = Math.max(0, Math.min(255, Math.floor(u))), x1 = Math.min(255, x0 + 1);
+      const y0 = Math.max(0, Math.min(255, Math.floor(v))), y1 = Math.min(255, y0 + 1);
+      const fx = u - x0, fy = v - y0;
+      const a = elev[y0 * 256 + x0], b = elev[y0 * 256 + x1];
+      const c = elev[y1 * 256 + x0], d = elev[y1 * 256 + x1];
+      const h = (a * (1 - fx) + b * fx) * (1 - fy) + (c * (1 - fx) + d * fx) * fy;
+      return Math.max(0, h);       // terrarium carries bathymetry; keep water flat
     }
 
     // Vertices are stored relative to the tile's own centre and the mesh is then
@@ -717,7 +723,7 @@
       new THREE.PlaneGeometry(1200000, 1200000),
       new THREE.MeshBasicMaterial({ color: 0x25415c }));
     sea.rotation.x = -Math.PI / 2;
-    sea.position.y = -1;
+    sea.position.y = -40;   // clear of coastal terrain clamped to sea level
     scene.add(sea);
 
     const terrain = createTerrain(scene, renderer, radius => {
@@ -807,7 +813,7 @@
       planeGroup.position.set(x, y, z);
       planeGroup.rotation.order = "YXZ";
       planeGroup.rotation.set((p.pitch || 0) * DEG2RAD, -p.hdg * DEG2RAD, -(p.bank || 0) * DEG2RAD);
-      sea.position.set(x, -1, z);
+      sea.position.set(x, -40, z);
       terrain.update(p.lat, p.lon, y, origin, project);
       updateTrail(time);
 
@@ -835,8 +841,17 @@
         camera.position.x += x - prevAC.x;
         camera.position.y += y - prevAC.y;
         camera.position.z += z - prevAC.z;
+        // ...and swing it around with the turn, so the nose keeps pointing away
+        // from the viewer instead of the aircraft appearing to slide sideways
+        const dh = ((p.hdg - prevAC.hdg + 540) % 360) - 180;
+        if (dh) {
+          const a = -dh * DEG2RAD, ca = Math.cos(a), sa = Math.sin(a);
+          const ox = camera.position.x - x, oz = camera.position.z - z;
+          camera.position.x = x + ox * ca + oz * sa;
+          camera.position.z = z - ox * sa + oz * ca;
+        }
       }
-      prevAC = { x, y, z };
+      prevAC = { x, y, z, hdg: p.hdg };
       controls.target.set(x, y, z);
     }
 
