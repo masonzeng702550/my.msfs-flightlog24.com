@@ -896,7 +896,11 @@
     const sky = new THREE.Mesh(
       new THREE.SphereGeometry(1, 32, 16),
       new THREE.ShaderMaterial({
-        uniforms: skyUniforms, side: THREE.BackSide, depthWrite: false, fog: false,
+        uniforms: skyUniforms, side: THREE.BackSide, fog: false,
+        // A custom shader doesn't get the logarithmic-depth chunks the renderer
+        // needs, so its depth comes out wrong and the dome can vanish. It never
+        // needs depth anyway: drawn first, with everything else painted over it.
+        depthWrite: false, depthTest: false,
         vertexShader: `varying vec3 vP; void main(){ vP = position;
           gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.0); }`,
         fragmentShader: `uniform vec3 top; uniform vec3 bottom; varying vec3 vP;
@@ -908,9 +912,11 @@
     // 0 at sea level to 1 in the flight levels, where the sky is nearly navy
     const setSkyAltitude = aglM => {
       const t = Math.min(1, Math.max(0, aglM / 11000));
-      skyUniforms.top.value.setRGB(.42 - .32 * t, .64 - .45 * t, .855 - .43 * t);
-      skyUniforms.bottom.value.setRGB(.56 - .18 * t, .714 - .2 * t, .871 - .18 * t);
-      scene.background.copy(skyUniforms.bottom.value);
+      // zenith runs pale blue -> deep navy; the horizon keeps a bright haze band
+      // so the boundary between air and space reads at altitude
+      skyUniforms.top.value.setRGB(.36 - .33 * t, .58 - .50 * t, .84 - .52 * t);
+      skyUniforms.bottom.value.setRGB(.70 - .10 * t, .82 - .12 * t, .93 - .10 * t);
+      scene.background.copy(skyUniforms.top.value);
       scene.fog.color.copy(skyUniforms.bottom.value);
     };
 
@@ -1120,11 +1126,11 @@
         // the map. Eased, and dropped entirely once the viewer orbits.
         const agl = Math.max(0, y - groundElevM);
         const d = idealDistance(agl);
-        // Keep the look-down angle inside half the field of view so the horizon
-        // — and the atmosphere above it — stays in frame at cruise. Aiming
-        // steeply down showed the map but nothing of the sky.
+        // Flatten the look-down angle as it climbs rather than steepening it:
+        // height is meant to show the horizon and the thin air above it, and a
+        // steep angle fills the frame with ground and leaves no sky at all.
         const t = Math.min(1, agl / 9000);            // level out by ~30,000 ft
-        const elev = (20 + 12 * t) * DEG2RAD;
+        const elev = (24 - 8 * t) * DEG2RAD;
         const hdgRad = p.hdg * DEG2RAD, ch = Math.cos(elev);
         // Ease the offset from the aircraft, not the absolute position: at 60x
         // the aircraft can move 20 km between updates, and easing a world
