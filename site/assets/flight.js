@@ -605,6 +605,7 @@
     scene.add(group);
     const tiles = new Map();       // "z/x/y" -> {mesh, elev}
     const elevCache = new Map();   // "z/x/y" -> Float32Array | null
+    const texCache = new Map();    // "z/wrappedX/y" -> THREE.Texture, kept across rebuilds
     let key = "", building = false, pending = null;
 
     // `sub` maps this tile onto its (possibly lower-zoom) elevation tile, so
@@ -658,61 +659,84 @@
 
     function layerJobs(z, lat, lon, grid, want, origin, project) {
       const cx = Math.floor(lon2tile(lon, z)), cy = Math.floor(lat2tile(lat, z));
-      const half = (grid - 1) / 2, jobs = [];
+      const half = (grid - 1) / 2, todo = [];
       for (let dx = -half; dx <= half; dx++) {
         for (let dy = -half; dy <= half; dy++) {
           const tx = cx + dx, ty = cy + dy, n = Math.pow(2, z);
           if (ty < 0 || ty >= n) continue;
-          const wx = ((tx % n) + n) % n;             // wrap at the antimeridian
           const id = `${z}/${tx}/${ty}`;
           want.add(id);
           if (tiles.has(id)) continue;
-          jobs.push((async () => {
-            const ez = Math.min(z, ELEV_MAX_Z);
-            const scale = Math.pow(2, z - ez);
-            const ekey = `${ez}/${Math.floor(wx / scale)}/${Math.floor(ty / scale)}`;
-            if (!elevCache.has(ekey)) {
-              const [exs, eys] = ekey.split("/").slice(1).map(Number);
-              const img = await loadImage(ELEVATION_URL(ez, exs, eys));
-              elevCache.set(ekey, img ? decodeElevation(img) : null);
-            }
-            const img = await loadImage(IMAGERY_URL(z, wx, ty));
-            let tex = null;
-            if (img) {
-              tex = new THREE.Texture(img);
-              // 256px tiles are power-of-two, so mipmaps + anisotropy are available
-              // and stop the ground smearing into mush toward the horizon
-              tex.minFilter = THREE.LinearMipmapLinearFilter;
-              tex.magFilter = THREE.LinearFilter;
-              tex.generateMipmaps = true;
-              tex.anisotropy = Math.min(8, maxAniso);
-              tex.wrapS = tex.wrapT = THREE.ClampToEdgeWrapping;
-              tex.needsUpdate = true;
-            }
-            const px = Math.floor(wx / scale), py = Math.floor(ty / scale);
-            const sub = scale === 1 ? null : { scale, ox: wx - px * scale, oy: ty - py * scale };
-            const mesh = buildTile(z, tx, ty, elevCache.get(ekey), tex, origin, project, sub);
-
-            if (tiles.has(id)) {                     // another pass won the race
-              mesh.geometry.dispose(); if (tex) tex.dispose(); mesh.material.dispose();
-              return;
-            }
-            tiles.set(id, mesh);
-            group.add(mesh);
-          })());
+          todo.push({ tx, ty, n, id, d: dx * dx + dy * dy });
         }
       }
-      return jobs;
+      // the browser only runs ~6 requests to a host at a time, so ask for the
+      // tiles under the aircraft first — the view becomes usable much sooner
+      todo.sort((a, b) => a.d - b.d);
+
+      return todo.map(({ tx, ty, n, id }) => (async () => {
+        const wx = ((tx % n) + n) % n;               // wrap at the antimeridian
+        const ez = Math.min(z, ELEV_MAX_Z);
+        const scale = Math.pow(2, z - ez);
+        const ekey = `${ez}/${Math.floor(wx / scale)}/${Math.floor(ty / scale)}`;
+        if (!elevCache.has(ekey)) {
+          const [exs, eys] = ekey.split("/").slice(1).map(Number);
+          const img = await loadImage(ELEVATION_URL(ez, exs, eys));
+          elevCache.set(ekey, img ? decodeElevation(img) : null);
+        }
+        const ikey = `${z}/${wx}/${ty}`;
+        let tex = texCache.get(ikey);
+        if (!tex) {
+          const img = await loadImage(IMAGERY_URL(z, wx, ty));
+          if (img) {
+            tex = new THREE.Texture(img);
+            // 256px tiles are power-of-two, so mipmaps + anisotropy are available
+            // and stop the ground smearing into mush toward the horizon
+            tex.minFilter = THREE.LinearMipmapLinearFilter;
+            tex.magFilter = THREE.LinearFilter;
+            tex.generateMipmaps = true;
+            tex.anisotropy = Math.min(8, maxAniso);
+            tex.wrapS = tex.wrapT = THREE.ClampToEdgeWrapping;
+            tex.needsUpdate = true;
+            texCache.set(ikey, tex);
+          }
+        }
+        const px = Math.floor(wx / scale), py = Math.floor(ty / scale);
+        const sub = scale === 1 ? null : { scale, ox: wx - px * scale, oy: ty - py * scale };
+        const mesh = buildTile(z, tx, ty, elevCache.get(ekey), tex || null, origin, project, sub);
+
+        if (tiles.has(id)) {                         // another pass won the race
+          mesh.geometry.dispose(); mesh.material.dispose();
+          return;
+        }
+        tiles.set(id, mesh);
+        group.add(mesh);
+      })());
     }
 
+    // the texture stays in texCache so flying back over the same ground doesn't
+    // re-download it; only the geometry, which is cheap to rebuild, is released
     function drop(id) {
       const mesh = tiles.get(id);
       if (!mesh) return;
       group.remove(mesh);
       mesh.geometry.dispose();
-      if (mesh.material.map) mesh.material.map.dispose();
       mesh.material.dispose();
       tiles.delete(id);
+    }
+    function trimTexCache() {
+      const MAX = 400;
+      if (texCache.size <= MAX) return;
+      const live = new Set([...tiles.keys()].map(id => {
+        const [z, x, y] = id.split("/").map(Number), n = Math.pow(2, z);
+        return `${z}/${((x % n) + n) % n}/${y}`;
+      }));
+      for (const k of texCache.keys()) {
+        if (texCache.size <= MAX) break;
+        if (live.has(k)) continue;
+        texCache.get(k).dispose();
+        texCache.delete(k);
+      }
     }
 
     async function rebuild(lat, lon, altM, origin, project) {
@@ -738,6 +762,7 @@
       const want = new Set();
       await Promise.all(layerJobs(z, lat, lon, GRID, want, origin, project));
       for (const id of [...tiles.keys()]) if (!want.has(id)) drop(id);
+      trimTexCache();
       building = false;
       if (pending) { const p = pending; pending = null; rebuild(...p); }
     }
@@ -803,8 +828,13 @@
     }, flattenZones(S));
 
     // trailing flight path (windowed, so it stays cheap regardless of flight length)
+    // written in place each frame by updateTrail(); a Line with no position
+    // attribute throws on the first render, so it is attached up front
+    const TRAIL_SEC = 120;
     const trailGeo = new THREE.BufferGeometry();
-    trailGeo.setFromPoints([new THREE.Vector3()]);   // a Line with no position attribute throws on first render
+    const trailAttr = new THREE.BufferAttribute(new Float32Array(Math.max(1, S.length) * 3), 3);
+    trailGeo.setAttribute("position", trailAttr);
+    trailGeo.setDrawRange(0, 0);
     const trail = new THREE.Line(trailGeo, new THREE.LineBasicMaterial({ color: 0x36c5ff, transparent: true, opacity: .85 }));
     scene.add(trail);
 
@@ -863,16 +893,27 @@
     }
     new ResizeObserver(resize).observe(container);
 
+    // Runs every frame, so it walks straight to the window with a binary search
+    // and writes into a buffer it owns — the old version scanned all ~1500
+    // samples and allocated a Vector3 per point, every frame.
+    const trailBuf = trailAttr.array;
+    function firstAtOrAfter(t) {
+      let lo = 0, hi = S.length - 1;
+      if (S[hi][0] < t) return S.length;
+      while (lo < hi) { const m = (lo + hi) >> 1; (S[m][0] < t ? lo = m + 1 : hi = m); }
+      return lo;
+    }
     function updateTrail(time) {
       if (!S.length) return;
-      const windowSec = 120, pts = [];
-      for (let i = 0; i < S.length; i++) {
-        if (S[i][0] < time - windowSec) continue;
-        if (S[i][0] > time) break;
+      let n = 0;
+      for (let i = firstAtOrAfter(time - TRAIL_SEC); i < S.length && S[i][0] <= time; i++) {
         const [x, z] = project(S[i][1], S[i][2]);
-        pts.push(new THREE.Vector3(x, S[i][3] * .3048, z));
+        trailBuf[n * 3] = x; trailBuf[n * 3 + 1] = S[i][3] * .3048; trailBuf[n * 3 + 2] = z;
+        n++;
       }
-      trailGeo.setFromPoints(pts);
+      trailGeo.setDrawRange(0, n);
+      trailAttr.needsUpdate = true;
+      trailGeo.computeBoundingSphere();
     }
 
     function update(p, time) {
