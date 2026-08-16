@@ -577,7 +577,10 @@
   // GRID x GRID tiles around the aircraft. Cruise tiles are enormous (a z9 tile
   // is ~78 km), so fewer of them still covers hundreds of km and there is far
   // less to fetch before the view is complete.
-  const gridForZoom = z => (z <= FLAT_ABOVE_Z ? 5 : 7);
+  // Rings of 3x3 tiles, each one zoom coarser than the last. Every step out
+  // doubles tile size, so 7 rings reach ~100x the innermost ring's extent for
+  // ~60 tiles — the ground runs past the horizon instead of ending in a square.
+  const RINGS = 7, RING_R = 1;
 
   const tile2lon = (x, z) => x / Math.pow(2, z) * 360 - 180;
   const tile2lat = (y, z) => {
@@ -721,22 +724,19 @@
 
     // load the tiles around (lat,lon) at one zoom level
 
-    function layerJobs(z, lat, lon, grid, want, origin, project) {
-      const cx = Math.floor(lon2tile(lon, z)), cy = Math.floor(lat2tile(lat, z));
-      const half = (grid - 1) / 2, todo = [];
-      for (let dx = -half; dx <= half; dx++) {
-        for (let dy = -half; dy <= half; dy++) {
-          const tx = cx + dx, ty = cy + dy, n = Math.pow(2, z);
-          if (ty < 0 || ty >= n) continue;
-          const id = `${z}/${tx}/${ty}`;
-          want.add(id);
-          if (tiles.has(id)) continue;
-          todo.push({ tx, ty, n, id, d: dx * dx + dy * dy });
-        }
+    // one ring's worth of tiles: `cells` is "tx,ty" at this zoom, `skip` the
+    // cells the next finer ring already draws
+    function ringJobs(z, cells, skip, want, origin, project) {
+      const n = Math.pow(2, z), todo = [];
+      for (const cell of cells) {
+        const [tx, ty] = cell.split(",").map(Number);
+        if (ty < 0 || ty >= n) continue;
+        if (skip && skip.has(cell)) continue;
+        const id = `${z}/${tx}/${ty}`;
+        want.add(id);
+        if (tiles.has(id)) continue;
+        todo.push({ tx, ty, n, id });
       }
-      // the browser only runs ~6 requests to a host at a time, so ask for the
-      // tiles under the aircraft first — the view becomes usable much sooner
-      todo.sort((a, b) => a.d - b.d);
 
       return todo.map(({ tx, ty, n, id }) => (async () => {
         const wx = ((tx % n) + n) % n;               // wrap at the antimeridian
@@ -818,17 +818,38 @@
       building = true;
       key = k;
 
-      const tileM = 40075017 * Math.cos(lat * DEG2RAD) / Math.pow(2, z);
-      const grid = gridForZoom(z);
-      if (onCoverage) onCoverage(tileM * grid / 2);
+      // Concentric rings of decreasing zoom. Each ring is 3x3 tiles, and every
+      // ring skips the tiles the finer ring inside it already covers, so the
+      // rings tile the ground exactly once — no overlap to z-fight, and the
+      // ground keeps going long past the horizon instead of ending in a square.
+      // Each step out doubles the tile size, so a handful of rings reaches
+      // thousands of km for about the same number of tiles as one flat grid.
+      const want = new Set(), jobs = [];
+      let coveredByFiner = null, outerTileM = 0;
+      for (let i = 0; i < RINGS; i++) {
+        const rz = z - i;
+        if (rz < 3) break;
+        const rcx = Math.floor(lon2tile(lon, rz)), rcy = Math.floor(lat2tile(lat, rz));
+        const here = new Set();
+        for (let dx = -RING_R; dx <= RING_R; dx++) {
+          for (let dy = -RING_R; dy <= RING_R; dy++) here.add(`${rcx + dx},${rcy + dy}`);
+        }
+        jobs.push(...ringJobs(rz, here, coveredByFiner, want, origin, project));
+        outerTileM = 40075017 * Math.cos(lat * DEG2RAD) / Math.pow(2, rz);
+        // a tile one zoom out is fully covered only if all four children are here
+        const parents = new Set();
+        for (const cell of here) {
+          const [tx, ty] = cell.split(",").map(Number);
+          const px = tx >> 1, py = ty >> 1;
+          if (here.has(`${px * 2},${py * 2}`) && here.has(`${px * 2 + 1},${py * 2}`) &&
+              here.has(`${px * 2},${py * 2 + 1}`) && here.has(`${px * 2 + 1},${py * 2 + 1}`))
+            parents.add(`${px},${py}`);
+        }
+        coveredByFiner = parents;
+      }
+      if (onCoverage) onCoverage(outerTileM * (RING_R * 2 + 1) / 2);
 
-      // Tiles from another zoom cover the same ground as the ones we're about to
-      // load. Drop them up front rather than after the loads: letting the two
-      // sets coexist is exactly what makes the ground flicker.
-      for (const id of [...tiles.keys()]) if (!id.startsWith(z + "/")) drop(id);
-
-      const want = new Set();
-      await Promise.all(layerJobs(z, lat, lon, grid, want, origin, project));
+      await Promise.all(jobs);
       for (const id of [...tiles.keys()]) if (!want.has(id)) drop(id);
       trimTexCache();
       building = false;
@@ -1096,8 +1117,10 @@
       const [x, z] = project(p.lat, p.lon), y = p.alt * .3048;
       planeGroup.position.set(x, y, z);
       planeGroup.rotation.order = "YXZ";
-      // YXZ = yaw, then pitch, then roll — the usual aircraft order
-      planeGroup.rotation.set((p.pitch || 0) * DEG2RAD, -p.hdg * DEG2RAD, (p.bank || 0) * DEG2RAD);
+      // YXZ = yaw, pitch, roll. The stored bank is already flipped to
+      // positive-is-roll-right, and with the nose down -Z a roll to the right is
+      // a negative rotation about Z — so it has to be negated again here.
+      planeGroup.rotation.set((p.pitch || 0) * DEG2RAD, -p.hdg * DEG2RAD, -(p.bank || 0) * DEG2RAD);
       sea.position.set(x, -40, z);
       setSkyAltitude(y - groundElevM);
       terrain.update(p.lat, p.lon, y, origin, project);
