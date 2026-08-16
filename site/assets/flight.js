@@ -352,6 +352,16 @@
       return false;
     };
 
+    // Nothing structural may ever be hidden. A fuselage is one big mesh, so a
+    // size cap alone rules it out — an earlier version tested only the centre
+    // height of a mesh and hid the entire 777 fuselage.
+    const MAX_DIM = targetLen * .12;
+    const sizeOf = o => {
+      const s = new THREE.Vector3();
+      new THREE.Box3().setFromObject(o).getSize(s);
+      return Math.max(s.x, s.y, s.z);
+    };
+
     // (a) by name. Gear bay doors count: on a ground model they are modelled
     // open, so leaving them behind hangs an empty bay under the aircraft.
     // "PassengerDoor" is safe — it has to match a gear word to get here at all.
@@ -359,16 +369,16 @@
     const SKIP = /seat|interior|cabin|cockpit|lever|handle|steering|gearbox|light/i;
     holder.traverse(o => {
       if (!o.name || !NAME.test(o.name) || SKIP.test(o.name)) return;
-      if (!claimed(o)) parts.add(o);
+      if (!claimed(o) && sizeOf(o) <= MAX_DIM) parts.add(o);
     });
 
     // (b) by position, because most models only name the wheels — the legs,
-    // bogies and doors are anonymous. Anything standing in the column above a
-    // wheel, below the belly, is part of that gear leg. Engines sit far enough
-    // outboard of the columns to be left alone.
+    // bogies and doors are anonymous. A part qualifies only if it is small and
+    // sits *entirely* below the belly line, inside the column above a wheel.
+    // Engines sit far enough outboard of the columns to be left alone.
     holder.updateMatrixWorld(true);
     const box = new THREE.Box3().setFromObject(holder);
-    const bellyY = box.min.y + (box.max.y - box.min.y) * .45;
+    const bellyY = box.min.y + (box.max.y - box.min.y) * .30;
     const cols = wheels.map(w => {
       const p = new THREE.Vector3(); w.pivot.getWorldPosition(p);
       return { x: p.x, z: p.z, r: Math.max(w.radius * 4, targetLen * .05) };
@@ -377,9 +387,10 @@
       holder.traverse(o => {
         if (!o.isMesh || claimed(o)) return;
         const b = new THREE.Box3().setFromObject(o);
-        if (b.min.y > bellyY) return;                  // sits above the belly
+        const s = new THREE.Vector3(); b.getSize(s);
+        if (Math.max(s.x, s.y, s.z) > MAX_DIM) return;  // structural, never hide
+        if (b.max.y > bellyY) return;                   // must sit wholly below the belly
         const c = b.getCenter(new THREE.Vector3());
-        if (c.y > bellyY) return;
         for (const col of cols) {
           if (Math.hypot(c.x - col.x, c.z - col.z) <= col.r) { parts.add(o); return; }
         }
