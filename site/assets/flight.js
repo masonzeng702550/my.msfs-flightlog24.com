@@ -572,8 +572,12 @@
     `https://s3.amazonaws.com/elevation-tiles-prod/terrarium/${z}/${x}/${y}.png`;
   const TERRAIN_CREDIT = "Imagery © Esri · Elevation: AWS Terrain Tiles";
   const ELEV_MAX_Z = 14;        // terrarium coverage tops out here
+  const FLAT_ABOVE_Z = 11;      // at/below this zoom the ground is drawn flat
   const TILE_SEGS = 24;         // vertices per tile edge - 1
-  const GRID = 7;               // GRID x GRID tiles kept around the aircraft
+  // GRID x GRID tiles around the aircraft. Cruise tiles are enormous (a z9 tile
+  // is ~78 km), so fewer of them still covers hundreds of km and there is far
+  // less to fetch before the view is complete.
+  const gridForZoom = z => (z <= FLAT_ABOVE_Z ? 5 : 7);
 
   const tile2lon = (x, z) => x / Math.pow(2, z) * 360 - 180;
   const tile2lat = (y, z) => {
@@ -733,7 +737,9 @@
         const ez = Math.min(z, ELEV_MAX_Z);
         const scale = Math.pow(2, z - ez);
         const ekey = `${ez}/${Math.floor(wx / scale)}/${Math.floor(ty / scale)}`;
-        if (!elevCache.has(ekey)) {
+        // Relief is invisible from cruise, and the elevation fetch doubles the
+        // requests per tile — skip it once the tiles are this wide.
+        if (z > FLAT_ABOVE_Z && !elevCache.has(ekey)) {
           const [exs, eys] = ekey.split("/").slice(1).map(Number);
           const img = await loadImage(ELEVATION_URL(ez, exs, eys));
           elevCache.set(ekey, img ? decodeElevation(img) : null);
@@ -806,7 +812,8 @@
       key = k;
 
       const tileM = 40075017 * Math.cos(lat * DEG2RAD) / Math.pow(2, z);
-      if (onCoverage) onCoverage(tileM * GRID / 2);
+      const grid = gridForZoom(z);
+      if (onCoverage) onCoverage(tileM * grid / 2);
 
       // Tiles from another zoom cover the same ground as the ones we're about to
       // load. Drop them up front rather than after the loads: letting the two
@@ -814,7 +821,7 @@
       for (const id of [...tiles.keys()]) if (!id.startsWith(z + "/")) drop(id);
 
       const want = new Set();
-      await Promise.all(layerJobs(z, lat, lon, GRID, want, origin, project));
+      await Promise.all(layerJobs(z, lat, lon, grid, want, origin, project));
       for (const id of [...tiles.keys()]) if (!want.has(id)) drop(id);
       trimTexCache();
       building = false;
@@ -836,6 +843,13 @@
       },
     };
   }
+
+  // major world cities for the map labels, biggest first so the label picker can
+  // just walk the list. Loaded once, and the 3D view works fine without it.
+  let CITIES = [];
+  fetch("data/cities.json", { cache: "force-cache" })
+    .then(r => r.json()).then(d => { CITIES = d.cities || []; })
+    .catch(() => {});
 
   let scene3d = null, scene3dError = null;
   function ensureScene3D() {
@@ -895,6 +909,66 @@
     const controls = new THREE.OrbitControls(camera, renderer.domElement);
     controls.enableDamping = true; controls.dampingFactor = .08;
     controls.maxPolarAngle = Math.PI * .49;
+    controls.minDistance = 20;
+    controls.maxDistance = 900000;
+    // once the viewer drags or zooms, stop imposing an altitude-driven distance
+    let userFramed = false;
+    controls.addEventListener("start", () => { userFramed = true; });
+    renderer.domElement.addEventListener("wheel", () => { userFramed = true; }, { passive: true });
+
+    // How far back the camera sits for a given height above ground. Close in on
+    // the ground so the aircraft fills the frame, opening out to a wide regional
+    // view at cruise — the altitude-driven zoom a moving map does.
+    const idealDistance = aglM => {
+      const L = meshInfo.acLen || 50;
+      return Math.max(L * 1.2, Math.min(260000, L * 1.2 + Math.max(0, aglM) * 4.5));
+    };
+
+    // ── city labels ──────────────────────────────────────────────────
+    // DOM text rather than sprites, so names stay sharp at any zoom. Which
+    // cities show is driven by how far the camera is: only the biggest at
+    // cruise, filling in smaller ones as the view closes on the ground.
+    const cityLayer = document.createElement("div");
+    cityLayer.className = "city-layer";
+    container.appendChild(cityLayer);
+    const cityEls = [];
+    const proj = new THREE.Vector3();
+    let cityTick = 0;
+
+    function updateCityLabels() {
+      if (!CITIES.length || !origin) return;
+      if (cityTick++ % 5) return;                    // 12 Hz is plenty for text
+      const dist = camera.position.distanceTo(controls.target);
+      const minPop = dist > 150000 ? 4e6 : dist > 60000 ? 1.5e6 : dist > 20000 ? 6e5 : 0;
+      // generous: whether a name is actually shown is decided by the projection
+      // test below, this only keeps the loop off the far side of the world
+      const reach = Math.max(120000, dist * 8);
+      const w = container.clientWidth, h = container.clientHeight;
+
+      const picks = [];
+      for (const c of CITIES) {
+        if (c.p < minPop) continue;
+        const [cx, cz] = project(c.y, sameWorldAs(c.x, origin.lon));
+        const dx = cx - controls.target.x, dz = cz - controls.target.z;
+        if (Math.hypot(dx, dz) > reach) continue;
+        proj.set(cx, 0, cz).project(camera);
+        if (proj.z > 1) continue;                    // behind the camera
+        const sx = (proj.x * .5 + .5) * w, sy = (-proj.y * .5 + .5) * h;
+        if (sx < 4 || sx > w - 4 || sy < 4 || sy > h - 4) continue;
+        picks.push({ c, sx, sy });
+        if (picks.length >= 14) break;
+      }
+      for (let i = 0; i < 14; i++) {
+        let el = cityEls[i];
+        if (!el) { el = document.createElement("div"); el.className = "city-label";
+                   cityLayer.appendChild(el); cityEls.push(el); }
+        const pick = picks[i];
+        if (!pick) { el.style.display = "none"; continue; }
+        el.style.display = "block";
+        el.style.transform = `translate(${Math.round(pick.sx)}px, ${Math.round(pick.sy)}px)`;
+        if (el.dataset.n !== pick.c.n) { el.textContent = pick.c.n; el.dataset.n = pick.c.n; }
+      }
+    }
 
     const attribEl = document.getElementById("rp-view3d-attrib");
     const planeGroup = new THREE.Group();
@@ -999,14 +1073,36 @@
         for (const w of meshInfo.wheels) w.pivot.rotateOnAxis(w.axle, -(mps * simDt) / w.radius);
       }
 
-      if (!initialised) {
-        const L = meshInfo.acLen;
-        const back = L * 1.1, up = L * .45, hdgRad = p.hdg * DEG2RAD;
-        camera.position.set(x - Math.sin(hdgRad) * back, y + up, z + Math.cos(hdgRad) * back);
-        initialised = true;
+      if (!userFramed) {
+        // Moving-map framing: sit behind the aircraft and rise with altitude,
+        // so low down it is a chase view and at cruise you are looking down at
+        // the map. Eased, and dropped entirely once the viewer orbits.
+        const agl = Math.max(0, y - groundElevM);
+        const d = idealDistance(agl);
+        const t = Math.min(1, agl / 9000);            // level out by ~30,000 ft
+        const elev = (24 + 42 * t) * DEG2RAD;
+        const hdgRad = p.hdg * DEG2RAD, ch = Math.cos(elev);
+        // Ease the offset from the aircraft, not the absolute position: at 60x
+        // the aircraft can move 20 km between updates, and easing a world
+        // position simply never catches up — it lagged to 250 km behind.
+        const ox = -Math.sin(hdgRad) * d * ch, oy = Math.sin(elev) * d, oz = Math.cos(hdgRad) * d * ch;
+        const cx = camera.position.x - x, cy = camera.position.y - y, cz = camera.position.z - z;
+        const cur = Math.hypot(cx, cy, cz);
+        // Ease while the flight plays, but snap on a discontinuity — dragging the
+        // scrubber moves the aircraft hundreds of km at once, and easing from
+        // there left the camera stranded far behind pointing at the horizon.
+        if (!initialised || cur > d * 2.5 || cur < d * .4) {
+          camera.position.set(x + ox, y + oy, z + oz);
+          initialised = true;
+        } else {
+          const k = .12;
+          camera.position.set(x + cx + (ox - cx) * k,
+                              y + cy + (oy - cy) * k,
+                              z + cz + (oz - cz) * k);
+        }
       } else if (prevAC) {
         // carry the camera along with the aircraft so it stays a chase view,
-        // preserving whatever offset the user set by orbiting
+        // preserving whatever offset the viewer set by orbiting
         camera.position.x += x - prevAC.x;
         camera.position.y += y - prevAC.y;
         camera.position.z += z - prevAC.z;
@@ -1027,6 +1123,10 @@
     function animate() {
       raf3d = requestAnimationFrame(animate);
       controls.update();
+      // in the render loop, not in update(): update() only runs when the replay
+      // advances, so labels would never appear if the city list finished
+      // loading after it, nor follow the view while the viewer orbits
+      updateCityLabels();
       renderer.render(scene, camera);
     }
 
