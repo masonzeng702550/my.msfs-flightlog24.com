@@ -595,13 +595,19 @@
   // GRID tiles still reach hundreds of km. A second, coarser "backdrop" layer
   // was tried here and removed — overlapping it with these tiles put two nearly
   // coplanar surfaces in the same place and the ground flickered (z-fighting).
-  function zoomForAltitude(altM) {
-    if (altM < 200) return 16;    //   ~4 km across
-    if (altM < 700) return 14;    //  ~17 km
-    if (altM < 2500) return 12;   //  ~68 km
-    if (altM < 7000) return 11;   // ~137 km
-    if (altM < 12000) return 10;  // ~274 km
-    return 9;                     // ~547 km
+  //                  ~4 km   ~17    ~68    ~137    ~274   ~547 km across
+  const ZOOM_BANDS = [200, 700, 2500, 7000, 12000];
+  const ZOOM_OF_BAND = [16, 14, 12, 11, 10, 9];
+  // Hysteresis matters: sitting right on a boundary (levelling off, or a noisy
+  // altitude) would otherwise flip zoom every update, and each flip throws away
+  // the whole tile grid and reloads it — which reads as the ground flickering.
+  function bandForAltitude(altM, cur) {
+    let i = ZOOM_BANDS.findIndex(b => altM < b);
+    if (i < 0) i = ZOOM_BANDS.length;
+    if (cur == null || i === cur) return i;
+    if (i > cur && altM < ZOOM_BANDS[cur] * 1.15) return cur;      // climbing out
+    if (i < cur && altM > ZOOM_BANDS[i] * 0.85) return cur;        // descending in
+    return i;
   }
 
   function loadImage(url) {
@@ -664,7 +670,7 @@
     const tiles = new Map();       // "z/x/y" -> {mesh, elev}
     const elevCache = new Map();   // "z/x/y" -> Float32Array | null
     const texCache = new Map();    // "z/wrappedX/y" -> THREE.Texture, kept across rebuilds
-    let key = "", building = false, pending = null;
+    let key = "", building = false, pending = null, curBand = null;
 
     // `sub` maps this tile onto its (possibly lower-zoom) elevation tile, so
     // relief still works when imagery is zoomed in past the terrarium max zoom.
@@ -800,7 +806,8 @@
     }
 
     async function rebuild(lat, lon, altM, origin, project) {
-      const z = zoomForAltitude(altM);
+      curBand = bandForAltitude(altM, curBand);
+      const z = ZOOM_OF_BAND[curBand];
       const cx = Math.floor(lon2tile(lon, z)), cy = Math.floor(lat2tile(lat, z));
       const k = `${z}/${cx}/${cy}`;
       if (k === key) return;
@@ -860,7 +867,11 @@
     const container = document.getElementById("map3d");
     let renderer;
     try {
-      renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: "low-power" });
+      // The view spans metres (taxiway) to hundreds of km (cruise). With a
+      // normal depth buffer that range leaves almost no precision far out and
+      // the terrain z-fights with itself, which looks like flickering.
+      renderer = new THREE.WebGLRenderer({
+        antialias: true, powerPreference: "low-power", logarithmicDepthBuffer: true });
     } catch (e) {
       scene3dError = "WebGL is unavailable — enable hardware acceleration in your browser settings";
       return null;
@@ -874,6 +885,34 @@
     scene.fog = new THREE.Fog(SKY, 4000, 90000);
     const camera = new THREE.PerspectiveCamera(55, 1, 1, 400000);
     camera.position.set(0, 40, 90);
+
+    // Sky dome. A single flat colour reads as nothing at cruise — the point of
+    // height is that the air thins, so the zenith darkens towards space while a
+    // pale band stays on the horizon. Rides with the camera and ignores fog.
+    const skyUniforms = {
+      top: { value: new THREE.Color(0x6ba3da) },
+      bottom: { value: new THREE.Color(SKY) },
+    };
+    const sky = new THREE.Mesh(
+      new THREE.SphereGeometry(1, 32, 16),
+      new THREE.ShaderMaterial({
+        uniforms: skyUniforms, side: THREE.BackSide, depthWrite: false, fog: false,
+        vertexShader: `varying vec3 vP; void main(){ vP = position;
+          gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.0); }`,
+        fragmentShader: `uniform vec3 top; uniform vec3 bottom; varying vec3 vP;
+          void main(){ float h = clamp(normalize(vP).y * 1.6 + .12, 0.0, 1.0);
+            gl_FragColor = vec4(mix(bottom, top, pow(h, .7)), 1.0); }`,
+      }));
+    sky.renderOrder = -2;
+    scene.add(sky);
+    // 0 at sea level to 1 in the flight levels, where the sky is nearly navy
+    const setSkyAltitude = aglM => {
+      const t = Math.min(1, Math.max(0, aglM / 11000));
+      skyUniforms.top.value.setRGB(.42 - .32 * t, .64 - .45 * t, .855 - .43 * t);
+      skyUniforms.bottom.value.setRGB(.56 - .18 * t, .714 - .2 * t, .871 - .18 * t);
+      scene.background.copy(skyUniforms.bottom.value);
+      scene.fog.color.copy(skyUniforms.bottom.value);
+    };
 
     scene.add(new THREE.HemisphereLight(0xbcd8f5, 0x33404d, 1.05));
     const sun = new THREE.DirectionalLight(0xffffff, .75);
@@ -893,6 +932,7 @@
       scene.fog.far = radius * .98;
       camera.far = Math.max(40000, radius * 4);
       camera.updateProjectionMatrix();
+      sky.scale.setScalar(camera.far * .48);         // stay inside the far plane
     }, flattenZones(S));
 
     // trailing flight path (windowed, so it stays cheap regardless of flight length)
@@ -1053,6 +1093,7 @@
       // YXZ = yaw, then pitch, then roll — the usual aircraft order
       planeGroup.rotation.set((p.pitch || 0) * DEG2RAD, -p.hdg * DEG2RAD, (p.bank || 0) * DEG2RAD);
       sea.position.set(x, -40, z);
+      setSkyAltitude(y - groundElevM);
       terrain.update(p.lat, p.lon, y, origin, project);
       updateTrail(time);
 
@@ -1079,8 +1120,11 @@
         // the map. Eased, and dropped entirely once the viewer orbits.
         const agl = Math.max(0, y - groundElevM);
         const d = idealDistance(agl);
+        // Keep the look-down angle inside half the field of view so the horizon
+        // — and the atmosphere above it — stays in frame at cruise. Aiming
+        // steeply down showed the map but nothing of the sky.
         const t = Math.min(1, agl / 9000);            // level out by ~30,000 ft
-        const elev = (24 + 42 * t) * DEG2RAD;
+        const elev = (20 + 12 * t) * DEG2RAD;
         const hdgRad = p.hdg * DEG2RAD, ch = Math.cos(elev);
         // Ease the offset from the aircraft, not the absolute position: at 60x
         // the aircraft can move 20 km between updates, and easing a world
@@ -1127,6 +1171,7 @@
       // advances, so labels would never appear if the city list finished
       // loading after it, nor follow the view while the viewer orbits
       updateCityLabels();
+      sky.position.copy(camera.position);            // the dome travels with the eye
       renderer.render(scene, camera);
     }
 
