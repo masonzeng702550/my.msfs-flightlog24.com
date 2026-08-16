@@ -328,20 +328,63 @@
     return wheels;
   }
 
+  // Which of the detected parts are safe to actually spin. The shape test is
+  // loose enough to also catch discs that belong to the leg — the 777 reports
+  // 55 "wheels" where it has 14 — and spinning those makes the whole bogie
+  // rotate on the ground. Keep only the dominant wheel size, and if the
+  // detection still looks implausible don't spin anything.
+  function spinnableWheels(wheels) {
+    if (wheels.length < 2) return wheels;
+    const radii = wheels.map(w => w.radius).sort((a, b) => a - b);
+    const median = radii[radii.length >> 1];
+    const keep = wheels.filter(w => w.radius > median * .65 && w.radius < median * 1.55);
+    return keep.length <= 24 ? keep : [];
+  }
+
   // Everything to hide when the gear comes up. Named nodes are the reliable
   // signal; the rigged wheel pivots are added so models with unnamed geometry
   // still retract something visible.
-  function findGearParts(holder, wheels) {
+  function findGearParts(holder, wheels, targetLen) {
     const parts = new Set(wheels.map(w => w.pivot));
+    const claimed = o => {
+      if (parts.has(o)) return true;
+      for (let p = o.parent; p; p = p.parent) if (parts.has(p)) return true;
+      return false;
+    };
+
+    // (a) by name. Gear bay doors count: on a ground model they are modelled
+    // open, so leaving them behind hangs an empty bay under the aircraft.
+    // "PassengerDoor" is safe — it has to match a gear word to get here at all.
     const NAME = /gear|wheel|tire|tyre|bogie|strut|undercarriage|\bnlg\b|\bmlg\b/i;
-    // "SeatGear" and "gearLever" are cabin/cockpit parts, not the undercarriage
-    const SKIP = /seat|interior|cabin|cockpit|lever|handle|steering|gearbox|door|light/i;
+    const SKIP = /seat|interior|cabin|cockpit|lever|handle|steering|gearbox|light/i;
     holder.traverse(o => {
       if (!o.name || !NAME.test(o.name) || SKIP.test(o.name)) return;
-      // don't nest: if an ancestor already matched, the child comes along anyway
-      for (let p = o.parent; p; p = p.parent) if (parts.has(p)) return;
-      parts.add(o);
+      if (!claimed(o)) parts.add(o);
     });
+
+    // (b) by position, because most models only name the wheels — the legs,
+    // bogies and doors are anonymous. Anything standing in the column above a
+    // wheel, below the belly, is part of that gear leg. Engines sit far enough
+    // outboard of the columns to be left alone.
+    holder.updateMatrixWorld(true);
+    const box = new THREE.Box3().setFromObject(holder);
+    const bellyY = box.min.y + (box.max.y - box.min.y) * .45;
+    const cols = wheels.map(w => {
+      const p = new THREE.Vector3(); w.pivot.getWorldPosition(p);
+      return { x: p.x, z: p.z, r: Math.max(w.radius * 4, targetLen * .05) };
+    });
+    if (cols.length) {
+      holder.traverse(o => {
+        if (!o.isMesh || claimed(o)) return;
+        const b = new THREE.Box3().setFromObject(o);
+        if (b.min.y > bellyY) return;                  // sits above the belly
+        const c = b.getCenter(new THREE.Vector3());
+        if (c.y > bellyY) return;
+        for (const col of cols) {
+          if (Math.hypot(c.x - col.x, c.z - col.z) <= col.r) { parts.add(o); return; }
+        }
+      });
+    }
     return [...parts];
   }
 
@@ -416,7 +459,7 @@
     } catch (e) { console.warn("ground-clamp refine failed:", e); }
 
     const wheels = setupWheels(holder, spec.len);
-    return { holder, wheels, gearParts: findGearParts(holder, wheels) };
+    return { holder, wheels, gearParts: findGearParts(holder, wheels, spec.len) };
   }
 
   let sharedDraco = null;
@@ -482,8 +525,8 @@
       const ground = await loadRealModel(spec.ground);
       if (ground) {
         result.group.add(ground.holder);
-        result.wheels = ground.wheels;
-        result.gearParts = ground.gearParts;
+        result.wheels = spinnableWheels(ground.wheels);
+        result.gearParts = ground.gearParts;   // hides every detected part, spin uses the filtered set
         result.credit = spec.credit;
         result.groundMesh = ground.holder;
         result.acLen = spec.ground.len;
