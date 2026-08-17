@@ -991,16 +991,6 @@
       // frame: at cruise the auto distance is ~48 km, so a floor of 0.1 still
       // left it 5 km away — a handful of pixels, which reads as it vanishing.
       zoomMul = Math.max(.004, Math.min(20, zoomMul * f));
-      // Zoom must not reset the framing. Doing that snapped the camera back
-      // behind the tail on every scroll, so any rotation was instantly undone —
-      // which is why the view seemed stuck there. When the viewer has taken
-      // over, scale their own offset and leave their angle alone.
-      if (userFramed) {
-        const o = camera.position.clone().sub(controls.target).multiplyScalar(f);
-        const len = o.length(), min = (meshInfo.acLen || 50) * .8;
-        if (len < min) o.setLength(min);
-        camera.position.copy(controls.target).add(o);
-      }
     }, { passive: false });
 
     // How much ground the view actually spans, in real metres: how far the
@@ -1149,24 +1139,38 @@
     // Called from the render loop as well as from update(), because otherwise a
     // wheel-zoom while the replay is paused changes the framing distance with
     // no frame ever applying it — which looked like zoom being broken.
+    // Direction and distance are separate concerns. Distance is always the map
+    // scale — that is what makes the ground and the aircraft grow together when
+    // you zoom. Direction is the automatic behind-and-above angle until the
+    // viewer orbits, after which it is simply whichever way they are looking.
+    // (Tying zoom to the viewer's own distance instead is what made zoom go back
+    // to enlarging only the aircraft: dollying towards something 10 km up never
+    // approaches the ground.)
     function autoFrame(p, x, y, z, k) {
       const aglReal = Math.max(0, y - groundElevM) / VSCALE;
       const d = idealDistance(aglReal);
-      // Flatten the look-down angle as it climbs rather than steepening it:
-      // height is meant to show the horizon and the thin air above it, and a
-      // steep angle fills the frame with ground and leaves no sky at all.
-      const t = Math.min(1, aglReal / 9000);          // level out by ~30,000 ft
-      const elev = (24 - 8 * t) * DEG2RAD;
-      const hdgRad = p.hdg * DEG2RAD, ch = Math.cos(elev);
-      // Ease the offset from the aircraft, not the absolute position: at 60x the
-      // aircraft can move 20 km between updates, and easing a world position
-      // simply never catches up — it lagged to 250 km behind.
-      const ox = -Math.sin(hdgRad) * d * ch, oy = Math.sin(elev) * d, oz = Math.cos(hdgRad) * d * ch;
+
+      let dirX, dirY, dirZ;
       const cx = camera.position.x - x, cy = camera.position.y - y, cz = camera.position.z - z;
       const cur = Math.hypot(cx, cy, cz);
-      // Ease while the flight plays, but snap on a discontinuity — dragging the
-      // scrubber moves the aircraft hundreds of km at once, and easing from
-      // there left the camera stranded far behind pointing at the horizon.
+      if (userFramed && cur > 1e-3) {
+        dirX = cx / cur; dirY = cy / cur; dirZ = cz / cur;
+      } else {
+        // Flatten the look-down angle as it climbs rather than steepening it:
+        // height is meant to show the horizon and the thin air above it, and a
+        // steep angle fills the frame with ground and leaves no sky at all.
+        const t = Math.min(1, aglReal / 9000);        // level out by ~30,000 ft
+        const elev = (24 - 8 * t) * DEG2RAD;
+        const hdgRad = p.hdg * DEG2RAD, ch = Math.cos(elev);
+        dirX = -Math.sin(hdgRad) * ch; dirY = Math.sin(elev); dirZ = Math.cos(hdgRad) * ch;
+      }
+      const ox = dirX * d, oy = dirY * d, oz = dirZ * d;
+
+      // Ease the offset from the aircraft, not the absolute position: at 60x the
+      // aircraft can move 20 km between updates, and easing a world position
+      // simply never catches up — it lagged to 250 km behind. Snap on a
+      // discontinuity, since dragging the scrubber moves the aircraft hundreds
+      // of km at once and easing from there strands the camera.
       if (!initialised || cur > d * 2.5 || cur < d * .4) {
         camera.position.set(x + ox, y + oy, z + oz);
         initialised = true;
@@ -1210,24 +1214,9 @@
         for (const w of meshInfo.wheels) w.pivot.rotateOnAxis(w.axle, -(mps * simDt) / w.radius);
       }
 
-      if (!userFramed) {
-        autoFrame(p, x, y, z, .12);
-      } else if (prevAC) {
-        // carry the camera along with the aircraft so it stays a chase view,
-        // preserving whatever offset the viewer set by orbiting
-        camera.position.x += x - prevAC.x;
-        camera.position.y += y - prevAC.y;
-        camera.position.z += z - prevAC.z;
-        // ...and swing it around with the turn, so the nose keeps pointing away
-        // from the viewer instead of the aircraft appearing to slide sideways
-        const dh = ((p.hdg - prevAC.hdg + 540) % 360) - 180;
-        if (dh) {
-          const a = -dh * DEG2RAD, ca = Math.cos(a), sa = Math.sin(a);
-          const ox = camera.position.x - x, oz = camera.position.z - z;
-          camera.position.x = x + ox * ca + oz * sa;
-          camera.position.z = z - ox * sa + oz * ca;
-        }
-      }
+      // runs in both modes: it keeps the viewer's angle when they have one, and
+      // always applies the map-scale distance
+      autoFrame(p, x, y, z, .12);
       prevAC = { x, y, z, hdg: p.hdg };
       controls.target.set(x, y, z);
     }
@@ -1242,10 +1231,8 @@
       // also here so a wheel-zoom applies and re-cuts the detail even while the
       // replay is paused; both return immediately when nothing has changed
       if (lastP && origin) {
-        if (!userFramed) {
-          const [ax, az] = project(lastP.lat, lastP.lon);
-          autoFrame(lastP, ax, lastP.alt * .3048 * VSCALE, az, .18);
-        }
+        const [ax, az] = project(lastP.lat, lastP.lon);
+        autoFrame(lastP, ax, lastP.alt * .3048 * VSCALE, az, .18);
         terrain.update(lastP.lat, lastP.lon, viewScale(), origin, project);
       }
       sky.position.copy(camera.position);            // the dome travels with the eye
