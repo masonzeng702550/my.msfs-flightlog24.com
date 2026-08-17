@@ -97,6 +97,7 @@
       <div class="meta-grid">
         ${row(T("l_departure"), dep.name ? `${dep.icao} · ${dep.name}` : dep.icao)}
         ${row(T("l_arrival"), arr.name ? `${arr.icao} · ${arr.name}` : arr.icao)}
+        ${row(T("l_times"), timesRow())}
         ${row(T("l_aircraft"), `${ac.title}${ac.model ? ` (${ac.model})` : ""}`)}
         ${row(T("l_airline"), ac.airline || "—")}
         ${row(T("l_maxalt"), `${f.altitude.max_ft.toLocaleString()} ft`)}
@@ -114,6 +115,19 @@
   const plane = buildPlane(map);
   setupReplay(map, chart, plane);
   hideSplash();
+
+  // Departure time comes from the recording's own filename, so it is the
+  // departure's wall clock. The arrival is only shown when both airports'
+  // timezones are known — a long eastbound leg can land on a different calendar
+  // day, and a guessed time would be worse than none.
+  function timesRow() {
+    const dep = [f.date, f.time_local].filter(Boolean).join(" ");
+    const a = f.arrival_local;
+    if (!a) return dep || "—";
+    const off = a.day_offset ? ` <sup>${a.day_offset > 0 ? "+" : ""}${a.day_offset}d</sup>` : "";
+    const zone = a.tz ? ` <span class="tz">${a.tz.split("/").pop().replace(/_/g, " ")}</span>` : "";
+    return `${dep} <span class="arrow">→</span> ${a.time_local}${off}${zone}`;
+  }
 
   // ── map ─────────────────────────────────────────────────────────────
   function buildMap() {
@@ -1429,6 +1443,28 @@
     seek.addEventListener("input", () => { t = +seek.value; last = null; render(t); });
     speedEl.addEventListener("change", () => { speed = +speedEl.value; });
     speed = +speedEl.value;
+
+    // Keyboard: space to play, arrows to scrub, shift for a bigger jump, home/end
+    // for the ends, F for follow, D for the 3D view. Ignored while a form control
+    // has focus so the scrubber's own arrow keys and the language select still work.
+    document.addEventListener("keydown", e => {
+      if (e.metaKey || e.ctrlKey || e.altKey) return;
+      const el = document.activeElement;
+      if (el && /^(INPUT|SELECT|TEXTAREA|BUTTON)$/.test(el.tagName)) return;
+      const step = e.shiftKey ? 60 : 10;
+      const go = v => { t = Math.max(0, Math.min(duration, v)); last = null; render(t); };
+      switch (e.key) {
+        case " ": case "k": playing ? pause() : play(); break;
+        case "ArrowRight": case "l": go(t + step); break;
+        case "ArrowLeft": case "j": go(t - step); break;
+        case "Home": go(0); break;
+        case "End": go(duration); break;
+        case "f": case "F": setFollow(!follow); break;
+        case "d": case "D": view3dBtn.click(); break;
+        default: return;
+      }
+      e.preventDefault();
+    });
     render(0);
   }
 

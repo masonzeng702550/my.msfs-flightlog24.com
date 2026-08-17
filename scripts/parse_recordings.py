@@ -62,7 +62,7 @@ def load_airports():
     with open(AIRPORTS_CSV, newline="", encoding="utf-8") as f:
         for r in csv.DictReader(f):
             rows.append((r["icao"], float(r["lat"]), float(r["lon"]),
-                         r["name"], r["country"]))
+                         r["name"], r["country"], r.get("tz") or ""))
     return rows
 
 
@@ -70,13 +70,13 @@ def nearest_airport(airports, lat, lon, limit_nm=AIRPORT_MATCH_NM):
     """Brute-force nearest airport with a coarse lat/lon prefilter."""
     best = None
     best_d = limit_nm
-    for icao, alat, alon, name, country in airports:
+    for icao, alat, alon, name, country, tz in airports:
         if abs(alat - lat) > 0.5 or abs(alon - lon) > 0.5:
             continue
         d = haversine_nm(lat, lon, alat, alon)
         if d < best_d:
             best_d = d
-            best = {"icao": icao, "name": name, "country": country,
+            best = {"icao": icao, "name": name, "country": country, "tz": tz,
                     "lat": alat, "lon": alon, "dist_nm": round(d, 2)}
     return best
 
@@ -331,6 +331,7 @@ def parse_recording(path, airports):
             "start": [round(lons[0], 5), round(lats[0], 5)],
             "end": [round(lons[-1], 5), round(lats[-1], 5)],
         },
+        "arrival_local": None,      # filled in below, once the sidecar has had its say
         "frames": len(pos),
         "duration_sec": replay[-1][0] if replay else 0,
         "replay": replay,
@@ -342,9 +343,38 @@ def parse_recording(path, airports):
         if code:
             ap = next((a for a in airports if a[0] == code.upper()), None)
             if ap:
-                detail["route"][side] = {"icao": ap[0], "name": ap[3],
-                                         "country": ap[4], "lat": ap[1], "lon": ap[2]}
+                detail["route"][side] = {"icao": ap[0], "name": ap[3], "country": ap[4],
+                                         "tz": ap[5], "lat": ap[1], "lon": ap[2]}
+
+    detail["arrival_local"] = arrival_local(
+        date, time_local, block_min,
+        detail["route"]["departure"].get("tz"), detail["route"]["arrival"].get("tz"))
     return detail
+
+
+
+def arrival_local(date, time_local, block_min, dep_tz, arr_tz):
+    """Wall-clock arrival time at the destination.
+
+    A long flight can land the previous calendar day (RCTP->PHNL) and the
+    recording only knows the departure's local time, so the two zones have to be
+    resolved properly rather than by adding hours. Returns None unless both
+    zones are known, since a guessed time is worse than none.
+    """
+    if not (date and time_local and block_min and dep_tz and arr_tz):
+        return None
+    try:
+        from zoneinfo import ZoneInfo
+        import datetime
+        y, mo, d = (int(x) for x in date.split("-"))
+        h, mi = (int(x) for x in time_local.split(":"))
+        dep = datetime.datetime(y, mo, d, h, mi, tzinfo=ZoneInfo(dep_tz))
+        arr = dep + datetime.timedelta(minutes=block_min)
+        arr = arr.astimezone(ZoneInfo(arr_tz))
+        return {"date": arr.strftime("%Y-%m-%d"), "time_local": arr.strftime("%H:%M"),
+                "tz": arr_tz, "day_offset": (arr.date() - dep.date()).days}
+    except Exception:
+        return None
 
 
 def summarize(detail):
