@@ -328,6 +328,88 @@
     "count": 14
    }
   ],
-  "year_span": 1
+  "year_span": 1,
+  "total_block_min": 5192.3,
+  "total_air_min": 4178.5,
+  "hours_by_year": [
+   {
+    "label": "2026",
+    "minutes": 5192.3
+   }
+  ],
+  "hours_by_month": [
+   {
+    "label": "2026-01",
+    "minutes": 150.5
+   },
+   {
+    "label": "2026-02",
+    "minutes": 750.2
+   },
+   {
+    "label": "2026-03",
+    "minutes": 232.8
+   },
+   {
+    "label": "2026-05",
+    "minutes": 17.3
+   },
+   {
+    "label": "2026-06",
+    "minutes": 484.9
+   },
+   {
+    "label": "2026-07",
+    "minutes": 1758.4
+   },
+   {
+    "label": "2026-08",
+    "minutes": 1798.2
+   }
+  ],
+  "records": {
+   "longest": {
+    "id": "2026-08-13-RCTP-PHNL-a525d5",
+    "date": "2026-08-13",
+    "value": 5052.6,
+    "route": "RCTP–PHNL",
+    "aircraft": "B78X"
+   },
+   "longest_time": {
+    "id": "2026-08-13-RCTP-PHNL-a525d5",
+    "date": "2026-08-13",
+    "value": 615.7,
+    "route": "RCTP–PHNL",
+    "aircraft": "B78X"
+   },
+   "highest": {
+    "id": "2026-06-28-RCTP-RJAA-35bf39",
+    "date": "2026-06-28",
+    "value": 41272,
+    "route": "RCTP–RJAA",
+    "aircraft": "B773"
+   },
+   "fastest": {
+    "id": "2026-08-06-RCYU-RCSS-80f62d",
+    "date": "2026-08-06",
+    "value": 642.9,
+    "route": "RCYU–RCSS",
+    "aircraft": "FA18E"
+   },
+   "smoothest_landing": {
+    "id": "2026-03-16-RCTP-RCSS-09015c",
+    "date": "2026-03-16",
+    "value": 46.0,
+    "route": "RCTP–RCSS",
+    "aircraft": "B78X"
+   },
+   "hardest_landing": {
+    "id": "2026-03-14-RCTP-RCSS-ddfb49",
+    "date": "2026-03-14",
+    "value": 1171.0,
+    "route": "RCTP–RCSS",
+    "aircraft": "A20N"
+   }
+  }
  }
 }

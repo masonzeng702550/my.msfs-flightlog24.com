@@ -185,7 +185,7 @@ a:hover { text-decoration: underline; }
 .analytics.open { grid-template-rows: 1fr; }
 .analytics-inner { overflow: hidden; min-height: 0; }
 
-.analytics-cards { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; padding: 16px 0 4px; }
+.analytics-cards { display: grid; grid-template-columns: repeat(6, 1fr); gap: 12px; padding: 16px 0 4px; }
 .acard { border: 1px solid var(--line); border-radius: 10px; overflow: hidden; background: var(--panel); }
 .acard h4 { margin: 0; padding: 9px 14px; font-size: 12px; letter-spacing: .5px; text-transform: uppercase; font-weight: 700; color: #07131e; }
 .acard ul { list-style: none; margin: 0; padding: 10px 12px; }
@@ -197,7 +197,7 @@ a:hover { text-decoration: underline; }
 .acard .total { padding: 9px 14px; border-top: 1px solid var(--line); color: var(--muted); font-size: 11.5px; }
 .acard .total b { color: var(--text); font-size: 17px; font-weight: 700; }
 
-.analytics-charts { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; padding: 4px 0 18px; }
+.analytics-charts { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; padding: 4px 0 18px; }
 .chart-box { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 14px; }
 .chart-box h4 { margin: 0 0 10px; font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: .5px; }
 
@@ -419,3 +419,21 @@ a:hover { text-decoration: underline; }
   .flight .date { order: 3; white-space: nowrap; }
   .flight .date small { display: inline; margin-left: 6px; opacity: .7; }
 }
+
+/* records card in the analytics panel */
+.acard.records .hours {
+  padding: 10px 12px 8px; border-bottom: 1px solid var(--line);
+  color: var(--muted); font-size: 12px;
+}
+.acard.records .hours b { color: var(--text); font-size: 20px; font-variant-numeric: tabular-nums; }
+.acard.records .hours span { display: block; margin-top: 2px; }
+.rec {
+  display: grid; grid-template-columns: 1fr auto; gap: 0 8px;
+  padding: 7px 12px; border-bottom: 1px solid var(--line);
+  text-decoration: none; color: inherit;
+}
+.rec:last-child { border-bottom: 0; }
+.rec:hover { background: var(--panel-2); }
+.rec .rk { font-size: 12px; color: var(--muted); }
+.rec .rv { font-size: 13px; font-weight: 700; font-variant-numeric: tabular-nums; color: var(--accent); }
+.rec .rm { grid-column: 1 / -1; font-size: 11px; color: var(--muted); opacity: .8; }

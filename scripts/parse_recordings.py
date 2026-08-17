@@ -371,6 +371,12 @@ def summarize(detail):
         "complete": detail["complete"],
         "title": detail["title"],
         "tags": detail["tags"],
+        # carried into the index so the records panel can rank without loading
+        # every per-flight file
+        "max_ft": detail["altitude"]["max_ft"],
+        "max_gs_kt": detail["stats"]["max_ground_speed_kt"],
+        "landing_fpm": (detail["landing"] or {}).get("fpm"),
+        "landing_rating": (detail["landing"] or {}).get("rating"),
     }
 
 
@@ -460,6 +466,43 @@ def build_analytics(flights):
     def top(counter, n=5):
         return [{"label": k, "count": v} for k, v in counter.most_common(n)]
 
+    # A logbook is really about hours, not counts — those are the numbers a
+    # pilot actually tracks — so total them alongside the tallies.
+    hours_by_year, hours_by_month = Counter(), Counter()
+    total_block = total_air = 0.0
+    for f in flights:
+        blk = f.get("block_min") or 0
+        air = f.get("air_min") or 0
+        total_block += blk
+        total_air += air
+        d = f.get("date")
+        if d:
+            hours_by_year[d[:4]] += blk
+            hours_by_month[d[:7]] += blk
+
+    def best(items, key, reverse=True):
+        picked = [f for f in items if key(f) is not None]
+        if not picked:
+            return None
+        f = sorted(picked, key=key, reverse=reverse)[0]
+        return {"id": f["id"], "date": f["date"], "value": key(f),
+                "route": f"{f['departure']}–{f['arrival']}",
+                "aircraft": f.get("model") or f.get("aircraft")}
+
+    # A touchdown of exactly 0 fpm means the sim never reported one, not a
+    # perfect landing — ranking those first would put a phantom at the top.
+    landed = [f for f in flights
+              if f.get("landing_fpm") and f.get("complete")]
+    records = {
+        "longest": best(flights, lambda f: f.get("distance_nm")),
+        "longest_time": best(flights, lambda f: f.get("block_min")),
+        "highest": best(flights, lambda f: f.get("max_ft")),
+        "fastest": best(flights, lambda f: f.get("max_gs_kt")),
+        # softest touchdown wins, so rank by the smallest rate of descent
+        "smoothest_landing": best(landed, lambda f: abs(f["landing_fpm"]), reverse=False),
+        "hardest_landing": best(landed, lambda f: abs(f["landing_fpm"])),
+    }
+
     years = sorted(by_year)
     year_span = (int(years[-1]) - int(years[0]) + 1) if years else 0
 
@@ -473,6 +516,12 @@ def build_analytics(flights):
         "by_month_of_year": [{"label": m, "count": by_month_of_year.get(m, 0)} for m in range(1, 13)],
         "by_weekday": [{"label": w, "count": by_weekday.get(w, 0)} for w in range(7)],
         "year_span": year_span,
+        "total_block_min": round(total_block, 1),
+        "total_air_min": round(total_air, 1),
+        "hours_by_year": [{"label": y, "minutes": round(hours_by_year[y], 1)} for y in years],
+        "hours_by_month": [{"label": m, "minutes": round(hours_by_month[m], 1)}
+                           for m in sorted(hours_by_month)],
+        "records": records,
     }
 
 

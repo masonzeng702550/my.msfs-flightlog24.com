@@ -25,7 +25,11 @@
   "air_min": 611.3,
   "complete": true,
   "title": null,
-  "tags": []
+  "tags": [],
+  "max_ft": 39053,
+  "max_gs_kt": 514.2,
+  "landing_fpm": 190.0,
+  "landing_rating": "normal"
  },
  {
   "id": "2026-08-13-RCTP-VIDP-b690bb",
@@ -53,7 +57,11 @@
   "air_min": 332.3,
   "complete": true,
   "title": null,
-  "tags": []
+  "tags": [],
+  "max_ft": 35063,
+  "max_gs_kt": 520.0,
+  "landing_fpm": 94.0,
+  "landing_rating": "normal"
  },
  {
   "id": "2026-08-11-RCSS-RJTT-c5626b",
@@ -81,7 +89,11 @@
   "air_min": 160.5,
   "complete": true,
   "title": null,
-  "tags": []
+  "tags": [],
+  "max_ft": 39052,
+  "max_gs_kt": 517.4,
+  "landing_fpm": 165.0,
+  "landing_rating": "normal"
  },
  {
   "id": "2026-08-10-ZSSS-ZSPD-3f444b",
@@ -109,7 +121,11 @@
   "air_min": 24.0,
   "complete": true,
   "title": null,
-  "tags": []
+  "tags": [],
+  "max_ft": 2649,
+  "max_gs_kt": 339.4,
+  "landing_fpm": 415.0,
+  "landing_rating": "firm"
  },
  {
   "id": "2026-08-09-RJBB-RCTP-528767",
@@ -137,7 +153,11 @@
   "air_min": 133.5,
   "complete": true,
   "title": null,
-  "tags": []
+  "tags": [],
+  "max_ft": 35029,
+  "max_gs_kt": 488.8,
+  "landing_fpm": 306.0,
+  "landing_rating": "firm"
  },
  {
   "id": "2026-08-06-RCYU-RCSS-80f62d",
@@ -165,7 +185,11 @@
   "air_min": 15.3,
   "complete": true,
   "title": null,
-  "tags": []
+  "tags": [],
+  "max_ft": 17687,
+  "max_gs_kt": 642.9,
+  "landing_fpm": 247.0,
+  "landing_rating": "firm"
  },
  {
   "id": "2026-08-06-RCSS-RCYU-0189be",
@@ -193,7 +217,11 @@
   "air_min": 32.7,
   "complete": true,
   "title": null,
-  "tags": []
+  "tags": [],
+  "max_ft": 10274,
+  "max_gs_kt": 301.6,
+  "landing_fpm": 226.0,
+  "landing_rating": "normal"
  },
  {
   "id": "2026-08-03-RCTP-RCTP-28a547",
@@ -221,7 +249,11 @@
   "air_min": 31.2,
   "complete": true,
   "title": null,
-  "tags": []
+  "tags": [],
+  "max_ft": 5051,
+  "max_gs_kt": 296.0,
+  "landing_fpm": 229.0,
+  "landing_rating": "normal"
  },
  {
   "id": "2026-08-03-WSSS-RCTP-495c1a",
@@ -249,7 +281,11 @@
   "air_min": 258.4,
   "complete": true,
   "title": null,
-  "tags": []
+  "tags": [],
+  "max_ft": 40057,
+  "max_gs_kt": 502.9,
+  "landing_fpm": 322.0,
+  "landing_rating": "firm"
  },
  {
   "id": "2026-08-02-RCSS-RCSS-0905c6",
@@ -277,7 +313,11 @@
   "air_min": 15.8,
   "complete": true,
   "title": null,
-  "tags": []
+  "tags": [],
+  "max_ft": 6008,
+  "max_gs_kt": 242.5,
+  "landing_fpm": 280.0,
+  "landing_rating": "firm"
  },
  {
   "id": "2026-08-02-UNKN-RCSS-f661d0",
@@ -305,7 +345,11 @@
   "air_min": null,
   "complete": false,
   "title": null,
-  "tags": []
+  "tags": [],
+  "max_ft": 7474,
+  "max_gs_kt": 257.2,
+  "landing_fpm": 387.0,
+  "landing_rating": "firm"
  },
  {
   "id": "2026-08-02-RCQC-UNKN-839138",
@@ -333,7 +377,11 @@
   "air_min": null,
   "complete": false,
   "title": null,
-  "tags": []
+  "tags": [],
+  "max_ft": 15048,
+  "max_gs_kt": 436.1,
+  "landing_fpm": null,
+  "landing_rating": null
  },
  {
   "id": "2026-07-31-RCTP-WADD-e87148",
@@ -361,7 +409,11 @@
   "air_min": 289.0,
   "complete": true,
   "title": null,
-  "tags": []
+  "tags": [],
+  "max_ft": 37036,
+  "max_gs_kt": 492.8,
+  "landing_fpm": 278.0,
+  "landing_rating": "firm"
  },
  {
   "id": "2026-07-31-RCTP-RJBB-bd0039",
@@ -389,7 +441,11 @@
   "air_min": 126.8,
   "complete": true,
   "title": null,
-  "tags": []
+  "tags": [],
+  "max_ft": 35019,
+  "max_gs_kt": 498.6,
+  "landing_fpm": 229.0,
+  "landing_rating": "normal"
  },
  {
   "id": "2026-07-30-RJOO-RJBB-eb87a0",
@@ -417,7 +473,11 @@
   "air_min": 7.4,
   "complete": true,
   "title": null,
-  "tags": []
+  "tags": [],
+  "max_ft": 3058,
+  "max_gs_kt": 248.4,
+  "landing_fpm": 101.0,
+  "landing_rating": "normal"
  },
  {
   "id": "2026-07-30-RJAA-RJTT-7cf509",
@@ -445,7 +505,11 @@
   "air_min": 9.4,
   "complete": true,
   "title": null,
-  "tags": []
+  "tags": [],
+  "max_ft": 2610,
+  "max_gs_kt": 255.1,
+  "landing_fpm": 113.0,
+  "landing_rating": "normal"
  },
  {
   "id": "2026-07-29-RKPK-RKPK-d35515",
@@ -473,7 +537,11 @@
   "air_min": 10.5,
   "complete": true,
   "title": null,
-  "tags": []
+  "tags": [],
+  "max_ft": 3047,
+  "max_gs_kt": 266.2,
+  "landing_fpm": 203.0,
+  "landing_rating": "normal"
  },
  {
   "id": "2026-07-29-RJFF-RJFF-377b16",
@@ -501,7 +569,11 @@
   "air_min": 8.7,
   "complete": true,
   "title": null,
-  "tags": []
+  "tags": [],
+  "max_ft": 3041,
+  "max_gs_kt": 268.0,
+  "landing_fpm": 263.0,
+  "landing_rating": "firm"
  },
  {
   "id": "2026-07-29-RJFF-RJFF-c84f6f",
@@ -529,7 +601,11 @@
   "air_min": 9.8,
   "complete": true,
   "title": null,
-  "tags": []
+  "tags": [],
+  "max_ft": 3087,
+  "max_gs_kt": 282.6,
+  "landing_fpm": 87.0,
+  "landing_rating": "normal"
  },
  {
   "id": "2026-07-28-RKPK-RJFF-a9646b",
@@ -557,7 +633,11 @@
   "air_min": 42.0,
   "complete": true,
   "title": null,
-  "tags": []
+  "tags": [],
+  "max_ft": 14999,
+  "max_gs_kt": 400.4,
+  "landing_fpm": 140.0,
+  "landing_rating": "normal"
  },
  {
   "id": "2026-07-28-RJBB-RJOO-f72109",
@@ -585,7 +665,11 @@
   "air_min": 12.3,
   "complete": true,
   "title": null,
-  "tags": []
+  "tags": [],
+  "max_ft": 4534,
+  "max_gs_kt": 270.7,
+  "landing_fpm": 61.0,
+  "landing_rating": "normal"
  },
  {
   "id": "2026-07-28-RCTP-RCSS-03b985",
@@ -613,7 +697,11 @@
   "air_min": 4.9,
   "complete": true,
   "title": null,
-  "tags": []
+  "tags": [],
+  "max_ft": 4243,
+  "max_gs_kt": 343.3,
+  "landing_fpm": 623.0,
+  "landing_rating": "hard"
  },
  {
   "id": "2026-07-18-VHHH-VHHH-688a26",
@@ -641,7 +729,11 @@
   "air_min": 20.6,
   "complete": true,
   "title": null,
-  "tags": []
+  "tags": [],
+  "max_ft": 3007,
+  "max_gs_kt": 227.0,
+  "landing_fpm": 290.0,
+  "landing_rating": "firm"
  },
  {
   "id": "2026-07-17-RCTP-WSSS-cd64b9",
@@ -669,7 +761,11 @@
   "air_min": 238.4,
   "complete": true,
   "title": null,
-  "tags": []
+  "tags": [],
+  "max_ft": 37595,
+  "max_gs_kt": 514.3,
+  "landing_fpm": 132.0,
+  "landing_rating": "normal"
  },
  {
   "id": "2026-07-17-RCKH-RCTP-cb50af",
@@ -697,7 +793,11 @@
   "air_min": 48.2,
   "complete": true,
   "title": null,
-  "tags": []
+  "tags": [],
+  "max_ft": 13020,
+  "max_gs_kt": 392.8,
+  "landing_fpm": 649.0,
+  "landing_rating": "hard"
  },
  {
   "id": "2026-07-15-RCTP-RJBB-4cff43",
@@ -725,7 +825,11 @@
   "air_min": 133.1,
   "complete": true,
   "title": null,
-  "tags": []
+  "tags": [],
+  "max_ft": 34707,
+  "max_gs_kt": 485.4,
+  "landing_fpm": 420.0,
+  "landing_rating": "firm"
  },
  {
   "id": "2026-07-14-RCTP-RJFT-b8707b",
@@ -753,7 +857,11 @@
   "air_min": 101.4,
   "complete": true,
   "title": null,
-  "tags": []
+  "tags": [],
+  "max_ft": 35764,
+  "max_gs_kt": 493.5,
+  "landing_fpm": 651.0,
+  "landing_rating": "hard"
  },
  {
   "id": "2026-07-13-RCTP-RCTP-92f80c",
@@ -781,7 +889,11 @@
   "air_min": 46.7,
   "complete": true,
   "title": "Local Check",
-  "tags": []
+  "tags": [],
+  "max_ft": 5209,
+  "max_gs_kt": 258.8,
+  "landing_fpm": 118.0,
+  "landing_rating": "normal"
  },
  {
   "id": "2026-07-10-ROIG-UNKN-d43ef9",
@@ -809,7 +921,11 @@
   "air_min": 65.0,
   "complete": false,
   "title": null,
-  "tags": []
+  "tags": [],
+  "max_ft": 27605,
+  "max_gs_kt": 598.6,
+  "landing_fpm": 0,
+  "landing_rating": "greaser"
  },
  {
   "id": "2026-07-09-RCTP-VHHH-0ee00b",
@@ -837,7 +953,11 @@
   "air_min": 73.3,
   "complete": true,
   "title": null,
-  "tags": []
+  "tags": [],
+  "max_ft": 29997,
+  "max_gs_kt": 506.2,
+  "landing_fpm": 171.0,
+  "landing_rating": "normal"
  },
  {
   "id": "2026-07-09-RCTP-VHHH-f9341d",
@@ -865,7 +985,11 @@
   "air_min": 73.3,
   "complete": true,
   "title": null,
-  "tags": []
+  "tags": [],
+  "max_ft": 29997,
+  "max_gs_kt": 506.2,
+  "landing_fpm": 171.0,
+  "landing_rating": "normal"
  },
  {
   "id": "2026-07-08-RCTP-ROAH-cc747c",
@@ -893,7 +1017,11 @@
   "air_min": 56.6,
   "complete": true,
   "title": null,
-  "tags": []
+  "tags": [],
+  "max_ft": 29999,
+  "max_gs_kt": 487.2,
+  "landing_fpm": 233.0,
+  "landing_rating": "normal"
  },
  {
   "id": "2026-07-08-RCQC-RCNN-604ef0",
@@ -921,7 +1049,11 @@
   "air_min": 14.4,
   "complete": true,
   "title": null,
-  "tags": []
+  "tags": [],
+  "max_ft": 5345,
+  "max_gs_kt": 318.7,
+  "landing_fpm": 295.0,
+  "landing_rating": "firm"
  },
  {
   "id": "2026-07-07-VHHH-VMMC-a887a4",
@@ -949,7 +1081,11 @@
   "air_min": 18.4,
   "complete": true,
   "title": null,
-  "tags": []
+  "tags": [],
+  "max_ft": 5008,
+  "max_gs_kt": 217.3,
+  "landing_fpm": 251.0,
+  "landing_rating": "firm"
  },
  {
   "id": "2026-07-07-VHHH-VHSS-114db8",
@@ -977,7 +1113,11 @@
   "air_min": 5.1,
   "complete": true,
   "title": null,
-  "tags": []
+  "tags": [],
+  "max_ft": 3005,
+  "max_gs_kt": 214.8,
+  "landing_fpm": 258.0,
+  "landing_rating": "firm"
  },
  {
   "id": "2026-07-06-VHHH-VHSS-08f01e",
@@ -1005,7 +1145,11 @@
   "air_min": 5.0,
   "complete": true,
   "title": null,
-  "tags": []
+  "tags": [],
+  "max_ft": 1977,
+  "max_gs_kt": 229.6,
+  "landing_fpm": 68.0,
+  "landing_rating": "normal"
  },
  {
   "id": "2026-07-06-VHHH-VHSS-2518fb",
@@ -1033,7 +1177,11 @@
   "air_min": 5.2,
   "complete": true,
   "title": null,
-  "tags": []
+  "tags": [],
+  "max_ft": 3147,
+  "max_gs_kt": 225.9,
+  "landing_fpm": 391.0,
+  "landing_rating": "firm"
  },
  {
   "id": "2026-07-03-RCTP-RCSS-3b5280",
@@ -1061,7 +1209,11 @@
   "air_min": 26.3,
   "complete": true,
   "title": null,
-  "tags": []
+  "tags": [],
+  "max_ft": 9600,
+  "max_gs_kt": 346.2,
+  "landing_fpm": 295.0,
+  "landing_rating": "firm"
  },
  {
   "id": "2026-06-29-RCTP-RCSS-1804c8",
@@ -1089,7 +1241,11 @@
   "air_min": 5.6,
   "complete": true,
   "title": null,
-  "tags": []
+  "tags": [],
+  "max_ft": 1856,
+  "max_gs_kt": 220.5,
+  "landing_fpm": 127.0,
+  "landing_rating": "normal"
  },
  {
   "id": "2026-06-29-RCFN-RCFN-d23963",
@@ -1117,7 +1273,11 @@
   "air_min": 9.0,
   "complete": true,
   "title": null,
-  "tags": []
+  "tags": [],
+  "max_ft": 2943,
+  "max_gs_kt": 197.8,
+  "landing_fpm": 314.0,
+  "landing_rating": "firm"
  },
  {
   "id": "2026-06-29-RCTP-RJFF-87ff8d",
@@ -1145,7 +1305,11 @@
   "air_min": 109.5,
   "complete": true,
   "title": null,
-  "tags": []
+  "tags": [],
+  "max_ft": 39030,
+  "max_gs_kt": 485.3,
+  "landing_fpm": 254.0,
+  "landing_rating": "firm"
  },
  {
   "id": "2026-06-28-RCTP-RJAA-35bf39",
@@ -1173,7 +1337,11 @@
   "air_min": 150.2,
   "complete": true,
   "title": null,
-  "tags": []
+  "tags": [],
+  "max_ft": 41272,
+  "max_gs_kt": 526.2,
+  "landing_fpm": 252.0,
+  "landing_rating": "firm"
  },
  {
   "id": "2026-06-28-ROAH-UNKN-d6337e",
@@ -1201,7 +1369,11 @@
   "air_min": null,
   "complete": false,
   "title": null,
-  "tags": []
+  "tags": [],
+  "max_ft": 3102,
+  "max_gs_kt": 307.4,
+  "landing_fpm": null,
+  "landing_rating": null
  },
  {
   "id": "2026-06-28-UNKN-ROAH-a3f6ad",
@@ -1229,7 +1401,11 @@
   "air_min": 0.0,
   "complete": false,
   "title": null,
-  "tags": []
+  "tags": [],
+  "max_ft": 3196,
+  "max_gs_kt": 168.1,
+  "landing_fpm": 238.0,
+  "landing_rating": "normal"
  },
  {
   "id": "2026-06-28-UNKN-ROAH-6b3c8d",
@@ -1257,7 +1433,11 @@
   "air_min": null,
   "complete": false,
   "title": null,
-  "tags": []
+  "tags": [],
+  "max_ft": 3196,
+  "max_gs_kt": 185.8,
+  "landing_fpm": 249.0,
+  "landing_rating": "firm"
  },
  {
   "id": "2026-06-27-RCTP-RCSS-37eb0b",
@@ -1285,7 +1465,11 @@
   "air_min": 6.2,
   "complete": true,
   "title": null,
-  "tags": []
+  "tags": [],
+  "max_ft": 4539,
+  "max_gs_kt": 233.6,
+  "landing_fpm": 247.0,
+  "landing_rating": "firm"
  },
  {
   "id": "2026-06-27-RCFN-RCGI-95237d",
@@ -1313,7 +1497,11 @@
   "air_min": 13.9,
   "complete": true,
   "title": null,
-  "tags": []
+  "tags": [],
+  "max_ft": 3066,
+  "max_gs_kt": 127.1,
+  "landing_fpm": 68.0,
+  "landing_rating": "normal"
  },
  {
   "id": "2026-06-27-RJNA-RJOO-a6b9db",
@@ -1341,7 +1529,11 @@
   "air_min": 19.7,
   "complete": true,
   "title": null,
-  "tags": []
+  "tags": [],
+  "max_ft": 5008,
+  "max_gs_kt": 376.2,
+  "landing_fpm": 307.0,
+  "landing_rating": "firm"
  },
  {
   "id": "2026-06-27-RCTP-RCKH-de9a09",
@@ -1369,7 +1561,11 @@
   "air_min": 35.2,
   "complete": true,
   "title": null,
-  "tags": []
+  "tags": [],
+  "max_ft": 14715,
+  "max_gs_kt": 385.9,
+  "landing_fpm": 98.0,
+  "landing_rating": "normal"
  },
  {
   "id": "2026-05-27-UNKN-RCFN-54689e",
@@ -1397,7 +1593,11 @@
   "air_min": 0.0,
   "complete": false,
   "title": null,
-  "tags": []
+  "tags": [],
+  "max_ft": 1136,
+  "max_gs_kt": 127.8,
+  "landing_fpm": 192.0,
+  "landing_rating": "normal"
  },
  {
   "id": "2026-05-27-RCFN-RCFN-2ab0aa",
@@ -1425,7 +1625,11 @@
   "air_min": 6.6,
   "complete": true,
   "title": null,
-  "tags": []
+  "tags": [],
+  "max_ft": 1842,
+  "max_gs_kt": 129.8,
+  "landing_fpm": 658.0,
+  "landing_rating": "hard"
  },
  {
   "id": "2026-05-27-RCTP-RCSS-124d31",
@@ -1453,7 +1657,11 @@
   "air_min": 5.4,
   "complete": true,
   "title": null,
-  "tags": []
+  "tags": [],
+  "max_ft": 4355,
+  "max_gs_kt": 228.3,
+  "landing_fpm": 418.0,
+  "landing_rating": "firm"
  },
  {
   "id": "2026-03-25-UNKN-RCSS-28ac7e",
@@ -1481,7 +1689,11 @@
   "air_min": 0.3,
   "complete": false,
   "title": null,
-  "tags": []
+  "tags": [],
+  "max_ft": 1453,
+  "max_gs_kt": 225.1,
+  "landing_fpm": 13.0,
+  "landing_rating": "greaser"
  },
  {
   "id": "2026-03-22-RCTP-RCSS-760004",
@@ -1509,7 +1721,11 @@
   "air_min": 5.8,
   "complete": true,
   "title": null,
-  "tags": []
+  "tags": [],
+  "max_ft": 3010,
+  "max_gs_kt": 209.3,
+  "landing_fpm": 248.0,
+  "landing_rating": "firm"
  },
  {
   "id": "2026-03-22-RCTP-RCSS-3cb04b",
@@ -1537,7 +1753,11 @@
   "air_min": 5.7,
   "complete": true,
   "title": null,
-  "tags": []
+  "tags": [],
+  "max_ft": 3024,
+  "max_gs_kt": 218.6,
+  "landing_fpm": 236.0,
+  "landing_rating": "normal"
  },
  {
   "id": "2026-03-21-RCTP-RCSS-cbd619",
@@ -1565,7 +1785,11 @@
   "air_min": 5.8,
   "complete": true,
   "title": null,
-  "tags": []
+  "tags": [],
+  "max_ft": 3015,
+  "max_gs_kt": 209.6,
+  "landing_fpm": 270.0,
+  "landing_rating": "firm"
  },
  {
   "id": "2026-03-16-RCTP-RCSS-b9f325",
@@ -1593,7 +1817,11 @@
   "air_min": 5.7,
   "complete": true,
   "title": null,
-  "tags": []
+  "tags": [],
+  "max_ft": 2997,
+  "max_gs_kt": 223.5,
+  "landing_fpm": 63.0,
+  "landing_rating": "normal"
  },
  {
   "id": "2026-03-16-RCTP-RCSS-388fe5",
@@ -1621,7 +1849,11 @@
   "air_min": 4.5,
   "complete": true,
   "title": null,
-  "tags": []
+  "tags": [],
+  "max_ft": 3006,
+  "max_gs_kt": 266.6,
+  "landing_fpm": 118.0,
+  "landing_rating": "normal"
  },
  {
   "id": "2026-03-16-RCTP-RCSS-09015c",
@@ -1649,7 +1881,11 @@
   "air_min": 17.6,
   "complete": true,
   "title": null,
-  "tags": []
+  "tags": [],
+  "max_ft": 4175,
+  "max_gs_kt": 330.5,
+  "landing_fpm": 46.0,
+  "landing_rating": "greaser"
  },
  {
   "id": "2026-03-16-RCTP-RCSS-52af64",
@@ -1677,7 +1913,11 @@
   "air_min": 5.2,
   "complete": true,
   "title": null,
-  "tags": []
+  "tags": [],
+  "max_ft": 3014,
+  "max_gs_kt": 240.5,
+  "landing_fpm": 253.0,
+  "landing_rating": "firm"
  },
  {
   "id": "2026-03-16-RCTP-RCSS-7949c1",
@@ -1705,7 +1945,11 @@
   "air_min": 4.5,
   "complete": true,
   "title": null,
-  "tags": []
+  "tags": [],
+  "max_ft": 2983,
+  "max_gs_kt": 362.1,
+  "landing_fpm": 331.0,
+  "landing_rating": "firm"
  },
  {
   "id": "2026-03-16-RCTP-UNKN-1097b8",
@@ -1733,7 +1977,11 @@
   "air_min": null,
   "complete": false,
   "title": null,
-  "tags": []
+  "tags": [],
+  "max_ft": 3114,
+  "max_gs_kt": 287.7,
+  "landing_fpm": null,
+  "landing_rating": null
  },
  {
   "id": "2026-03-14-RCTP-RCSS-44a1af",
@@ -1761,7 +2009,11 @@
   "air_min": 4.6,
   "complete": true,
   "title": null,
-  "tags": []
+  "tags": [],
+  "max_ft": 2982,
+  "max_gs_kt": 401.2,
+  "landing_fpm": 130.0,
+  "landing_rating": "normal"
  },
  {
   "id": "2026-03-14-RCTP-RCSS-ddfb49",
@@ -1789,7 +2041,11 @@
   "air_min": 4.9,
   "complete": true,
   "title": null,
-  "tags": []
+  "tags": [],
+  "max_ft": 2997,
+  "max_gs_kt": 240.0,
+  "landing_fpm": 1171.0,
+  "landing_rating": "hard"
  },
  {
   "id": "2026-03-14-RCTP-RCSS-b770e0",
@@ -1817,7 +2073,11 @@
   "air_min": 5.8,
   "complete": true,
   "title": null,
-  "tags": []
+  "tags": [],
+  "max_ft": 2999,
+  "max_gs_kt": 201.4,
+  "landing_fpm": 658.0,
+  "landing_rating": "hard"
  },
  {
   "id": "2026-03-13-UNKN-RCSS-2c88a3",
@@ -1845,7 +2105,11 @@
   "air_min": null,
   "complete": false,
   "title": null,
-  "tags": []
+  "tags": [],
+  "max_ft": 3084,
+  "max_gs_kt": 174.9,
+  "landing_fpm": 246.0,
+  "landing_rating": "firm"
  },
  {
   "id": "2026-03-13-UNKN-RJTT-be3373",
@@ -1873,7 +2137,11 @@
   "air_min": null,
   "complete": false,
   "title": null,
-  "tags": []
+  "tags": [],
+  "max_ft": 3185,
+  "max_gs_kt": 178.9,
+  "landing_fpm": 219.0,
+  "landing_rating": "normal"
  },
  {
   "id": "2026-03-12-UNKN-RJTT-cf2cef",
@@ -1901,7 +2169,11 @@
   "air_min": null,
   "complete": false,
   "title": null,
-  "tags": []
+  "tags": [],
+  "max_ft": 3214,
+  "max_gs_kt": 176.8,
+  "landing_fpm": 144.0,
+  "landing_rating": "normal"
  },
  {
   "id": "2026-03-12-UNKN-RJTT-bdb2db",
@@ -1929,7 +2201,11 @@
   "air_min": null,
   "complete": false,
   "title": null,
-  "tags": []
+  "tags": [],
+  "max_ft": 3217,
+  "max_gs_kt": 168.8,
+  "landing_fpm": 362.0,
+  "landing_rating": "firm"
  },
  {
   "id": "2026-03-01-RJFF-UNKN-b14658",
@@ -1957,7 +2233,11 @@
   "air_min": null,
   "complete": false,
   "title": null,
-  "tags": []
+  "tags": [],
+  "max_ft": 7167,
+  "max_gs_kt": 308.4,
+  "landing_fpm": null,
+  "landing_rating": null
  },
  {
   "id": "2026-03-01-UNKN-RJFF-d4a506",
@@ -1985,7 +2265,11 @@
   "air_min": null,
   "complete": false,
   "title": null,
-  "tags": []
+  "tags": [],
+  "max_ft": 3210,
+  "max_gs_kt": 191.0,
+  "landing_fpm": 129.0,
+  "landing_rating": "normal"
  },
  {
   "id": "2026-02-27-RCSS-RJTT-fa0fd4",
@@ -2013,7 +2297,11 @@
   "air_min": 158.3,
   "complete": true,
   "title": null,
-  "tags": []
+  "tags": [],
+  "max_ft": 40055,
+  "max_gs_kt": 502.0,
+  "landing_fpm": 294.0,
+  "landing_rating": "firm"
  },
  {
   "id": "2026-02-24-UNKN-RKPK-ab3ac7",
@@ -2041,7 +2329,11 @@
   "air_min": 6.3,
   "complete": false,
   "title": null,
-  "tags": []
+  "tags": [],
+  "max_ft": 4822,
+  "max_gs_kt": 214.2,
+  "landing_fpm": 85.0,
+  "landing_rating": "normal"
  },
  {
   "id": "2026-02-23-RCSS-RJTT-b55e11",
@@ -2069,7 +2361,11 @@
   "air_min": 155.8,
   "complete": true,
   "title": null,
-  "tags": []
+  "tags": [],
+  "max_ft": 39049,
+  "max_gs_kt": 499.3,
+  "landing_fpm": 397.0,
+  "landing_rating": "firm"
  },
  {
   "id": "2026-02-23-RCQC-RCKH-dba7d9",
@@ -2097,7 +2393,11 @@
   "air_min": 18.5,
   "complete": true,
   "title": null,
-  "tags": []
+  "tags": [],
+  "max_ft": 10003,
+  "max_gs_kt": 436.9,
+  "landing_fpm": 269.0,
+  "landing_rating": "firm"
  },
  {
   "id": "2026-02-22-RCQC-RCKH-2f25a7",
@@ -2125,7 +2425,11 @@
   "air_min": 17.8,
   "complete": true,
   "title": null,
-  "tags": []
+  "tags": [],
+  "max_ft": 11999,
+  "max_gs_kt": 381.3,
+  "landing_fpm": 368.0,
+  "landing_rating": "firm"
  },
  {
   "id": "2026-02-21-RCQC-RCKH-34223b",
@@ -2153,7 +2457,11 @@
   "air_min": 20.9,
   "complete": true,
   "title": null,
-  "tags": []
+  "tags": [],
+  "max_ft": 12938,
+  "max_gs_kt": 383.1,
+  "landing_fpm": 244.0,
+  "landing_rating": "firm"
  },
  {
   "id": "2026-02-18-VMMC-RJAA-9a4fea",
@@ -2181,7 +2489,11 @@
   "air_min": 2.6,
   "complete": true,
   "title": null,
-  "tags": []
+  "tags": [],
+  "max_ft": 1980,
+  "max_gs_kt": 495.7,
+  "landing_fpm": 178.0,
+  "landing_rating": "normal"
  },
  {
   "id": "2026-02-18-UNKN-RJAA-fb1ea4",
@@ -2209,7 +2521,11 @@
   "air_min": 4.8,
   "complete": false,
   "title": null,
-  "tags": []
+  "tags": [],
+  "max_ft": 3126,
+  "max_gs_kt": 495.7,
+  "landing_fpm": 186.0,
+  "landing_rating": "normal"
  },
  {
   "id": "2026-02-12-RJTT-RJTT-68edc5",
@@ -2237,7 +2553,11 @@
   "air_min": 3.6,
   "complete": true,
   "title": null,
-  "tags": []
+  "tags": [],
+  "max_ft": 2156,
+  "max_gs_kt": 453.3,
+  "landing_fpm": 149.0,
+  "landing_rating": "normal"
  },
  {
   "id": "2026-02-08-UNKN-KPHX-d4e3f3",
@@ -2265,7 +2585,11 @@
   "air_min": null,
   "complete": false,
   "title": null,
-  "tags": []
+  "tags": [],
+  "max_ft": 37802,
+  "max_gs_kt": 540.1,
+  "landing_fpm": 222.0,
+  "landing_rating": "normal"
  },
  {
   "id": "2026-02-04-RCTP-RJBE-02d2d4",
@@ -2293,7 +2617,11 @@
   "air_min": 141.2,
   "complete": true,
   "title": null,
-  "tags": []
+  "tags": [],
+  "max_ft": 34999,
+  "max_gs_kt": 509.5,
+  "landing_fpm": 269.0,
+  "landing_rating": "firm"
  },
  {
   "id": "2026-02-03-RJBE-RJOO-ad60bb",
@@ -2321,7 +2649,11 @@
   "air_min": 13.8,
   "complete": true,
   "title": null,
-  "tags": []
+  "tags": [],
+  "max_ft": 3199,
+  "max_gs_kt": 344.8,
+  "landing_fpm": 179.0,
+  "landing_rating": "normal"
  },
  {
   "id": "2026-02-03-WIDD-WSSS-abba24",
@@ -2349,7 +2681,11 @@
   "air_min": 11.1,
   "complete": true,
   "title": null,
-  "tags": []
+  "tags": [],
+  "max_ft": 2998,
+  "max_gs_kt": 213.9,
+  "landing_fpm": 572.0,
+  "landing_rating": "firm"
  },
  {
   "id": "2026-02-03-RCSS-RCSS-bb9d31",
@@ -2377,7 +2713,11 @@
   "air_min": 8.2,
   "complete": true,
   "title": null,
-  "tags": []
+  "tags": [],
+  "max_ft": 3448,
+  "max_gs_kt": 261.1,
+  "landing_fpm": 219.0,
+  "landing_rating": "normal"
  },
  {
   "id": "2026-02-03-RCTP-RCSS-4f1524",
@@ -2405,7 +2745,11 @@
   "air_min": 4.4,
   "complete": true,
   "title": null,
-  "tags": []
+  "tags": [],
+  "max_ft": 3920,
+  "max_gs_kt": 273.8,
+  "landing_fpm": 499.0,
+  "landing_rating": "firm"
  },
  {
   "id": "2026-02-02-UNKN-VHSS-3a112b",
@@ -2433,7 +2777,11 @@
   "air_min": 0.0,
   "complete": false,
   "title": null,
-  "tags": []
+  "tags": [],
+  "max_ft": 2996,
+  "max_gs_kt": 209.3,
+  "landing_fpm": 238.0,
+  "landing_rating": "normal"
  },
  {
   "id": "2026-02-02-UNKN-VMMC-032abb",
@@ -2461,7 +2809,11 @@
   "air_min": null,
   "complete": false,
   "title": null,
-  "tags": []
+  "tags": [],
+  "max_ft": 1521,
+  "max_gs_kt": 175.7,
+  "landing_fpm": 948.0,
+  "landing_rating": "hard"
  },
  {
   "id": "2026-01-31-UNKN-RCSS-9400dc",
@@ -2489,7 +2841,11 @@
   "air_min": null,
   "complete": false,
   "title": null,
-  "tags": []
+  "tags": [],
+  "max_ft": 2979,
+  "max_gs_kt": 216.7,
+  "landing_fpm": 314.0,
+  "landing_rating": "firm"
  },
  {
   "id": "2026-01-31-RCYU-RCSS-006099",
@@ -2517,7 +2873,11 @@
   "air_min": 19.8,
   "complete": true,
   "title": null,
-  "tags": []
+  "tags": [],
+  "max_ft": 10001,
+  "max_gs_kt": 438.7,
+  "landing_fpm": 759.0,
+  "landing_rating": "hard"
  },
  {
   "id": "2026-01-30-RCSS-RCQC-69c8f9",
@@ -2545,7 +2905,11 @@
   "air_min": 37.8,
   "complete": true,
   "title": null,
-  "tags": []
+  "tags": [],
+  "max_ft": 6211,
+  "max_gs_kt": 390.7,
+  "landing_fpm": 329.0,
+  "landing_rating": "firm"
  },
  {
   "id": "2026-01-29-RJGG-RJBE-7e0f28",
@@ -2573,7 +2937,11 @@
   "air_min": 33.7,
   "complete": true,
   "title": null,
-  "tags": []
+  "tags": [],
+  "max_ft": 11458,
+  "max_gs_kt": 339.1,
+  "landing_fpm": 459.0,
+  "landing_rating": "firm"
  },
  {
   "id": "2026-01-10-RCFN-RCFN-b92d6c",
@@ -2601,7 +2969,11 @@
   "air_min": 17.2,
   "complete": true,
   "title": "SOLO",
-  "tags": []
+  "tags": [],
+  "max_ft": 2903,
+  "max_gs_kt": 150.2,
+  "landing_fpm": 141.0,
+  "landing_rating": "normal"
  },
  {
   "id": "2026-01-09-RCFN-RCQS-bf1b8b",
@@ -2629,6 +3001,10 @@
   "air_min": 4.2,
   "complete": true,
   "title": null,
-  "tags": []
+  "tags": [],
+  "max_ft": 1212,
+  "max_gs_kt": 118.9,
+  "landing_fpm": 109.0,
+  "landing_rating": "normal"
  }
 ]

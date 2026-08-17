@@ -39,8 +39,31 @@
         + `<ul>${rows}</ul><div class="total"><b>${total}</b> ${totalLabel}</div></div>`;
     };
 
+    // Hours and personal bests: the numbers a logbook is actually kept for,
+    // which the panel only had as flight counts.
+    const hm = m => { const h = Math.floor(m / 60), r = Math.round(m % 60);
+                      return h ? `${h}h ${String(r).padStart(2, "0")}m` : `${r}m`; };
+    const rec = (label, r, fmt) => r
+      ? `<a class="rec" href="flight.html?id=${r.id}"><span class="rk">${label}</span>`
+        + `<span class="rv">${fmt(r.value)}</span>`
+        + `<span class="rm">${esc(r.route)} · ${esc(r.aircraft || "")} · ${r.date || ""}</span></a>`
+      : "";
+    const R = a.records || {};
+    const recordsHtml =
+      `<div class="acard records"><h4 style="background:#36c5ff;color:#07131e">${T("records")}</h4>`
+      + `<div class="hours"><b>${hm(a.total_block_min || 0)}</b> ${T("total_block")}`
+      + `<span>${hm(a.total_air_min || 0)} ${T("total_air")}</span></div>`
+      + rec(T("rec_longest"), R.longest, v => `${v} NM`)
+      + rec(T("rec_longest_time"), R.longest_time, hm)
+      + rec(T("rec_highest"), R.highest, v => `${v.toLocaleString()} ft`)
+      + rec(T("rec_fastest"), R.fastest, v => `${v} kt`)
+      + rec(T("rec_smoothest"), R.smoothest_landing, v => `${Math.round(v)} fpm`)
+      + rec(T("rec_hardest"), R.hardest_landing, v => `${Math.round(v)} fpm`)
+      + `</div>`;
+
     inner.innerHTML =
       `<div class="analytics-cards">`
+      + recordsHtml
       + card(T("top_airports"), "#8bc34a", false, a.top_airports, a.total_airports, T("u_airports"))
       + card(T("top_airlines"), "#ffc107", false, a.top_airlines, a.total_airlines, T("u_airlines"))
       + card(T("top_aircraft"), "#ef5350", false, a.top_aircraft, a.total_aircraft, T("u_aircraft"))
@@ -51,6 +74,7 @@
       + `<div class="chart-box"><h4>${T("per_year")}</h4><canvas id="ch-year" height="150"></canvas></div>`
       + `<div class="chart-box"><h4>${T("per_month")}</h4><canvas id="ch-month" height="150"></canvas></div>`
       + `<div class="chart-box"><h4>${T("per_weekday")}</h4><canvas id="ch-weekday" height="150"></canvas></div>`
+      + `<div class="chart-box"><h4>${T("hours_per_month")}</h4><canvas id="ch-hours" height="150"></canvas></div>`
       + `</div>`;
 
     let charted = false;
@@ -85,6 +109,19 @@
       type: "bar",
       data: { labels: days, datasets: [{ data: a.by_weekday.map(x => x.count), backgroundColor: "#45e0a0", borderRadius: 3 }] },
       options: { ...base, scales: axes({ maxRotation: 0 }) },
+    });
+    // hours rather than counts, and only the last two years' worth of months so
+    // the axis stays readable
+    const hrs = (a.hours_by_month || []).slice(-24);
+    new window.Chart(document.getElementById("ch-hours"), {
+      type: "bar",
+      data: { labels: hrs.map(x => x.label.slice(2)),
+              datasets: [{ data: hrs.map(x => +(x.minutes / 60).toFixed(1)), backgroundColor: "#ffc107", borderRadius: 3 }] },
+      options: { ...base,
+        scales: { x: { ticks: { color: tick, maxRotation: 90, font: { size: 9 } }, grid: { color: grid } },
+                  y: { beginAtZero: true, ticks: { color: tick, callback: v => v + "h" }, grid: { color: grid } } },
+        plugins: { legend: { display: false },
+                   tooltip: { callbacks: { label: c => c.parsed.y + " h" } } } },
     });
   }
 
