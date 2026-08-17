@@ -1131,6 +1131,40 @@
       trailGeo.computeBoundingSphere();
     }
 
+    // Moving-map framing: sit behind the aircraft and rise with altitude, so low
+    // down it is a chase view and at cruise you are looking down at the map.
+    // Called from the render loop as well as from update(), because otherwise a
+    // wheel-zoom while the replay is paused changes the framing distance with
+    // no frame ever applying it — which looked like zoom being broken.
+    function autoFrame(p, x, y, z, k) {
+      const aglReal = Math.max(0, y - groundElevM) / VSCALE;
+      const d = idealDistance(aglReal);
+      // Flatten the look-down angle as it climbs rather than steepening it:
+      // height is meant to show the horizon and the thin air above it, and a
+      // steep angle fills the frame with ground and leaves no sky at all.
+      const t = Math.min(1, aglReal / 9000);          // level out by ~30,000 ft
+      const elev = (24 - 8 * t) * DEG2RAD;
+      const hdgRad = p.hdg * DEG2RAD, ch = Math.cos(elev);
+      // Ease the offset from the aircraft, not the absolute position: at 60x the
+      // aircraft can move 20 km between updates, and easing a world position
+      // simply never catches up — it lagged to 250 km behind.
+      const ox = -Math.sin(hdgRad) * d * ch, oy = Math.sin(elev) * d, oz = Math.cos(hdgRad) * d * ch;
+      const cx = camera.position.x - x, cy = camera.position.y - y, cz = camera.position.z - z;
+      const cur = Math.hypot(cx, cy, cz);
+      // Ease while the flight plays, but snap on a discontinuity — dragging the
+      // scrubber moves the aircraft hundreds of km at once, and easing from
+      // there left the camera stranded far behind pointing at the horizon.
+      if (!initialised || cur > d * 2.5 || cur < d * .4) {
+        camera.position.set(x + ox, y + oy, z + oz);
+        initialised = true;
+      } else {
+        camera.position.set(x + cx + (ox - cx) * k,
+                            y + cy + (oy - cy) * k,
+                            z + cz + (oz - cz) * k);
+      }
+      controls.target.set(x, y, z);
+    }
+
     function update(p, time) {
       lastP = p;
       if (!origin || Math.abs(p.lat - origin.lat) + Math.abs(p.lon - origin.lon) > .03) recentre(p.lat, p.lon);
@@ -1164,35 +1198,7 @@
       }
 
       if (!userFramed) {
-        // Moving-map framing: sit behind the aircraft and rise with altitude,
-        // so low down it is a chase view and at cruise you are looking down at
-        // the map. Eased, and dropped entirely once the viewer orbits.
-        const aglReal = Math.max(0, y - groundElevM) / VSCALE;
-        const d = idealDistance(aglReal);
-        // Flatten the look-down angle as it climbs rather than steepening it:
-        // height is meant to show the horizon and the thin air above it, and a
-        // steep angle fills the frame with ground and leaves no sky at all.
-        const t = Math.min(1, aglReal / 9000);        // level out by ~30,000 ft
-        const elev = (24 - 8 * t) * DEG2RAD;
-        const hdgRad = p.hdg * DEG2RAD, ch = Math.cos(elev);
-        // Ease the offset from the aircraft, not the absolute position: at 60x
-        // the aircraft can move 20 km between updates, and easing a world
-        // position simply never catches up — it lagged to 250 km behind.
-        const ox = -Math.sin(hdgRad) * d * ch, oy = Math.sin(elev) * d, oz = Math.cos(hdgRad) * d * ch;
-        const cx = camera.position.x - x, cy = camera.position.y - y, cz = camera.position.z - z;
-        const cur = Math.hypot(cx, cy, cz);
-        // Ease while the flight plays, but snap on a discontinuity — dragging the
-        // scrubber moves the aircraft hundreds of km at once, and easing from
-        // there left the camera stranded far behind pointing at the horizon.
-        if (!initialised || cur > d * 2.5 || cur < d * .4) {
-          camera.position.set(x + ox, y + oy, z + oz);
-          initialised = true;
-        } else {
-          const k = .12;
-          camera.position.set(x + cx + (ox - cx) * k,
-                              y + cy + (oy - cy) * k,
-                              z + cz + (oz - cz) * k);
-        }
+        autoFrame(p, x, y, z, .12);
       } else if (prevAC) {
         // carry the camera along with the aircraft so it stays a chase view,
         // preserving whatever offset the viewer set by orbiting
@@ -1220,10 +1226,15 @@
       // advances, so labels would never appear if the city list finished
       // loading after it, nor follow the view while the viewer orbits
       updateCityLabels();
-      // also here so zooming while paused re-cuts the detail; rebuild() returns
-      // immediately when the tile set hasn't actually changed
-      if (lastP && origin)
+      // also here so a wheel-zoom applies and re-cuts the detail even while the
+      // replay is paused; both return immediately when nothing has changed
+      if (lastP && origin) {
+        if (!userFramed) {
+          const [ax, az] = project(lastP.lat, lastP.lon);
+          autoFrame(lastP, ax, lastP.alt * .3048 * VSCALE, az, .18);
+        }
         terrain.update(lastP.lat, lastP.lon, viewScale(), origin, project);
+      }
       sky.position.copy(camera.position);            // the dome travels with the eye
       renderer.render(scene, camera);
     }
