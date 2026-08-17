@@ -525,6 +525,61 @@ def build_analytics(flights):
     }
 
 
+
+# ── shareable per-flight pages ─────────────────────────────────────────────
+# Social previews are read by crawlers that do not run JavaScript, so a single
+# flight.html?id=... can never describe the flight it is about to load. Each
+# flight therefore gets a real page under site/f/, built from flight.html with
+# its own <title> and Open Graph tags and the id baked in.
+SITE = ROOT / "site"
+SHARE_DIR = SITE / "f"
+
+
+def esc_attr(s):
+    return (str(s).replace("&", "&amp;").replace('"', "&quot;")
+            .replace("<", "&lt;").replace(">", "&gt;"))
+
+
+def share_pages(flights, base_url):
+    template = (SITE / "flight.html").read_text(encoding="utf-8")
+    SHARE_DIR.mkdir(parents=True, exist_ok=True)
+    keep = set()
+    for f in flights:
+        route = f"{f['departure']} → {f['arrival']}"
+        bits = [f.get("aircraft") or f.get("model") or "", f"{f['distance_nm']} NM",
+                human_time(f["block_min"]) if f.get("block_min") else ""]
+        desc = " · ".join(b for b in bits if b)
+        title = f"{route} · {f.get('date') or ''}".strip(" ·")
+        url = f"{base_url}/f/{f['id']}.html" if base_url else ""
+        og = (
+            f'  <title>{esc_attr(title)} · my.msfs-flightlog24</title>\n'
+            f'  <meta name="description" content="{esc_attr(desc)}">\n'
+            f'  <meta property="og:type" content="article">\n'
+            f'  <meta property="og:site_name" content="my.msfs-flightlog24">\n'
+            f'  <meta property="og:title" content="{esc_attr(title)}">\n'
+            f'  <meta property="og:description" content="{esc_attr(desc)}">\n'
+            f'  <meta property="og:image" content="{esc_attr(base_url)}/assets/icon-512.png">\n'
+            + (f'  <meta property="og:url" content="{esc_attr(url)}">\n' if url else "")
+            + f'  <meta name="twitter:card" content="summary">\n'
+        )
+        html = template.replace("  <title>Flight · my.msfs-flightlog24</title>\n", og)
+        # the page now lives one directory down, and knows which flight it is
+        html = html.replace('href="assets/', 'href="../assets/')
+        html = html.replace('src="assets/', 'src="../assets/')
+        html = html.replace('href="manifest.webmanifest"', 'href="../manifest.webmanifest"')
+        html = html.replace('href="index.html"', 'href="../index.html"')
+        html = html.replace('register("sw.js")', 'register("../sw.js")')
+        html = html.replace("</head>",
+                            f'  <script>window.__FLIGHT_ID={json.dumps(f["id"])};</script>\n</head>')
+        out = SHARE_DIR / f"{f['id']}.html"
+        out.write_text(html, encoding="utf-8")
+        keep.add(out.name)
+    for old in SHARE_DIR.glob("*.html"):
+        if old.name not in keep:
+            old.unlink()
+    return len(keep)
+
+
 # ── incremental support ────────────────────────────────────────────────────
 def source_key(path):
     """Identity of a recording *and* its sidecar, so either one changing re-parses."""
@@ -562,6 +617,8 @@ def main():
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--full", action="store_true",
                     help="re-parse every recording, ignoring the manifest")
+    ap.add_argument("--base-url", default="https://masonzeng702550.github.io/my.msfs-flightlog24.com",
+                    help="absolute site URL, used for og:url and og:image")
     ap.add_argument("--inventory", metavar="FILE",
                     help="file listing every recording in the repo (one path per line); "
                          "entries not checked out are reused from the manifest")
@@ -629,7 +686,9 @@ def main():
     (OUT / "stats.json").write_text(
         json.dumps(build_stats(flights), ensure_ascii=False, indent=1), encoding="utf-8")
     MANIFEST.write_text(json.dumps(manifest, ensure_ascii=False, indent=1), encoding="utf-8")
-    print(f"Wrote {len(flights)} flight(s) -> site/data/  ({parsed} parsed, {reused} reused)")
+    shared = share_pages(flights, args.base_url.rstrip("/"))
+    print(f"Wrote {len(flights)} flight(s) -> site/data/  ({parsed} parsed, {reused} reused)"
+          f", {shared} share page(s) -> site/f/")
 
 
 if __name__ == "__main__":

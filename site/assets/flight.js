@@ -2,8 +2,10 @@
 (async function () {
   const T = k => (window.I18N ? window.I18N.t(k) : k);
   const IC = n => (window.I18N ? window.I18N.ICONS[n] : "");
-  const id = new URLSearchParams(location.search).get("id");
+  // share pages under /f/ bake the id in; flight.html?id=... still works
+  const id = window.__FLIGHT_ID || new URLSearchParams(location.search).get("id");
   const root = document.getElementById("detail");
+  const BASE = window.__FLIGHT_ID ? "../" : "";     // share pages live in /f/
   const hideSplash = () => {
     const s = document.getElementById("splash");
     if (!s || s.classList.contains("hidden")) return;
@@ -14,7 +16,7 @@
 
   let f;
   try {
-    f = await fetch(`data/flights/${id}.json`, { cache: "no-cache" }).then(r => { if (!r.ok) throw 0; return r.json(); });
+    f = await fetch(`${BASE}data/flights/${id}.json`, { cache: "no-cache" }).then(r => { if (!r.ok) throw 0; return r.json(); });
   } catch {
     root.innerHTML = `<div class="empty">${T("not_found")}</div>`;
     hideSplash();
@@ -46,7 +48,7 @@
         <div class="sub">${acLine}</div>
       </div>
       <div class="when">${f.date || ""} ${f.time_local || ""}<br>${f.title || ""}
-        <br><a class="make-story-btn" href="story.html?id=${id}">${IC("film")}<span>${T("make_story")}</span></a>
+        <br><a class="make-story-btn" href="${BASE}story.html?id=${id}">${IC("film")}<span>${T("make_story")}</span></a>
       </div>
     </div>
 
@@ -481,11 +483,11 @@
       if (THREE.DRACOLoader) {
         if (!sharedDraco) {
           sharedDraco = new THREE.DRACOLoader();
-          sharedDraco.setDecoderPath("assets/draco/");
+          sharedDraco.setDecoderPath(BASE + "assets/draco/");
         }
         loader.setDRACOLoader(sharedDraco);
       }
-      loader.load(fileSpec.file, gltf => {
+      loader.load(BASE + fileSpec.file, gltf => {
         try { resolve(processRealModel(gltf.scene, fileSpec)); }
         catch (e) { console.warn("model post-process failed:", e); resolve(null); }
       }, undefined, () => resolve(null));
@@ -894,7 +896,7 @@
   // major world cities for the map labels, biggest first so the label picker can
   // just walk the list. Loaded once, and the 3D view works fine without it.
   let CITIES = [];
-  fetch("data/cities.json", { cache: "force-cache" })
+  fetch(BASE + "data/cities.json", { cache: "force-cache" })
     .then(r => r.json()).then(d => { CITIES = d.cities || []; })
     .catch(() => {});
 
@@ -1438,7 +1440,7 @@
       const repo = location.pathname.split("/").filter(Boolean)[0];
       return `https://raw.githubusercontent.com/${owner}/${repo}/main/${srcFile}`;
     }
-    return srcFile; // local fallback (works when served from repo root)
+    return BASE + srcFile;   // local fallback (works when served from repo root)
   }
   function zoomForBounds(b) {
     // approximate the zoom that frames `b`, assuming a ~1000×500 viewport,

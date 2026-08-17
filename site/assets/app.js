@@ -44,7 +44,7 @@
     const hm = m => { const h = Math.floor(m / 60), r = Math.round(m % 60);
                       return h ? `${h}h ${String(r).padStart(2, "0")}m` : `${r}m`; };
     const rec = (label, r, fmt) => r
-      ? `<a class="rec" href="flight.html?id=${r.id}"><span class="rk">${label}</span>`
+      ? `<a class="rec" href="f/${r.id}.html"><span class="rk">${label}</span>`
         + `<span class="rv">${fmt(r.value)}</span>`
         + `<span class="rm">${esc(r.route)} · ${esc(r.aircraft || "")} · ${r.date || ""}</span></a>`
       : "";
@@ -224,7 +224,7 @@
           .arcDashGap(d => d.complete ? 0 : 0.2)
           .arcDashAnimateTime(d => d.complete ? 0 : 2500)
           .arcLabel("label")
-          .onArcClick(d => { location.href = `flight.html?id=${d.id}`; })
+          .onArcClick(d => { location.href = `f/${d.id}.html`; })
           .pointsData(airports)
           .pointLat("lat").pointLng("lng")
           .pointColor(() => "#eef6ff")
@@ -318,7 +318,7 @@
       L.control.attribution({ prefix: false }).addTo(lmap);
       arcs.forEach(a => {
         L.polyline(gcLine(a), { color: a.complete ? "#36c5ff" : "#ffaf43", weight: 2, opacity: .85 })
-          .on("click", () => { location.href = `flight.html?id=${a.id}`; })
+          .on("click", () => { location.href = `f/${a.id}.html`; })
           .addTo(lmap);
       });
       airports.forEach(ap => {
@@ -491,7 +491,7 @@
       const partial = !f.complete ? `<span class="badge">${T("partial")}</span>` : "";
       const acLine = [f.aircraft, f.flight_no && f.flight_no !== "TEMP" ? f.flight_no : null]
         .filter(Boolean).join(" · ");
-      return `<a class="flight ${f.complete ? "" : "partial"}" href="flight.html?id=${f.id}">
+      return `<a class="flight ${f.complete ? "" : "partial"}" href="f/${f.id}.html">
         <div class="date">${f.date || "—"}<small>${f.time_local || ""}</small></div>
         <div>
           <div class="route">${f.departure}<span class="arrow">→</span>${f.arrival} ${partial}${tags}</div>
