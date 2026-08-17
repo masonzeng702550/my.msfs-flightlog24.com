@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>my.msfs-flightlog24</title>
+  <meta name="theme-color" content="#05070d">
+  <meta name="description" content="Every flight on one aircraft type or through one airport, with its own totals.">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="my.msfs-flightlog24">
+  <meta property="og:title" content="my.msfs-flightlog24">
+  <meta property="og:description" content="Every flight on one aircraft type or through one airport, with its own totals.">
+  <meta property="og:image" content="https://masonzeng702550.github.io/my.msfs-flightlog24.com/assets/icon-512.png">
+  <meta name="twitter:card" content="summary">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="FlightLog24">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+  <link rel="icon" type="image/png" href="assets/icon-192.png">
+  <link rel="stylesheet" href="assets/style.css?v=20">
+</head>
+<body>
+  <header class="site-header">
+    <span class="brand">my.msfs-flightlog<span class="dot">24</span></span>
+    <a class="back" href="index.html" data-icon="back"><span data-i18n="back_to_all">回到全部飛行</span></a>
+  </header>
+
+  <div class="wrap" id="group">
+    <div class="empty" data-i18n="loading">載入中…</div>
+  </div>
+
+  <script src="assets/i18n.js?v=9"></script>
+  <script src="assets/group.js?v=1"></script>
+  <script>if("serviceWorker" in navigator){addEventListener("load",function(){navigator.serviceWorker.register("sw.js").catch(function(){})})}</script>
+</body>
+</html>

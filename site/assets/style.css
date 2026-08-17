@@ -439,3 +439,5 @@ a:hover { text-decoration: underline; }
 .rec .rm { grid-column: 1 / -1; font-size: 11px; color: var(--muted); opacity: .8; }
 .meta-grid .tz { color: var(--muted); font-size: 11px; margin-left: 5px; }
 .meta-grid sup { color: var(--accent-2); font-size: 10px; }
+a.lbl { color: var(--muted); }
+a.lbl:hover { color: var(--accent); text-decoration: none; }

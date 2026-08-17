@@ -37,6 +37,18 @@
   const duration = f.duration_sec || (S.length ? S[S.length - 1][0] : 0);
   const sourceURL = rawSourceURL(f.source_file);
 
+  // the airport and type both open their own page of flights and totals
+  const gq = v => `${BASE}group.html?${v}`;
+  const apLink = a => a.icao && a.icao !== "UNKN"
+    ? `<a href="${gq("airport=" + encodeURIComponent(a.icao))}">${a.name ? `${a.icao} · ${a.name}` : a.icao}</a>`
+    : (a.icao || "—");
+  const acLink = () => {
+    const label = `${ac.title}${ac.model ? ` (${ac.model})` : ""}`;
+    const key = ac.model || ac.title;
+    return key && key !== "Unknown aircraft"
+      ? `<a href="${gq("aircraft=" + encodeURIComponent(key))}">${label}</a>` : label;
+  };
+
   const partial = !f.complete ? `<span class="badge">${T("partial")}</span>` : "";
   const acLine = [ac.title, ac.flight_no && ac.flight_no !== "TEMP" ? ac.flight_no : null,
                   ac.registration].filter(Boolean).join(" · ");
@@ -95,10 +107,10 @@
     <div class="meta-card">
       <h3>${T("flight_data")}</h3>
       <div class="meta-grid">
-        ${row(T("l_departure"), dep.name ? `${dep.icao} · ${dep.name}` : dep.icao)}
-        ${row(T("l_arrival"), arr.name ? `${arr.icao} · ${arr.name}` : arr.icao)}
+        ${row(T("l_departure"), apLink(dep))}
+        ${row(T("l_arrival"), apLink(arr))}
         ${row(T("l_times"), timesRow())}
-        ${row(T("l_aircraft"), `${ac.title}${ac.model ? ` (${ac.model})` : ""}`)}
+        ${row(T("l_aircraft"), acLink())}
         ${row(T("l_airline"), ac.airline || "—")}
         ${row(T("l_maxalt"), `${f.altitude.max_ft.toLocaleString()} ft`)}
         ${row(T("l_maxgs"), f.stats.max_ground_speed_kt != null ? `${f.stats.max_ground_speed_kt} kt` : "—")}

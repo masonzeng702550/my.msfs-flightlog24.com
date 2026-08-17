@@ -28,13 +28,18 @@
     if (!a || !inner) { if (wrap) wrap.style.display = "none"; return; }
 
     const esc = s => String(s).replace(/[<>&]/g, c => ({ "<": "&lt;", ">": "&gt;", "&": "&amp;" }[c]));
-    const card = (title, color, dark, items, total, totalLabel) => {
+    // top airports and aircraft link through to their own page of flights
+    const card = (title, color, dark, items, total, totalLabel, link) => {
       if (!items.length) return "";
       const max = Math.max(...items.map(i => i.count), 1);
-      const rows = items.map(i =>
-        `<div class="arow"><span class="lbl" title="${esc(i.label)}">${esc(i.label)}</span>`
-        + `<span class="track"><span class="fill" style="width:${Math.max(8, i.count / max * 100)}%;background:${color}"></span></span>`
-        + `<span class="cnt">${i.count}</span></div>`).join("");
+      const rows = items.map(i => {
+        const lbl = link
+          ? `<a class="lbl" href="group.html?${link}=${encodeURIComponent(i.label)}" title="${esc(i.label)}">${esc(i.label)}</a>`
+          : `<span class="lbl" title="${esc(i.label)}">${esc(i.label)}</span>`;
+        return `<div class="arow">${lbl}`
+          + `<span class="track"><span class="fill" style="width:${Math.max(8, i.count / max * 100)}%;background:${color}"></span></span>`
+          + `<span class="cnt">${i.count}</span></div>`;
+      }).join("");
       return `<div class="acard"><h4 style="background:${color};color:${dark ? "#fff" : "#07131e"}">${title}</h4>`
         + `<ul>${rows}</ul><div class="total"><b>${total}</b> ${totalLabel}</div></div>`;
     };
@@ -64,9 +69,9 @@
     inner.innerHTML =
       `<div class="analytics-cards">`
       + recordsHtml
-      + card(T("top_airports"), "#8bc34a", false, a.top_airports, a.total_airports, T("u_airports"))
+      + card(T("top_airports"), "#8bc34a", false, a.top_airports, a.total_airports, T("u_airports"), "airport")
       + card(T("top_airlines"), "#ffc107", false, a.top_airlines, a.total_airlines, T("u_airlines"))
-      + card(T("top_aircraft"), "#ef5350", false, a.top_aircraft, a.total_aircraft, T("u_aircraft"))
+      + card(T("top_aircraft"), "#ef5350", false, a.top_aircraft, a.total_aircraft, T("u_aircraft"), "aircraft")
       + card(T("top_routes"), "#ab47bc", true, a.top_routes, a.total_routes, T("u_routes"))
       + card(T("top_countries"), "#26a69a", true, a.top_countries, a.total_countries, T("u_countries"))
       + `</div>`
