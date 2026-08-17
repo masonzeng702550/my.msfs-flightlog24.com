@@ -986,8 +986,21 @@
     controls.enableZoom = false;
     renderer.domElement.addEventListener("wheel", e => {
       e.preventDefault();
-      zoomMul = Math.max(.1, Math.min(12, zoomMul * Math.exp(e.deltaY * .0012)));
-      userFramed = false;                            // wheel means "frame it for me"
+      const f = Math.exp(e.deltaY * .0012);
+      // Range has to reach from a regional view down to the aircraft filling the
+      // frame: at cruise the auto distance is ~48 km, so a floor of 0.1 still
+      // left it 5 km away — a handful of pixels, which reads as it vanishing.
+      zoomMul = Math.max(.004, Math.min(20, zoomMul * f));
+      // Zoom must not reset the framing. Doing that snapped the camera back
+      // behind the tail on every scroll, so any rotation was instantly undone —
+      // which is why the view seemed stuck there. When the viewer has taken
+      // over, scale their own offset and leave their angle alone.
+      if (userFramed) {
+        const o = camera.position.clone().sub(controls.target).multiplyScalar(f);
+        const len = o.length(), min = (meshInfo.acLen || 50) * .8;
+        if (len < min) o.setLength(min);
+        camera.position.copy(controls.target).add(o);
+      }
     }, { passive: false });
 
     // How much ground the view actually spans, in real metres: how far the
