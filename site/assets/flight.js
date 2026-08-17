@@ -251,7 +251,7 @@
     atr72: { credit: "ATR72 model © Isidor G (Sketchfab, CC-BY-4.0)",
       ground: { file: "assets/models/atr72.glb", yaw: Math.PI / 2, len: 20, sceneryRatio: 0 } },
     da40: { credit: "DA40 model (Sketchfab, CC-BY-4.0)",
-      ground: { file: "assets/models/da40.glb", yaw: Math.PI, len: 12, sceneryRatio: 0 } },
+      ground: { file: "assets/models/da40.glb", yaw: 0, len: 12, sceneryRatio: 0 } },
     c172: { credit: "Cessna 172 model (Sketchfab, CC-BY-4.0)",
       ground: { file: "assets/models/c172.glb", yaw: Math.PI, len: 11, sceneryRatio: 0 } },
     747: { credit: "747-8i model (Sketchfab, CC-BY-4.0)",
@@ -572,7 +572,12 @@
     `https://s3.amazonaws.com/elevation-tiles-prod/terrarium/${z}/${x}/${y}.png`;
   const TERRAIN_CREDIT = "Imagery © Esri · Elevation: AWS Terrain Tiles";
   const ELEV_MAX_Z = 14;        // terrarium coverage tops out here
-  const FLAT_ABOVE_Z = 11;      // at/below this zoom the ground is drawn flat
+  // Everything vertical is exaggerated by the same factor — terrain, the
+  // aircraft's altitude, the trail. Real relief is tiny against a view hundreds
+  // of km wide, so at true scale a mountain range renders as a flat green
+  // smudge and cruise looks like it is skimming the ground. Moving maps
+  // exaggerate for exactly this reason.
+  const VSCALE = 2.5;
   const TILE_SEGS = 24;         // vertices per tile edge - 1
   // GRID x GRID tiles around the aircraft. Cruise tiles are enormous (a z9 tile
   // is ~78 km), so fewer of them still covers hundreds of km and there is far
@@ -706,7 +711,7 @@
           const idx = j * (TILE_SEGS + 1) + i;
           const lon = lon0 + (lon1 - lon0) * (i / TILE_SEGS);
           const lat = lat0 + (lat1 - lat0) * (j / TILE_SEGS);
-          const h = flattenHeight(sampleElev(elev, i, j, sub), lat, lon, zones, mLon);
+          const h = flattenHeight(sampleElev(elev, i, j, sub), lat, lon, zones, mLon) * VSCALE;
           pos.setXYZ(idx, (lon - clon) * mLon, h, -(lat - clat) * metersPerDegLat);
         }
       }
@@ -742,9 +747,11 @@
         const ez = Math.min(z, ELEV_MAX_Z);
         const scale = Math.pow(2, z - ez);
         const ekey = `${ez}/${Math.floor(wx / scale)}/${Math.floor(ty / scale)}`;
-        // Relief is invisible from cruise, and the elevation fetch doubles the
-        // requests per tile — skip it once the tiles are this wide.
-        if (z > FLAT_ABOVE_Z && !elevCache.has(ekey)) {
+        // Always fetch relief. Skipping it on the wide tiles saved requests but
+        // those are exactly the tiles you see at cruise, which is why the ground
+        // was flat there. Coarse tiles share one elevation tile between many, so
+        // the cache absorbs most of the cost.
+        if (!elevCache.has(ekey)) {
           const [exs, eys] = ekey.split("/").slice(1).map(Number);
           const img = await loadImage(ELEVATION_URL(ez, exs, eys));
           elevCache.set(ekey, img ? decodeElevation(img) : null);
@@ -939,7 +946,7 @@
       new THREE.PlaneGeometry(1200000, 1200000),
       new THREE.MeshBasicMaterial({ color: 0x25415c }));
     sea.rotation.x = -Math.PI / 2;
-    sea.position.y = -40;   // clear of coastal terrain clamped to sea level
+    sea.position.y = -40 * VSCALE;   // clear of coastal terrain clamped to sea level
     scene.add(sea);
 
     const terrain = createTerrain(scene, renderer, radius => {
@@ -969,14 +976,39 @@
     // once the viewer drags or zooms, stop imposing an altitude-driven distance
     let userFramed = false;
     controls.addEventListener("start", () => { userFramed = true; });
-    renderer.domElement.addEventListener("wheel", () => { userFramed = true; }, { passive: true });
+
+    // The wheel scales the *map*, not the distance to the aircraft. Dollying
+    // towards an aircraft sitting 10 km up barely approaches the ground, so the
+    // scenery never grew and only the aircraft got bigger. Instead the wheel
+    // changes how far back the moving-map framing sits, which scales the ground
+    // and the aircraft together and re-cuts the tile detail with it.
+    let zoomMul = 1;
+    controls.enableZoom = false;
+    renderer.domElement.addEventListener("wheel", e => {
+      e.preventDefault();
+      zoomMul = Math.max(.1, Math.min(12, zoomMul * Math.exp(e.deltaY * .0012)));
+      userFramed = false;                            // wheel means "frame it for me"
+    }, { passive: false });
+
+    // How much ground the view actually spans, in real metres: how far the
+    // camera is from the ground it is pointed at. This — not the aircraft's
+    // altitude — is what should pick the tile detail, otherwise zooming in on a
+    // high-flying aircraft never sharpens the scenery, because the camera moves
+    // towards the aircraft rather than towards the ground.
+    const viewScale = () => {
+      const dy = Math.max(1, camera.position.y - groundElevM);
+      const flat = Math.hypot(camera.position.x - controls.target.x,
+                              camera.position.z - controls.target.z);
+      return Math.hypot(dy, flat) / VSCALE;
+    };
 
     // How far back the camera sits for a given height above ground. Close in on
     // the ground so the aircraft fills the frame, opening out to a wide regional
     // view at cruise — the altitude-driven zoom a moving map does.
     const idealDistance = aglM => {
       const L = meshInfo.acLen || 50;
-      return Math.max(L * 1.2, Math.min(260000, L * 1.2 + Math.max(0, aglM) * 4.5));
+      const base = Math.max(L * 1.2, Math.min(260000, L * 1.2 + Math.max(0, aglM) * 4.5));
+      return Math.max(L * .8, Math.min(400000, base * zoomMul));
     };
 
     // ── city labels ──────────────────────────────────────────────────
@@ -1045,7 +1077,7 @@
       if (lastP) update(lastP, lastSimTime || 0);
       if (attribEl) attribEl.textContent = [res.credit, TERRAIN_CREDIT].filter(Boolean).join(" · ");
     });
-    const groundElevM = S.length ? Math.min(...S.map(s => s[3])) * .3048 : 0;
+    const groundElevM = (S.length ? Math.min(...S.map(s => s[3])) * .3048 : 0) * VSCALE;
 
     let origin = null, initialised = false, raf3d = null, lastSimTime = null, lastP = null, prevAC = null;
 
@@ -1091,7 +1123,7 @@
       let n = 0;
       for (let i = firstAtOrAfter(time - TRAIL_SEC); i < S.length && S[i][0] <= time; i++) {
         const [x, z] = project(S[i][1], S[i][2]);
-        trailBuf[n * 3] = x; trailBuf[n * 3 + 1] = S[i][3] * .3048; trailBuf[n * 3 + 2] = z;
+        trailBuf[n * 3] = x; trailBuf[n * 3 + 1] = S[i][3] * .3048 * VSCALE; trailBuf[n * 3 + 2] = z;
         n++;
       }
       trailGeo.setDrawRange(0, n);
@@ -1102,22 +1134,19 @@
     function update(p, time) {
       lastP = p;
       if (!origin || Math.abs(p.lat - origin.lat) + Math.abs(p.lon - origin.lon) > .03) recentre(p.lat, p.lon);
-      const [x, z] = project(p.lat, p.lon), y = p.alt * .3048;
+      const [x, z] = project(p.lat, p.lon), y = p.alt * .3048 * VSCALE;
       planeGroup.position.set(x, y, z);
       planeGroup.rotation.order = "YXZ";
       // YXZ = yaw, pitch, roll. The stored bank is already flipped to
       // positive-is-roll-right, and with the nose down -Z a roll to the right is
       // a negative rotation about Z — so it has to be negated again here.
       planeGroup.rotation.set((p.pitch || 0) * DEG2RAD, -p.hdg * DEG2RAD, -(p.bank || 0) * DEG2RAD);
-      sea.position.set(x, -40, z);
-      setSkyAltitude(y - groundElevM);
-      // Detail follows the *camera*, not the aircraft: zooming in should sharpen
-      // the scenery, not just make the aircraft bigger. Falls out the same way
-      // when the camera is simply riding along at the aircraft's altitude.
-      terrain.update(p.lat, p.lon, Math.max(0, camera.position.y - groundElevM), origin, project);
+      sea.position.set(x, -40 * VSCALE, z);
+      setSkyAltitude((y - groundElevM) / VSCALE);
+      terrain.update(p.lat, p.lon, viewScale(), origin, project);
       updateTrail(time);
 
-      const agl = Math.max(0, y - groundElevM);
+      const agl = Math.max(0, y - groundElevM) / VSCALE;   // real metres
       // gear state is recorded by the sim, so raise/lower at the moment the
       // pilot actually moved the lever rather than at an altitude we invented
       const gearDown = p.gearDown !== false;
@@ -1138,12 +1167,12 @@
         // Moving-map framing: sit behind the aircraft and rise with altitude,
         // so low down it is a chase view and at cruise you are looking down at
         // the map. Eased, and dropped entirely once the viewer orbits.
-        const agl = Math.max(0, y - groundElevM);
-        const d = idealDistance(agl);
+        const aglReal = Math.max(0, y - groundElevM) / VSCALE;
+        const d = idealDistance(aglReal);
         // Flatten the look-down angle as it climbs rather than steepening it:
         // height is meant to show the horizon and the thin air above it, and a
         // steep angle fills the frame with ground and leaves no sky at all.
-        const t = Math.min(1, agl / 9000);            // level out by ~30,000 ft
+        const t = Math.min(1, aglReal / 9000);        // level out by ~30,000 ft
         const elev = (24 - 8 * t) * DEG2RAD;
         const hdgRad = p.hdg * DEG2RAD, ch = Math.cos(elev);
         // Ease the offset from the aircraft, not the absolute position: at 60x
@@ -1194,7 +1223,7 @@
       // also here so zooming while paused re-cuts the detail; rebuild() returns
       // immediately when the tile set hasn't actually changed
       if (lastP && origin)
-        terrain.update(lastP.lat, lastP.lon, Math.max(0, camera.position.y - groundElevM), origin, project);
+        terrain.update(lastP.lat, lastP.lon, viewScale(), origin, project);
       sky.position.copy(camera.position);            // the dome travels with the eye
       renderer.render(scene, camera);
     }
