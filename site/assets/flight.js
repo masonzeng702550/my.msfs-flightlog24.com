@@ -578,13 +578,32 @@
   // smudge and cruise looks like it is skimming the ground. Moving maps
   // exaggerate for exactly this reason.
   const VSCALE = 2.5;
-  const TILE_SEGS = 24;         // vertices per tile edge - 1
-  // GRID x GRID tiles around the aircraft. Cruise tiles are enormous (a z9 tile
-  // is ~78 km), so fewer of them still covers hundreds of km and there is far
-  // less to fetch before the view is complete.
-  // Rings of 4x4 tiles, each one zoom coarser than the last. Every step out
-  // doubles tile size, so 6 rings reach ~32x the innermost ring's extent.
-  const RINGS = 6;
+
+  // The 3D view is heavy — dozens of terrain tiles, a real glTF airframe, a
+  // logarithmic depth buffer. That is fine on a laptop and much less fine on a
+  // phone, so the cost is graded by what the device looks capable of and can be
+  // stepped down again at runtime if frames are actually slow.
+  //   0 = phones / weak GPUs, 1 = typical laptop, 2 = desktop
+  function detectTier() {
+    const w = Math.min(screen.width, screen.height) * (window.devicePixelRatio || 1);
+    const cores = navigator.hardwareConcurrency || 4;
+    const mem = navigator.deviceMemory || 4;                // Chromium only
+    const coarse = window.matchMedia && window.matchMedia("(pointer: coarse)").matches;
+    if (coarse || w <= 1100 || cores <= 4 || mem <= 4) return 0;
+    if (cores <= 8 || mem <= 8) return 1;
+    return 2;
+  }
+  let TIER = detectTier();
+  // rings of 4x4 tiles, each a zoom coarser: 4 rings still reach ~8x the
+  // innermost extent, which is plenty of horizon for a phone
+  const RINGS_BY_TIER = [4, 5, 6];
+  const SEGS_BY_TIER = [10, 16, 24];      // vertices per tile edge - 1
+  const PIXR_BY_TIER = [1, 1.5, 2];
+  const ANISO_BY_TIER = [1, 4, 8];
+  const LABELS_BY_TIER = [6, 10, 14];
+  let RINGS = RINGS_BY_TIER[TIER];
+  let TILE_SEGS = SEGS_BY_TIER[TIER];
+  let MAX_LABELS = LABELS_BY_TIER[TIER];
 
   const tile2lon = (x, z) => x / Math.pow(2, z) * 360 - 180;
   const tile2lat = (y, z) => {
@@ -767,7 +786,7 @@
             tex.minFilter = THREE.LinearMipmapLinearFilter;
             tex.magFilter = THREE.LinearFilter;
             tex.generateMipmaps = true;
-            tex.anisotropy = Math.min(8, maxAniso);
+            tex.anisotropy = Math.min(ANISO_BY_TIER[TIER], maxAniso);
             tex.wrapS = tex.wrapT = THREE.ClampToEdgeWrapping;
             tex.needsUpdate = true;
             texCache.set(ikey, tex);
@@ -856,6 +875,11 @@
         if (!origin) return;
         rebuild(lat, lon, altM, origin, project);
       },
+      // settings changed under us (quality tier): drop everything and reload
+      rebuildAll() {
+        for (const id of [...tiles.keys()]) drop(id);
+        key = "";
+      },
       // the local metre frame moved under us — re-place every tile from its centre
       relocate(project) {
         for (const [, mesh] of tiles) {
@@ -892,7 +916,7 @@
       scene3dError = "WebGL is unavailable — enable hardware acceleration in your browser settings";
       return null;
     }
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, PIXR_BY_TIER[TIER]));
     container.appendChild(renderer.domElement);
 
     const scene = new THREE.Scene();
@@ -1046,13 +1070,13 @@
         const sx = (proj.x * .5 + .5) * w, sy = (-proj.y * .5 + .5) * h;
         if (sx < 4 || sx > w - 4 || sy < 4 || sy > h - 4) continue;
         picks.push({ c, sx, sy });
-        if (picks.length >= 14) break;
+        if (picks.length >= MAX_LABELS) break;
       }
-      for (let i = 0; i < 14; i++) {
+      for (let i = 0; i < LABELS_BY_TIER[2]; i++) {
         let el = cityEls[i];
         if (!el) { el = document.createElement("div"); el.className = "city-label";
                    cityLayer.appendChild(el); cityEls.push(el); }
-        const pick = picks[i];
+        const pick = i < MAX_LABELS ? picks[i] : null;
         if (!pick) { el.style.display = "none"; continue; }
         el.style.display = "block";
         el.style.transform = `translate(${Math.round(pick.sx)}px, ${Math.round(pick.sy)}px)`;
@@ -1221,8 +1245,30 @@
       controls.target.set(x, y, z);
     }
 
+    // The tier is a guess from device hints, which can be wrong in both
+    // directions. Watch actual frame times and step down if the guess was
+    // optimistic — better a coarser horizon than a slideshow on a phone.
+    let frameCount = 0, frameStart = 0, downgraded = false;
+    function watchFrames() {
+      if (downgraded || TIER === 0) return;
+      const now = performance.now();
+      if (!frameStart) { frameStart = now; frameCount = 0; return; }
+      if (++frameCount < 90) return;
+      const fps = frameCount * 1000 / (now - frameStart);
+      frameStart = now; frameCount = 0;
+      if (fps >= 24) return;
+      TIER = Math.max(0, TIER - 1);
+      downgraded = true;                                // only step down once
+      RINGS = RINGS_BY_TIER[TIER];
+      TILE_SEGS = SEGS_BY_TIER[TIER];
+      MAX_LABELS = LABELS_BY_TIER[TIER];
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, PIXR_BY_TIER[TIER]));
+      terrain.rebuildAll();
+    }
+
     function animate() {
       raf3d = requestAnimationFrame(animate);
+      watchFrames();
       controls.update();
       // in the render loop, not in update(): update() only runs when the replay
       // advances, so labels would never appear if the city list finished
