@@ -1,25 +1,25 @@
 {
- "flights_total": 94,
- "flights_complete": 73,
+ "flights_total": 104,
+ "flights_complete": 83,
  "flights_partial": 21,
- "domestic": 51,
- "international": 22,
- "distance_total_nm": 35312.0,
- "distance_total_km": 65398.0,
- "distance_total_miles": 40637.0,
- "around_earth": 1.63,
- "block_time_total_min": 5192.0,
- "block_time_human": "86h 32m",
+ "domestic": 58,
+ "international": 25,
+ "distance_total_nm": 40138.0,
+ "distance_total_km": 74337.0,
+ "distance_total_miles": 46191.0,
+ "around_earth": 1.85,
+ "block_time_total_min": 5928.0,
+ "block_time_human": "98h 48m",
  "by_aircraft": [
   {
    "aircraft": "A20N",
-   "flights": 40,
-   "nm": 4150.8
+   "flights": 46,
+   "nm": 4872.2
   },
   {
    "aircraft": "B78X",
-   "flights": 23,
-   "nm": 22081.800000000003
+   "flights": 27,
+   "nm": 26186.7
   },
   {
    "aircraft": "B773",
@@ -64,6 +64,7 @@
  ],
  "airports_visited": [
   "KPHX",
+  "OMDB",
   "PHNL",
   "RCFN",
   "RCGI",
@@ -123,33 +124,33 @@
   },
   {
    "month": "2026-08",
-   "flights": 12
+   "flights": 22
   }
  ],
  "analytics": {
   "top_airports": [
    {
     "label": "RCTP",
-    "count": 39
+    "count": 46
    },
    {
     "label": "RCSS",
-    "count": 32
+    "count": 37
    },
    {
     "label": "RJTT",
+    "count": 10
+   },
+   {
+    "label": "VHHH",
     "count": 9
    },
    {
     "label": "RCFN",
     "count": 9
-   },
-   {
-    "label": "RJFF",
-    "count": 8
    }
   ],
-  "total_airports": 32,
+  "total_airports": 33,
   "top_airlines": [
    {
     "label": "Smart Cat",
@@ -160,27 +161,27 @@
     "count": 11
    },
    {
+    "label": "EVA",
+    "count": 7
+   },
+   {
+    "label": "NH",
+    "count": 6
+   },
+   {
     "label": "Dynasty",
     "count": 6
-   },
-   {
-    "label": "EVA",
-    "count": 6
-   },
-   {
-    "label": "EVA Air",
-    "count": 5
    }
   ],
-  "total_airlines": 14,
+  "total_airlines": 15,
   "top_aircraft": [
    {
     "label": "A20N",
-    "count": 40
+    "count": 46
    },
    {
     "label": "B78X",
-    "count": 23
+    "count": 27
    },
    {
     "label": "B773",
@@ -199,7 +200,7 @@
   "top_routes": [
    {
     "label": "RCTP–RCSS",
-    "count": 17
+    "count": 22
    },
    {
     "label": "RCSS–RJTT",
@@ -218,19 +219,19 @@
     "count": 3
    }
   ],
-  "total_routes": 43,
+  "total_routes": 48,
   "top_countries": [
    {
     "label": "TW",
-    "count": 97
+    "count": 110
    },
    {
     "label": "JP",
-    "count": 41
+    "count": 46
    },
    {
     "label": "HK",
-    "count": 12
+    "count": 13
    },
    {
     "label": "KR",
@@ -241,11 +242,11 @@
     "count": 3
    }
   ],
-  "total_countries": 10,
+  "total_countries": 11,
   "by_year": [
    {
     "label": "2026",
-    "count": 94
+    "count": 104
    }
   ],
   "by_month_of_year": [
@@ -279,7 +280,7 @@
    },
    {
     "label": 8,
-    "count": 12
+    "count": 22
    },
    {
     "label": 9,
@@ -301,11 +302,11 @@
   "by_weekday": [
    {
     "label": 0,
-    "count": 19
+    "count": 21
    },
    {
     "label": 1,
-    "count": 12
+    "count": 18
    },
    {
     "label": 2,
@@ -313,7 +314,7 @@
    },
    {
     "label": 3,
-    "count": 12
+    "count": 13
    },
    {
     "label": 4,
@@ -325,16 +326,16 @@
    },
    {
     "label": 6,
-    "count": 14
+    "count": 15
    }
   ],
   "year_span": 1,
-  "total_block_min": 5192.3,
-  "total_air_min": 4178.5,
+  "total_block_min": 5928.2,
+  "total_air_min": 4848.3,
   "hours_by_year": [
    {
     "label": "2026",
-    "minutes": 5192.3
+    "minutes": 5928.2
    }
   ],
   "hours_by_month": [
@@ -364,7 +365,7 @@
    },
    {
     "label": "2026-08",
-    "minutes": 1798.2
+    "minutes": 2534.1
    }
   ],
   "records": {
