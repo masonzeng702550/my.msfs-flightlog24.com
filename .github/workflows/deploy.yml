@@ -77,7 +77,12 @@ jobs:
           # a .meta.yml edit must also pull its .fltrec so the pair can be re-parsed
           sed 's/\.meta\.yml$/.fltrec/' /tmp/changed.txt | sort -u > /tmp/want.txt
           echo "Fetching $(wc -l < /tmp/want.txt) recording(s):"; cat /tmp/want.txt
-          xargs -a /tmp/want.txt -r git sparse-checkout add --
+          # Cone mode only understands directories, so naming individual files
+          # fails outright ("is not a directory"). Restate the whole sparse set
+          # in non-cone mode, where a pattern can be an exact path.
+          { printf '/site/\n/scripts/\n/.github/\n'; sed 's|^|/|' /tmp/want.txt; } > /tmp/sparse.txt
+          git sparse-checkout set --no-cone --stdin < /tmp/sparse.txt
+          ls -la recordings/ | head
 
       - name: Fetch all recordings
         if: steps.scope.outputs.mode == 'all'
